@@ -10,7 +10,6 @@ import view.game.GamePanel;
  * You can design several methods about the game logic in this class.
  */
 public class GameController {
-    //test
     private final GamePanel view;
     private final MapModel model;
 
