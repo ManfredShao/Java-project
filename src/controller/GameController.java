@@ -13,6 +13,7 @@ public class GameController {
     private final GamePanel view;
     private final MapModel model;
     private boolean test;
+    private boolean test2;
 
     public GameController(GamePanel view, MapModel model) {
         this.view = view;
