@@ -12,6 +12,8 @@ import view.game.GamePanel;
 public class GameController {
     private final GamePanel view;
     private final MapModel model;
+    int a;
+    int b;
 
     public GameController(GamePanel view, MapModel model) {
         this.view = view;
