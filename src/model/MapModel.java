@@ -6,6 +6,9 @@ package model;
 public class MapModel {
     int[][] matrix;
 
+    public MapModel(Map level) {
+        this.matrix = level.getMatrix();
+    }
 
     public MapModel(int[][] matrix) {
         this.matrix = matrix;
@@ -33,5 +36,10 @@ public class MapModel {
 
     public boolean checkInHeightSize(int row) {
         return row >= 0 && row < matrix.length;
+    }
+
+    public int[][] resetMatrix(Map level) {
+        this.matrix = level.getMatrix(); // 增加矩阵赋值操作
+        return this.matrix;
     }
 }

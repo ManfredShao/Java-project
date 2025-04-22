@@ -39,5 +39,4 @@ public class FrameUtil {
         frame.add(button);
         return button;
     }
-
 }

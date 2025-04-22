@@ -1,3 +1,4 @@
+import model.Map;
 import model.MapModel;
 import view.game.GameFrame;
 import view.login.LoginFrame;
@@ -9,13 +10,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             LoginFrame loginFrame = new LoginFrame(280, 280);
             loginFrame.setVisible(true);
-            MapModel mapModel = new MapModel(new int[][]{
-                    {3,4,4,3},
-                    {3,4,4,3},
-                    {1,2,2,1},
-                    {3,1,1,3},
-                    {3,0,0,3}
-            });
+            MapModel mapModel = new MapModel(Map.LEVEL_1);
             GameFrame gameFrame = new GameFrame(600, 450, mapModel);
             gameFrame.setVisible(false);
             loginFrame.setGameFrame(gameFrame);

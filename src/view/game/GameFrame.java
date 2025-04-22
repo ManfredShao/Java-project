@@ -20,7 +20,7 @@ public class GameFrame extends JFrame {
         this.setTitle("2025 CS109 Project Demo");
         this.setLayout(null);
         this.setSize(width, height);
-        gamePanel = new GamePanel(mapModel);
+        gamePanel = new GamePanel();
         gamePanel.setLocation(30, height / 2 - gamePanel.getHeight() / 2);
         this.add(gamePanel);
         this.controller = new GameController(gamePanel, mapModel);

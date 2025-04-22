@@ -1,6 +1,7 @@
 package controller;
 
 import model.Direction;
+import model.Map;
 import model.MapModel;
 import view.game.BoxComponent;
 import view.game.GamePanel;
@@ -20,7 +21,10 @@ public class GameController {
     }
 
     public void restartGame() {
-        System.out.println("Do restart game here");
+        model.resetMatrix(Map.LEVEL_1);  // 重置模型
+        view.resetGame();        // 重置视图
+        view.requestFocus();     // 保持焦点在游戏面板
+        System.out.println("restartGame");
     }
 
     public boolean doMove(int row, int col, Direction direction) {

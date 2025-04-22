@@ -2,6 +2,7 @@ package view.game;
 
 import controller.GameController;
 import model.Direction;
+import model.Map;
 import model.MapModel;
 
 import javax.swing.*;
@@ -24,26 +25,19 @@ public class GamePanel extends ListenerPanel {
     private BoxComponent selectedBox;
 
 
-    public GamePanel(MapModel model) {
+    public GamePanel() {
         boxes = new ArrayList<>();
         this.setVisible(true);
         this.setFocusable(true);
         this.setLayout(null);
-        this.setSize(model.getWidth() * GRID_SIZE + 4, model.getHeight() * GRID_SIZE + 4);
-        this.model = model;
+        this.setSize(4 * GRID_SIZE + 4, 5 * GRID_SIZE + 4);
         this.selectedBox = null;
-        initialGame();
+        initialGame(Map.LEVEL_1);
     }
-
-    /*
-                        {1, 2, 2, 1, 1},
-                        {3, 4, 4, 2, 2},
-                        {3, 4, 4, 1, 0},
-                        {1, 2, 2, 1, 0},
-                        {1, 1, 1, 1, 1}
-     */
-    public void initialGame() {
+    public void initialGame(Map level) {
         this.steps = 0;
+        this.model = new MapModel(level);
+
         //copy a map
         int[][] map = new int[model.getHeight()][model.getWidth()];
         for (int i = 0; i < map.length; i++) {
@@ -84,6 +78,21 @@ public class GamePanel extends ListenerPanel {
                 }
             }
         }
+        this.repaint();
+    }
+
+    public void resetGame() {
+        // 清空现有组件
+        this.removeAll();
+        boxes.clear();
+
+        // 重置状态
+        selectedBox = null;
+        stepLabel.setText("Step: 0");
+
+        // 重新初始化
+        initialGame(Map.LEVEL_1);
+        revalidate();
         this.repaint();
     }
 
