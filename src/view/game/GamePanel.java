@@ -49,21 +49,21 @@ public class GamePanel extends ListenerPanel {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
                 BoxComponent box = null;
-                if (map[i][j] == 1) {
+                if (map[i][j] == 1) {//卒
                     box = new BoxComponent(Color.ORANGE, i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
                     map[i][j] = 0;
-                } else if (map[i][j] == 2) {
+                } else if (map[i][j] == 2) {//其他角色
                     box = new BoxComponent(Color.PINK, i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
                     map[i][j] = 0;
                     map[i][j + 1] = 0;
-                } else if (map[i][j] == 3) {
+                } else if (map[i][j] == 3) {//关羽
                     box = new BoxComponent(Color.BLUE, i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE * 2);
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
-                } else if (map[i][j] == 4) {
+                } else if (map[i][j] == 4) {//曹操
                     box = new BoxComponent(Color.GREEN, i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
                     map[i][j] = 0;
