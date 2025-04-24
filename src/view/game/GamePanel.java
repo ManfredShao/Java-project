@@ -8,6 +8,7 @@ import model.MapModel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,8 +166,37 @@ public class GamePanel extends ListenerPanel {
     public void afterMove() {
         this.steps++;
         this.stepLabel.setText(String.format("Step: %d", this.steps));
-        if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4){
-            JOptionPane.showMessageDialog(this, String.format("华容道尽\n云开见龙\n\n巧行%d步，智破千重", this.steps));
+        if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4) {
+            JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 2. 创建透明图标（替换咖啡图标）
+            Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+            // 3. 创建自定义对话框
+            JDialog dialog = new JDialog();
+            dialog.setTitle("一破——卧龙出山");
+            dialog.setIconImage(emptyIcon); // 移除Java图标
+            dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+            dialog.setLayout(new BorderLayout());
+
+            // 4. 设置对话框内容
+            dialog.add(label, BorderLayout.CENTER);
+
+            // 5. 添加确认按钮
+            JButton confirmBtn = new JButton("已知晓");
+            confirmBtn.setFont(new Font("楷体", Font.PLAIN, 16));
+            confirmBtn.addActionListener(e -> dialog.dispose());
+
+            JPanel btnPanel = new JPanel();
+            btnPanel.add(confirmBtn);
+            dialog.add(btnPanel, BorderLayout.SOUTH);
+
+            // 6. 自适应大小并居中显示
+            dialog.pack();
+            dialog.setSize(400, 300); // 固定对话框大小
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
         }
     }
 
