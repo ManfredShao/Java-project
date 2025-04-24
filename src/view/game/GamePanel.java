@@ -34,6 +34,7 @@ public class GamePanel extends ListenerPanel {
         this.selectedBox = null;
         initialGame(Map.LEVEL_1);
     }
+
     public void initialGame(Map level) {
         this.steps = 0;
         this.model = new MapModel(level);
@@ -85,11 +86,9 @@ public class GamePanel extends ListenerPanel {
         // 清空现有组件
         this.removeAll();
         boxes.clear();
-
         // 重置状态
         selectedBox = null;
         stepLabel.setText("Step: 0");
-
         // 重新初始化
         initialGame(Map.LEVEL_1);
         revalidate();
@@ -166,6 +165,9 @@ public class GamePanel extends ListenerPanel {
     public void afterMove() {
         this.steps++;
         this.stepLabel.setText(String.format("Step: %d", this.steps));
+        if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4){
+            JOptionPane.showMessageDialog(this, String.format("华容道尽\n云开见龙\n\n巧行%d步，智破千重", this.steps));
+        }
     }
 
     public void setStepLabel(JLabel stepLabel) {

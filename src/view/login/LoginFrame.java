@@ -16,7 +16,7 @@ public class LoginFrame extends JFrame {
 
 
     public LoginFrame(int width, int height) {
-        this.setTitle("Login Frame");
+        this.setTitle("Please Login");
         this.setLayout(null);
         this.setSize(width, height);
         JLabel userLabel = FrameUtil.createJLabel(this, new Point(50, 20), 70, 40, "username:");
