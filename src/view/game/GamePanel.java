@@ -53,12 +53,12 @@ public class GamePanel extends ListenerPanel {
                     box = new BoxComponent(Color.ORANGE, i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
                     map[i][j] = 0;
-                } else if (map[i][j] == 2) {//其他角色
+                } else if (map[i][j] == 2) {//关羽
                     box = new BoxComponent(Color.PINK, i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
                     map[i][j] = 0;
                     map[i][j + 1] = 0;
-                } else if (map[i][j] == 3) {//关羽
+                } else if (map[i][j] == 3) {//其他角色
                     box = new BoxComponent(Color.BLUE, i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE * 2);
                     map[i][j] = 0;
