@@ -28,61 +28,71 @@ public class GameController {
     }
 
     public boolean doMove(int row, int col, Direction direction) {
-        int boxId = model.getId(row, col);
-        int boxHeight = 0;
-        int boxWidth = 0;
-        switch (boxId) {
-            case 1:
-                boxHeight = 1;
-                boxWidth = 1;
-                break;
-            case 2:
-                boxHeight = 1;
-                boxWidth = 2;
-                break;
-            case 3:
-                boxHeight = 2;
-                boxWidth = 1;
-                break;
-            case 4:
-                boxHeight = 2;
-                boxWidth = 2;
-                break;
-            default:
-                break;
-        }
-        //下面检查是否出现碰撞或者越界
         int nextRow = row + direction.getRow();
         int nextCol = col + direction.getCol();
-        for (int i = 0; i < boxHeight; i++){
-            for (int j = 0; j < boxWidth; j++){
-                int idOfRowToBeChecked = i + nextRow;
-                int idOfColToBeChecked = j + nextCol;
-                //检查越界
-                if (!model.checkInHeightSize(idOfRowToBeChecked) || !model.checkInWidthSize(idOfColToBeChecked)){
-                    return false;
-                }
-                //检查碰撞
-                if (model.getId(idOfRowToBeChecked,idOfColToBeChecked) != 0){
-                    return false;
+        if (model.getId(row, col) == 1) {//卒1*1
+            if (model.checkInHeightSize(nextRow) && model.checkInWidthSize(nextCol)) {//不越界
+                if (model.getId(nextRow, nextCol) == 0) {//不碰撞
+                    model.getMatrix()[row][col] = 0;//能移动，将原位置更新为空
+                    model.getMatrix()[nextRow][nextCol] = 1;//更新新位置
+                    refreshCoordinate(nextRow,nextCol,1,1);
+                    return true;
                 }
             }
         }
-        //剩下的情况返回true
-        BoxComponent box = view.getSelectedBox();
-        box.setRow(nextRow);
-        box.setCol(nextCol);
-        box.setLocation(box.getCol() * view.getGRID_SIZE() + 2, box.getRow() * view.getGRID_SIZE() + 2);
-        box.repaint();
-        //重置参数，将原来的位置ID设为0，移动后的位置设置对应的iD。
-        for (int i = 0; i < boxHeight; i++) {
-            for (int j = 0; j < boxWidth; j++) {
-                model.getMatrix()[row + i][col + j] = 0;
-                model.getMatrix()[nextRow + i][nextCol + j] = boxId;
 
+        //非1*1板块注意自身重叠
+
+        if (model.getId(row, col) == 2) {//关羽1*2
+            if (model.checkInHeightSize(nextRow) && model.checkInWidthSize(nextCol) && model.checkInWidthSize(nextCol + 1)) {
+                if ((direction == Direction.LEFT && model.getId(nextRow, nextCol) == 0) || (direction == Direction.RIGHT && model.getId(nextRow, nextCol + 1) == 0) || ((direction == Direction.UP || direction == Direction.DOWN) && model.getId(nextRow, nextCol) == 0) && model.getId(nextRow, nextCol + 1) == 0) {
+                    model.getMatrix()[row][col] = 0;
+                    model.getMatrix()[row][col + 1] = 0;
+                    model.getMatrix()[nextRow][nextCol] = 2;
+                    model.getMatrix()[nextRow][nextCol + 1] = 2;
+                    refreshCoordinate(nextRow,nextCol,2,1);
+                    return true;
+                }
             }
         }
-        return true;
+        if (model.getId(row, col) == 3) {//其他角色2*1
+            if (model.checkInWidthSize(nextRow) && model.checkInHeightSize(nextRow + 1) && model.checkInHeightSize(nextRow + 1)) {
+                if ((direction == Direction.UP && model.getId(nextRow, nextCol) == 0) || (direction == Direction.DOWN && model.getId(nextRow + 1, nextCol) == 0) || ((direction == Direction.LEFT || direction == Direction.RIGHT) && model.getId(nextRow, nextCol) == 0) && model.getId(nextRow + 1, nextCol) == 0) {
+                    model.getMatrix()[row][col] = 0;
+                    model.getMatrix()[row + 1][col] = 0;
+                    model.getMatrix()[nextRow][nextCol] = 3;
+                    model.getMatrix()[nextRow + 1][nextCol] = 3;
+                    refreshCoordinate(nextRow,nextCol,1,2);
+                    return true;
+                }
+            }
+        }
+        if (model.getId(row, col) == 4) {//曹操
+            if (model.checkInHeightSize(nextRow) && model.checkInWidthSize(nextCol) && model.checkInHeightSize(nextRow + 1) && model.checkInWidthSize(nextCol + 1)) {
+                if ((direction == Direction.UP && model.getId(nextRow, nextCol) == 0 && model.getId(nextRow, nextCol + 1) == 0) || (direction == Direction.DOWN && model.getId(nextRow + 1, nextCol) == 0 && model.getId(nextRow + 1, nextCol + 1) == 0) || (direction == Direction.LEFT && model.getId(nextRow, nextCol) == 0 && model.getId(nextRow + 1, nextCol) == 0) || (direction == Direction.RIGHT && model.getId(nextRow, nextCol + 1) == 0 && model.getId(nextRow + 1, nextCol + 1) == 0)) {
+                    model.getMatrix()[row][col] = 0;
+                    model.getMatrix()[row + 1][col] = 0;
+                    model.getMatrix()[row][col + 1] = 0;
+                    model.getMatrix()[row + 1][col + 1] = 0;
+                    model.getMatrix()[nextRow][nextCol] = 4;
+                    model.getMatrix()[nextRow + 1][nextCol] = 4;
+                    model.getMatrix()[nextRow][nextCol + 1] = 4;
+                    model.getMatrix()[nextRow + 1][nextCol + 1] = 4;
+                    refreshCoordinate(nextRow,nextCol,2,2);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void refreshCoordinate (int nextRow, int nextCol,int width, int height) {
+        BoxComponent box = view.getSelectedBox();
+        box.setRow(nextRow);//更新逻辑坐标
+        box.setCol(nextCol);
+        //更新像素坐标
+        box.setBounds(box.getCol() * view.getGRID_SIZE() + 2, box.getRow() * view.getGRID_SIZE() + 2, width * view.getGRID_SIZE(), height * view.getGRID_SIZE());
+        box.repaint();
     }
 
     //todo: add other methods such as loadGame, saveGame...

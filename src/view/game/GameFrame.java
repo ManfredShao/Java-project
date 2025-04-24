@@ -17,7 +17,7 @@ public class GameFrame extends JFrame {
     private GamePanel gamePanel;
 
     public GameFrame(int width, int height, MapModel mapModel) {
-        this.setTitle("2025 CS109 Project Demo");
+        this.setTitle("Klotski Puzzle");
         this.setLayout(null);
         this.setSize(width, height);
         gamePanel = new GamePanel();
