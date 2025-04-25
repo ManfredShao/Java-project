@@ -189,7 +189,7 @@ public class GamePanel extends ListenerPanel {
     public void afterMove() {
         this.steps++;
         this.stepLabel.setText(String.format("移步: %d", this.steps));
-        if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4) {
+        if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
             label.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -209,7 +209,10 @@ public class GamePanel extends ListenerPanel {
             // 5. 添加确认按钮
             JButton confirmBtn = new JButton("已知晓");
             confirmBtn.setFont(new Font("楷体", Font.PLAIN, 16));
-            confirmBtn.addActionListener(e -> dialog.dispose());
+            confirmBtn.addActionListener(e -> {
+                controller.restartGame();
+//                this.gamePanel.requestFocusInWindow();//enable key listener
+            });
 
             JPanel btnPanel = new JPanel();
             btnPanel.add(confirmBtn);

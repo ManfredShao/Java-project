@@ -26,6 +26,10 @@ public class MapModel {
         return matrix[row][col];
     }
 
+    public void setMatrix(int row, int col, int id) {
+        this.matrix[row][col] = id;
+    }
+
     public int[][] getMatrix() {
         return matrix;
     }
