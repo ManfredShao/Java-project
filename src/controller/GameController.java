@@ -91,7 +91,7 @@ public class GameController {
             }
         }
         if (model_changed.getId(row, col) == 3) {//其他角色2*1
-            if (model_changed.checkInWidthSize(nextRow) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInHeightSize(nextRow)) {
+            if (model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInHeightSize(nextRow)) {
                 if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) || (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) || ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
