@@ -16,19 +16,72 @@ public class GameFrame extends JFrame {
     private JLabel stepLabel;
     private GamePanel gamePanel;
 
-    public GameFrame(int width, int height, MapModel mapModel) {
-        this.setTitle("Klotski Puzzle");
-        this.setLayout(null);
-        this.setSize(width, height);
+    public GameFrame(MapModel mapModel) {
+        super("華容道·漢末風雲");
+        this.setLayout(new GridBagLayout());
         gamePanel = new GamePanel();
-        gamePanel.setLocation(30, height / 2 - gamePanel.getHeight() / 2);
-        this.add(gamePanel);
         this.controller = new GameController(gamePanel, mapModel);
 
-        this.restartBtn = FrameUtil.createButton(this, "Restart", new Point(gamePanel.getWidth() + 80, 120), 80, 50);
-        this.loadBtn = FrameUtil.createButton(this, "Load", new Point(gamePanel.getWidth() + 80, 210), 80, 50);
-        this.stepLabel = FrameUtil.createJLabel(this, "Start", new Font("serif", Font.ITALIC, 22), new Point(gamePanel.getWidth() + 80, 70), 180, 50);
+        this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", new Point(gamePanel.getWidth() + 80, 120), 80, 50);
+        this.loadBtn = FrameUtil.createButton(this, "讀取戰局", new Point(gamePanel.getWidth() + 80, 210), 80, 50);
+        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), new Point(gamePanel.getWidth() + 80, 170), 80, 50);
         gamePanel.setStepLabel(stepLabel);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        int mapWidth = 4; // 假设地图的宽度为 4
+        int mapHeight = 5; // 假设地图的高度为 5
+        int gridWidth = mapWidth * gamePanel.getGRID_SIZE();
+        int gridHeight = mapHeight * gamePanel.getGRID_SIZE();
+        this.setSize(gridWidth, gridHeight+80);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(3, 3, 3, 3);
+
+        // 添加游戏面板
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.gridwidth = 3;
+        gbc.gridheight = 3;
+        this.add(gamePanel, gbc);
+
+        // 添加重启按钮
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        this.add(restartBtn, gbc);
+
+        // 添加加载按钮
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        this.add(loadBtn, gbc);
+
+        // 添加步数标签
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        this.add(stepLabel, gbc);
+        // 将按钮和标签放入JPanel再添加
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(restartBtn);
+        bottomPanel.add(stepLabel);
+        bottomPanel.add(loadBtn);
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridwidth = 3;
+        add(bottomPanel, gbc);
 
         this.restartBtn.addActionListener(e -> {
             controller.restartGame();
@@ -41,7 +94,7 @@ public class GameFrame extends JFrame {
         });
         //todo: add other button here
         this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
     }
-
 }

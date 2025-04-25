@@ -8,6 +8,8 @@ import model.MapModel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +24,37 @@ public class GamePanel extends ListenerPanel {
     private GameController controller;
     private JLabel stepLabel;
     private int steps;
-    private final int GRID_SIZE = 50;
+    private int GRID_SIZE;
     private BoxComponent selectedBox;
 
-
     public GamePanel() {
+        // 获取实际可用显示区域
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        DisplayMode dm = gd.getDisplayMode();
+
+        // 考虑多显示器场景
+        Rectangle effectiveBounds = gd.getDefaultConfiguration().getBounds();
+        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gd.getDefaultConfiguration());
+
+        int usableWidth = effectiveBounds.width - screenInsets.left - screenInsets.right;
+        int usableHeight = effectiveBounds.height - screenInsets.top - screenInsets.bottom;
+
+        // 计算基准尺寸（考虑横竖屏切换）
+        int baseSize = (int) Math.min(usableWidth / 4, usableHeight / 5);
+
+        // 应用系统缩放（Java 9+）
+        float scale = (float) gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
+        GRID_SIZE = (int) (baseSize / scale);
+
+        // 设置组件尺寸（保留边框）
+        int panelWidth = 4 * GRID_SIZE + 4;
+        int panelHeight = 5 * GRID_SIZE + 4;
+        this.setSize(panelWidth, panelHeight);
+        this.setLocation((usableWidth - panelWidth) / 2, (usableHeight - panelHeight) / 2);
         boxes = new ArrayList<>();
         this.setVisible(true);
         this.setFocusable(true);
         this.setLayout(null);
-        this.setSize(4 * GRID_SIZE + 4, 5 * GRID_SIZE + 4);
         this.selectedBox = null;
         initialGame(Map.LEVEL_1);
     }
@@ -89,7 +112,7 @@ public class GamePanel extends ListenerPanel {
         boxes.clear();
         // 重置状态
         selectedBox = null;
-        stepLabel.setText("Step: 0");
+        stepLabel.setText("移步: 0");
         // 重新初始化
         initialGame(Map.LEVEL_1);
         revalidate();
@@ -165,7 +188,7 @@ public class GamePanel extends ListenerPanel {
 
     public void afterMove() {
         this.steps++;
-        this.stepLabel.setText(String.format("Step: %d", this.steps));
+        this.stepLabel.setText(String.format("移步: %d", this.steps));
         if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4) {
             JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
             label.setHorizontalAlignment(SwingConstants.CENTER);
