@@ -189,7 +189,7 @@ public class GamePanel extends ListenerPanel {
     public void afterMove() {
         this.steps++;
         this.stepLabel.setText(String.format("移步: %d", this.steps));
-        if (model.getId(4, 1) == 4 && model.getId(4, 2) == 4) {
+        if (model.getId(3, 1) == 4) {
             JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
             label.setHorizontalAlignment(SwingConstants.CENTER);
 
