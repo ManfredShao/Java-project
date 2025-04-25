@@ -12,6 +12,7 @@ public class GameFrame extends JFrame {
     private GameController controller;
     private JButton restartBtn;
     private JButton loadBtn;
+    private JButton loginLabel;
 
     private JLabel stepLabel;
     private GamePanel gamePanel;
@@ -22,9 +23,11 @@ public class GameFrame extends JFrame {
         gamePanel = new GamePanel();
         this.controller = new GameController(gamePanel, mapModel);
 
-        this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", new Point(gamePanel.getWidth() + 80, 120), 80, 50);
-        this.loadBtn = FrameUtil.createButton(this, "讀取戰局", new Point(gamePanel.getWidth() + 80, 210), 80, 50);
-        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), new Point(gamePanel.getWidth() + 80, 170), 80, 50);
+        int height=50;
+        this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", new Point(gamePanel.getWidth() + 80, 120), 80, height);
+        this.loadBtn = FrameUtil.createButton(this, "讀取戰局", new Point(gamePanel.getWidth() + 80, 210), 80, height);
+        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), new Point(gamePanel.getWidth() + 80, 170), 80, height);
+        this.loginLabel=FrameUtil.createButton(this, "登錄", new Point(gamePanel.getWidth() + 80, 210), 80, height);
         gamePanel.setStepLabel(stepLabel);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -34,7 +37,7 @@ public class GameFrame extends JFrame {
         int mapHeight = 5; // 假设地图的高度为 5
         int gridWidth = mapWidth * gamePanel.getGRID_SIZE();
         int gridHeight = mapHeight * gamePanel.getGRID_SIZE();
-        this.setSize(gridWidth, gridHeight+80);
+        this.setSize(gridWidth, gridHeight+(int)(height*1.6));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -66,6 +69,14 @@ public class GameFrame extends JFrame {
         gbc.gridheight = 1;
         this.add(loadBtn, gbc);
 
+        // 添加登录按钮
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+
         // 添加步数标签
         gbc.gridx = 1;
         gbc.gridy = 3;
@@ -79,6 +90,7 @@ public class GameFrame extends JFrame {
         bottomPanel.add(restartBtn);
         bottomPanel.add(stepLabel);
         bottomPanel.add(loadBtn);
+        bottomPanel.add(loginLabel);
         gbc.gridx = 0; gbc.gridy = 3;
         gbc.gridwidth = 3;
         add(bottomPanel, gbc);
