@@ -8,8 +8,6 @@ import model.MapModel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,13 +105,12 @@ public class GamePanel extends ListenerPanel {
     }
 
     public void resetGame() {
-        // 清空现有组件
         this.removeAll();
         boxes.clear();
-        // 重置状态
+
         selectedBox = null;
         stepLabel.setText("移步: 0");
-        // 重新初始化
+
         initialGame(Map.LEVEL_1);
         revalidate();
         this.repaint();
