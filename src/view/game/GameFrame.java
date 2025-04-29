@@ -1,6 +1,7 @@
 package view.game;
 
 import controller.GameController;
+import model.Direction;
 import model.MapModel;
 import view.FrameUtil;
 
@@ -104,6 +105,69 @@ public class GameFrame extends JFrame {
             System.out.println(string);
             gamePanel.requestFocusInWindow();//enable key listener
         });
+
+        //添加右侧的方向控制按钮
+        JPanel directionPanel = new JPanel(new GridLayout(3,3,5,5));// 3 行 3 列，格子间水平垂直5像素
+        // 创建四个方向按钮
+        JButton upBtn    = new JButton("↑");
+        JButton downBtn  = new JButton("↓");
+        JButton leftBtn  = new JButton("←");
+        JButton rightBtn = new JButton("→");
+        // 第一行
+        directionPanel.add(new JLabel()); // (0,0) 空
+        directionPanel.add(upBtn);        // (0,1)
+        directionPanel.add(new JLabel()); // (0,2) 空
+
+        // 第二行
+        directionPanel.add(leftBtn);      // (1,0)
+        directionPanel.add(new JLabel()); // (1,1) 中心空
+        directionPanel.add(rightBtn);     // (1,2)
+
+        // 第三行
+        directionPanel.add(new JLabel()); // (2,0) 空
+        directionPanel.add(downBtn);      // (2,1)
+        directionPanel.add(new JLabel()); // (2,2) 空
+
+        // 再把 dirPanel 加到主窗口右侧，先为 directionPanel 准备单独的约束
+        GridBagConstraints gbcDir = new GridBagConstraints();
+
+        // 放在第 4 列 (gridx=3)，从第一行 (gridy=0) 开始
+        gbcDir.gridx      = 3;
+        gbcDir.gridy      = 2;
+        // 占满 3 行高度，与 chessPanel 同高
+        gbcDir.gridwidth  = 1;
+        gbcDir.gridheight = 1;
+        // 四周留点空隙
+        gbcDir.insets = new Insets(5,5,5,5);
+        // 最后用 add(组件, constraints)
+        this.add(directionPanel, gbcDir);
+
+        //监听
+        upBtn.addActionListener(e -> {
+            BoxComponent box = gamePanel.getSelectedBox();
+            int row = box.getRow();
+            int col = box.getCol();
+            controller.doMove(row, col, Direction.UP);
+            gamePanel.requestFocusInWindow(); });
+        downBtn.addActionListener(e -> {
+            BoxComponent box = gamePanel.getSelectedBox();
+            int row = box.getRow();
+            int col = box.getCol();
+            controller.doMove(row, col, Direction.DOWN);
+            gamePanel.requestFocusInWindow(); });
+        leftBtn.addActionListener(e -> {
+            BoxComponent box = gamePanel.getSelectedBox();
+            int row = box.getRow();
+            int col = box.getCol();
+            controller.doMove(row, col, Direction.LEFT);
+            gamePanel.requestFocusInWindow(); });
+        rightBtn.addActionListener(e -> {
+            BoxComponent box = gamePanel.getSelectedBox();
+            int row = box.getRow();
+            int col = box.getCol();
+            controller.doMove(row, col, Direction.RIGHT);
+            gamePanel.requestFocusInWindow(); });
+
         //todo: add other button here
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
