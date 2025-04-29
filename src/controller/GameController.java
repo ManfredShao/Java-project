@@ -56,9 +56,9 @@ public class GameController {
     }
 
     public void restartGame() {
-        model_changed.resetMatrix(Map.LEVEL_1);  // 重置模型
-        view.resetGame();        // 重置视图
-        view.requestFocus();     // 保持焦点在游戏面板
+        model_changed.resetMatrix(Map.LEVEL_1);
+        view.resetGame();
+        view.requestFocus();
         System.out.println("restartGame");
     }
 
@@ -75,8 +75,6 @@ public class GameController {
                 }
             }
         }
-
-        //非1*1板块注意自身重叠
 
         if (model_changed.getId(row, col) == 2) {//关羽1*2
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInWidthSize(nextCol + 1)) {
