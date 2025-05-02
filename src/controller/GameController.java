@@ -3,12 +3,20 @@ package controller;
 import model.Direction;
 import model.Map;
 import model.MapModel;
+import user.User;
 import view.game.BoxComponent;
 import view.game.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * It is a bridge to combine GamePanel(view) and MapMatrix(model) in one game.
@@ -17,6 +25,8 @@ import java.awt.image.BufferedImage;
 public class GameController {
     private final GamePanel view;
     public static MapModel model_changed;
+    private GamePanel gamePanel;
+    private int step;
 
     public GameController(GamePanel view, MapModel model) {
         this.view = view;
@@ -94,7 +104,7 @@ public class GameController {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
-                    model_changed.setMatrix(nextRow, nextCol, 3);
+                    model_changed.setMatrix(nextRow+1, nextCol, 3);
                     refreshCoordinate(nextRow, nextCol, 1, 2);
                     return true;
                 }
@@ -128,6 +138,51 @@ public class GameController {
         box.repaint();
     }
 
-    //todo: add other methods such as loadGame, saveGame...
+    public void saveGame(User user) {
+        if (user == null) {
+            JOptionPane.showMessageDialog(view, "请先登录！");
+        } else {
+            step=view.getSteps();
+            int[][] map = model_changed.getMatrix();
+            List<String> gameData = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            for (int[] line : map) {
+                for (int i : line) {
+                    sb.append(i).append(" ");
+                }
+                gameData.add(sb.toString());
+                sb.setLength(0);
+            }
+            gameData.add(String.valueOf(view.getSteps()));
+            String path = String.format("Save/%s", user.getUsername());
+            File dir = new File(path);
+            dir.mkdir();
+            try {
+                Files.write(Path.of(path + "/data.txt"), gameData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
+        }
+    }
+
+    public void loadGame(User user) {
+        int[][] map = new int[5][4];
+        try {
+            List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
+            for (int j = 0; j < 5; j++) {
+                String s = lines.get(j).replace(" ", "");
+                for (int i = 0; i < 4; i++) {
+                    map[j][i] = Integer.parseInt(s.substring(i, i + 1));
+                }
+            }
+            view.clear();
+            view.setSteps(Integer.parseInt(lines.get(lines.size() - 1)));
+            view.refreshStepLabel();
+            view.initialGame(map, view.getSteps());
+            model_changed.resetMatrix(map);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
