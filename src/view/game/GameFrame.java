@@ -87,15 +87,18 @@ public class GameFrame extends JFrame {
         });
         this.saveBtn.addActionListener(e -> {
             controller.saveGame(user);
-            JOptionPane.showMessageDialog(this, "保存成功！");
+            JOptionPane.showMessageDialog(this, "安營紮寨");
             gamePanel.requestFocusInWindow();
         });
 
-        JPanel directionPanel = new JPanel(new GridLayout(3, 3, 5, 5));// 3 行 3 列，格子间水平垂直5像素
+        //todo：revoke按钮
+
+        JPanel directionPanel = new JPanel(new GridLayout(5, 3, 5, 5));// 3 行 3 列，格子间水平垂直5像素
         JButton upBtn = new JButton("↑");
         JButton downBtn = new JButton("↓");
         JButton leftBtn = new JButton("←");
         JButton rightBtn = new JButton("→");
+        JButton revokeBtn = new JButton("撤兵");
         directionPanel.add(new JLabel()); // (0,0) 空
         directionPanel.add(upBtn);        // (0,1)
         directionPanel.add(new JLabel()); // (0,2) 空
@@ -105,6 +108,13 @@ public class GameFrame extends JFrame {
         directionPanel.add(new JLabel()); // (2,0) 空
         directionPanel.add(downBtn);      // (2,1)
         directionPanel.add(new JLabel()); // (2,2) 空
+        directionPanel.add(new JLabel());
+        directionPanel.add(new JLabel());
+        directionPanel.add(new JLabel());
+        directionPanel.add(new JLabel());
+        directionPanel.add(new JLabel());
+        directionPanel.add(revokeBtn);
+
         GridBagConstraints gbcDir = new GridBagConstraints();
 
         // 放在第 4 列 (gridx=3)，从第一行 (gridy=0) 开始

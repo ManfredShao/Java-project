@@ -139,6 +139,7 @@ public class GameController {
     }
 
     public void saveGame(User user) {
+        //todo:这个“请先登录”似乎没用？
         if (user == null) {
             JOptionPane.showMessageDialog(view, "请先登录！");
         } else {
@@ -151,7 +152,7 @@ public class GameController {
                     sb.append(i).append(" ");
                 }
                 gameData.add(sb.toString());
-                sb.setLength(0);
+                sb.setLength(0);//clear
             }
             gameData.add(String.valueOf(view.getSteps()));
             String path = String.format("Save/%s", user.getUsername());
