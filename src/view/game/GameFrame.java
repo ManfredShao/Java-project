@@ -87,12 +87,13 @@ public class GameFrame extends JFrame {
         });
 
         //添加右侧的方向控制按钮
-        JPanel directionPanel = new JPanel(new GridLayout(3,3,5,5));// 3 行 3 列，格子间水平垂直5像素
+        JPanel directionPanel = new JPanel(new GridLayout(4,3,5,5));// 3 行 3 列，格子间水平垂直5像素
         // 创建四个方向按钮
         JButton upBtn    = new JButton("↑");
         JButton downBtn  = new JButton("↓");
         JButton leftBtn  = new JButton("←");
         JButton rightBtn = new JButton("→");
+        JButton revokeBtn = new JButton("撤兵");
         // 第一行
         directionPanel.add(new JLabel()); // (0,0) 空
         directionPanel.add(upBtn);        // (0,1)
@@ -108,10 +109,15 @@ public class GameFrame extends JFrame {
         directionPanel.add(downBtn);      // (2,1)
         directionPanel.add(new JLabel()); // (2,2) 空
 
+        //第四行
+        directionPanel.add(new JLabel()); // (3,0) 空
+        directionPanel.add(new JLabel()); // (3,1) 空
+        directionPanel.add(revokeBtn);// (3,2)
+
         // 再把 dirPanel 加到主窗口右侧，先为 directionPanel 准备单独的约束
         GridBagConstraints gbcDir = new GridBagConstraints();
 
-        // 放在第 4 列 (gridx=3)，从第一行 (gridy=0) 开始
+        // 放在第 4 列 (gridx=3)，从第一行 (gridy = 0) 开始
         gbcDir.gridx      = 3;
         gbcDir.gridy      = 2;
         // 占满 3 行高度，与 chessPanel 同高
@@ -128,24 +134,28 @@ public class GameFrame extends JFrame {
             int row = box.getRow();
             int col = box.getCol();
             controller.doMove(row, col, Direction.UP);
+            gamePanel.afterMove();
             gamePanel.requestFocusInWindow(); });
         downBtn.addActionListener(e -> {
             BoxComponent box = gamePanel.getSelectedBox();
             int row = box.getRow();
             int col = box.getCol();
             controller.doMove(row, col, Direction.DOWN);
+            gamePanel.afterMove();
             gamePanel.requestFocusInWindow(); });
         leftBtn.addActionListener(e -> {
             BoxComponent box = gamePanel.getSelectedBox();
             int row = box.getRow();
             int col = box.getCol();
             controller.doMove(row, col, Direction.LEFT);
+            gamePanel.afterMove();
             gamePanel.requestFocusInWindow(); });
         rightBtn.addActionListener(e -> {
             BoxComponent box = gamePanel.getSelectedBox();
             int row = box.getRow();
             int col = box.getCol();
             controller.doMove(row, col, Direction.RIGHT);
+            gamePanel.afterMove();
             gamePanel.requestFocusInWindow(); });
 
         //todo: add other button here
