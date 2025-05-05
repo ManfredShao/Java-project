@@ -42,8 +42,11 @@ public class MapModel {
         return row >= 0 && row < matrix.length;
     }
 
-    public int[][] resetMatrix(Map level) {
-        this.matrix = level.getMatrix(); // 增加矩阵赋值操作
-        return this.matrix;
+    public void resetMatrix(Map level) {
+        this.matrix = level.getMatrix();
+    }
+
+    public void resetMatrix(int[][] matrix) {
+        this.matrix = matrix;
     }
 }

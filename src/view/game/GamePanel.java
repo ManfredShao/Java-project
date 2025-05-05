@@ -104,6 +104,50 @@ public class GamePanel extends ListenerPanel {
         this.repaint();
     }
 
+    public void initialGame(int[][] inputMap,int steps) {
+        this.steps = steps;
+        int[][] map = new int[inputMap.length][inputMap[0].length];
+        for (int i = 0; i < inputMap.length; i++) {
+            for (int j = 0; j < inputMap[0].length; j++) {
+                map[i][j] = inputMap[i][j];
+            }
+        }
+        //build Component
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[0].length; j++) {
+                BoxComponent box = null;
+                if (map[i][j] == 1) {//卒
+                    box = new BoxComponent(Color.ORANGE, i, j);
+                    box.setSize(GRID_SIZE, GRID_SIZE);
+                    map[i][j] = 0;
+                } else if (map[i][j] == 2) {//关羽
+                    box = new BoxComponent(Color.PINK, i, j);
+                    box.setSize(GRID_SIZE * 2, GRID_SIZE);
+                    map[i][j] = 0;
+                    map[i][j + 1] = 0;
+                } else if (map[i][j] == 3) {//其他角色
+                    box = new BoxComponent(Color.BLUE, i, j);
+                    box.setSize(GRID_SIZE, GRID_SIZE * 2);
+                    map[i][j] = 0;
+                    map[i + 1][j] = 0;
+                } else if (map[i][j] == 4) {//曹操
+                    box = new BoxComponent(Color.GREEN, i, j);
+                    box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
+                    map[i][j] = 0;
+                    map[i + 1][j] = 0;
+                    map[i][j + 1] = 0;
+                    map[i + 1][j + 1] = 0;
+                }
+                if (box != null) {
+                    box.setLocation(j * GRID_SIZE + 2, i * GRID_SIZE + 2);
+                    boxes.add(box);
+                    this.add(box);
+                }
+            }
+        }
+        this.repaint();
+    }
+
     public void resetGame() {
         this.removeAll();
         boxes.clear();
@@ -114,6 +158,13 @@ public class GamePanel extends ListenerPanel {
         initialGame(Map.LEVEL_1);
         revalidate();
         this.repaint();
+    }
+
+    public void clear() {
+        this.removeAll();
+        boxes.clear();
+        selectedBox = null;
+        stepLabel.setText("移步: 0");
     }
 
     @Override
@@ -189,21 +240,15 @@ public class GamePanel extends ListenerPanel {
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-
             // 2. 创建透明图标（替换咖啡图标）
             Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-
-            // 3. 创建自定义对话框
             JDialog dialog = new JDialog();
             dialog.setTitle("一破——卧龙出山");
             dialog.setIconImage(emptyIcon); // 移除Java图标
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setLayout(new BorderLayout());
-
-            // 4. 设置对话框内容
             dialog.add(label, BorderLayout.CENTER);
 
-            // 5. 添加确认按钮
             JButton confirmBtn = new JButton("已知晓");
             confirmBtn.setFont(new Font("楷体", Font.PLAIN, 16));
             confirmBtn.addActionListener(e -> {
@@ -215,11 +260,12 @@ public class GamePanel extends ListenerPanel {
             btnPanel.add(confirmBtn);
             dialog.add(btnPanel, BorderLayout.SOUTH);
 
-            // 6. 自适应大小并居中显示
+            // 自适应大小并居中显示
             dialog.pack();
-            dialog.setSize(400, 300); // 固定对话框大小
+            dialog.setSize(400, 300);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
+            dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
     }
 
@@ -238,5 +284,17 @@ public class GamePanel extends ListenerPanel {
 
     public int getGRID_SIZE() {
         return GRID_SIZE;
+    }
+
+    public int getSteps() {
+        return steps;
+    }
+
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
+
+    public void refreshStepLabel() {
+        this.stepLabel.setText(String.format("移步: %d", this.steps));
     }
 }
