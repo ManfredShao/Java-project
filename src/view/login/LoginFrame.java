@@ -25,10 +25,13 @@ public class LoginFrame extends JFrame {
     private JButton resetBtn;
 
 
-    public LoginFrame(int width, int height) {
+    public LoginFrame() {
         this.setTitle("烽燧连天处，一局定乾坤");
         this.setLayout(new GridLayout(6, 1, 10, 10));
-        this.setSize(width, height);
+        this.setSize(280,280);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         JLabel userLabel = FrameUtil.createJLabel(this, 70, 40, "帅印:");
         JLabel passLabel = FrameUtil.createJLabel(this, 70, 40, "兵符:");
         username = FrameUtil.createJTextField(this, 120, 40);
@@ -93,8 +96,5 @@ public class LoginFrame extends JFrame {
             username.setText("");
             password.setText("");
         });
-
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 }

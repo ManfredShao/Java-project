@@ -1,7 +1,6 @@
 package view.game;
 
 import controller.GameController;
-import model.Direction;
 import model.MapModel;
 import user.User;
 import view.FrameUtil;
@@ -10,6 +9,22 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameFrame extends JFrame {
+
+    public JButton getSaveBtn() {
+        return saveBtn;
+    }
+
+    public void setSaveBtn(JButton saveBtn) {
+        this.saveBtn = saveBtn;
+    }
+
+    public JButton getLoadBtn() {
+        return loadBtn;
+    }
+
+    public void setLoadBtn(JButton loadBtn) {
+        this.loadBtn = loadBtn;
+    }
 
     private GameController controller;
     private JButton restartBtn;
@@ -127,36 +142,20 @@ public class GameFrame extends JFrame {
         this.add(directionPanel, gbcDir);
 
         upBtn.addActionListener(e -> {
-            BoxComponent box = gamePanel.getSelectedBox();
-            int row = box.getRow();
-            int col = box.getCol();
-            controller.doMove(row, col, Direction.UP);
             gamePanel.requestFocusInWindow();
-            gamePanel.afterMove();
+            gamePanel.doMoveUp();
         });
         downBtn.addActionListener(e -> {
-            BoxComponent box = gamePanel.getSelectedBox();
-            int row = box.getRow();
-            int col = box.getCol();
-            controller.doMove(row, col, Direction.DOWN);
             gamePanel.requestFocusInWindow();
-            gamePanel.afterMove();
+            gamePanel.doMoveDown();
         });
         leftBtn.addActionListener(e -> {
-            BoxComponent box = gamePanel.getSelectedBox();
-            int row = box.getRow();
-            int col = box.getCol();
-            controller.doMove(row, col, Direction.LEFT);
             gamePanel.requestFocusInWindow();
-            gamePanel.afterMove();
+            gamePanel.doMoveLeft();
         });
         rightBtn.addActionListener(e -> {
-            BoxComponent box = gamePanel.getSelectedBox();
-            int row = box.getRow();
-            int col = box.getCol();
-            controller.doMove(row, col, Direction.RIGHT);
             gamePanel.requestFocusInWindow();
-            gamePanel.afterMove();
+            gamePanel.doMoveRight();
         });
 
         this.setLocationRelativeTo(null);

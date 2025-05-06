@@ -139,10 +139,6 @@ public class GameController {
     }
 
     public void saveGame(User user) {
-        //todo:这个“请先登录”似乎没用？
-        if (user == null) {
-            JOptionPane.showMessageDialog(view, "请先登录！");
-        } else {
             step=view.getSteps();
             int[][] map = model_changed.getMatrix();
             List<String> gameData = new ArrayList<>();
@@ -164,7 +160,7 @@ public class GameController {
                 throw new RuntimeException(e);
             }
 
-        }
+
     }
 
     public void loadGame(User user) {
