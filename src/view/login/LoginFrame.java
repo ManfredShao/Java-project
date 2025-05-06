@@ -42,45 +42,40 @@ public class LoginFrame extends JFrame {
         add(submitBtn);
         add(resetBtn);
 
-        ArrayList<User> registeredUsers = new ArrayList<>();
-
-            submitBtn.addActionListener(e -> {
+        submitBtn.addActionListener(e -> {
             System.out.println("Username = " + username.getText());
             System.out.println("Password = " + password.getText());
 
             //todo: check login info
             //todo:登录？注册？游客身份游玩还未实现（需要为客人和注册用户实现登录选择界面。）
             if (UserController.validateUser(username.getText(), password.getText())) {//输入有效
-                String path = String.format("Save/%s", username.getText());
-                File dir = new File(path);
+                Path userDir = Path.of("Save", username.getText());
+                Path passwordFile = userDir.resolve("password.txt");
                 // 判断目录是否存在且确实是文件夹
-                if (!dir.exists() && dir.isDirectory()) {//未创建文件夹，即还没注册
+                if (Files.notExists(userDir)) {//未创建文件夹，即还没注册
                     //注册一下，创建对应用户名的目录和下面的password.txt。实际data.txt在saveGame里面才创建
                     //有可能注册过却没保存？就不会有data.txt
-                    User user = new User(username.getText(), password.getText());
-                    dir.mkdir();
-                    List<String> passwordData = new ArrayList<>();
-                    passwordData.add(password.getText());
                     try {
-                        Files.write(Path.of(path + "/password.txt"), passwordData);
+                        Files.createDirectories(userDir);
+                        Files.writeString(passwordFile, password.getText());
                     } catch (IOException d) {
                         throw new RuntimeException(d);
                     }
 
                     this.setVisible(false);
                     MapModel mapModel = new MapModel(Map.LEVEL_1);
+                    User user = new User(username.getText(), password.getText());
                     GameFrame gameFrame = new GameFrame(mapModel, user);
                     gameFrame.setVisible(true);
 
-                }else{//已注册，比对密码
+                } else {//已注册，比对密码
                     try {
-                        String line = Files.readString(Path.of("Save/" + username.getText() + "/data.txt"));
-                        if (!line.equals(password.getText())){
-                            JOptionPane.showMessageDialog(this,"兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
-                        }else{
+                        String line = Files.readString(passwordFile).trim();
+                        if (!(line.equals(password.getText()))) {
+                            JOptionPane.showMessageDialog(this, "兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
+                        } else {
                             this.setVisible(false);
                             MapModel mapModel = new MapModel(Map.LEVEL_1);
-                            //已注册，不需要new GameFrame
                             User user = new User(username.getText(), password.getText());
                             GameFrame gameFrame = new GameFrame(mapModel, user);
                             gameFrame.setVisible(true);
@@ -90,8 +85,8 @@ public class LoginFrame extends JFrame {
                         throw new RuntimeException(d);
                     }
                 }
-            }else{
-                JOptionPane.showMessageDialog(this,"兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
             }
         });
         resetBtn.addActionListener(e -> {
