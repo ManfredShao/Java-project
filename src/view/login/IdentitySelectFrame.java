@@ -39,6 +39,7 @@ public class IdentitySelectFrame extends JFrame {
         });
 
         playerBtn.addActionListener(e -> {
+            this.setVisible(false);
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
         });
