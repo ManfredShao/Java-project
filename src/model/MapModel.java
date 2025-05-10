@@ -6,6 +6,9 @@ package model;
 public class MapModel {
     int[][] matrix;
 
+    public MapModel(Map level) {
+        this.matrix = level.getMatrix();
+    }
 
     public MapModel(int[][] matrix) {
         this.matrix = matrix;
@@ -23,6 +26,10 @@ public class MapModel {
         return matrix[row][col];
     }
 
+    public void setMatrix(int row, int col, int id) {
+        this.matrix[row][col] = id;
+    }
+
     public int[][] getMatrix() {
         return matrix;
     }
@@ -33,5 +40,13 @@ public class MapModel {
 
     public boolean checkInHeightSize(int row) {
         return row >= 0 && row < matrix.length;
+    }
+
+    public void resetMatrix(Map level) {
+        this.matrix = level.getMatrix();
+    }
+
+    public void resetMatrix(int[][] matrix) {
+        this.matrix = matrix;
     }
 }
