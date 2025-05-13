@@ -73,22 +73,26 @@ public class GamePanel extends ListenerPanel {
             for (int j = 0; j < map[0].length; j++) {
                 BoxComponent box = null;
                 if (map[i][j] == 1) {//卒
-                    box = new BoxComponent(Color.ORANGE, i, j);
+                    box = new BoxComponent(new Color(69, 67, 82), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
+                    box.setText("铁卫");
                     map[i][j] = 0;
                 } else if (map[i][j] == 2) {//关羽
-                    box = new BoxComponent(Color.PINK, i, j);
+                    box = new BoxComponent(new Color(46, 139, 87), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
+                    box.setText("武圣");
                     map[i][j] = 0;
                     map[i][j + 1] = 0;
                 } else if (map[i][j] == 3) {//其他角色
-                    box = new BoxComponent(Color.BLUE, i, j);
+                    box = new BoxComponent(new Color(65, 105, 225), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE * 2);
+                    box.setText("猛将");
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
                 } else if (map[i][j] == 4) {//曹操
-                    box = new BoxComponent(Color.GREEN, i, j);
+                    box = new BoxComponent(new Color(178, 34, 34), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
+                    box.setText("枭雄");
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
                     map[i][j + 1] = 0;
@@ -104,7 +108,7 @@ public class GamePanel extends ListenerPanel {
         this.repaint();
     }
 
-    public void initialGame(int[][] inputMap,int steps) {
+    public void initialGame(int[][] inputMap, int steps) {
         this.steps = steps;
         int[][] map = new int[inputMap.length][inputMap[0].length];
         for (int i = 0; i < inputMap.length; i++) {
@@ -167,18 +171,11 @@ public class GamePanel extends ListenerPanel {
         stepLabel.setText("移步: 0");
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        Border border = BorderFactory.createLineBorder(Color.DARK_GRAY, 2);
-        this.setBorder(border);
-    }
 
     @Override
     public void doMouseClick(Point point) {
-        Component component = this.getComponentAt(point);
+        Point adjustedPoint = SwingUtilities.convertPoint(this, point, this);
+        Component component = this.getComponentAt(adjustedPoint);
         if (component instanceof BoxComponent clickedComponent) {
             if (selectedBox == null) {
                 selectedBox = clickedComponent;
@@ -243,7 +240,7 @@ public class GamePanel extends ListenerPanel {
             // 2. 创建透明图标（替换咖啡图标）
             Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             JDialog dialog = new JDialog();
-            dialog.setTitle("一破——卧龙出山");
+            dialog.setTitle("一破：卧龙出山");
             dialog.setIconImage(emptyIcon); // 移除Java图标
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setLayout(new BorderLayout());
@@ -297,4 +294,36 @@ public class GamePanel extends ListenerPanel {
     public void refreshStepLabel() {
         this.stepLabel.setText(String.format("移步: %d", this.steps));
     }
+
+    public void moveBoxSmoothly(BoxComponent box, int targetRow, int targetCol) {
+        final int startX = box.getX();
+        final int startY = box.getY();
+        final int endX = targetCol * GRID_SIZE + 2;
+        final int endY = targetRow * GRID_SIZE + 2;
+
+        final int duration = 80; // 动画总时长，毫秒
+        final int steps = 75;     // 动画步数，越多越平滑
+        final int delay = duration / steps;
+
+        final int dx = (endX - startX) / steps;
+        final int dy = (endY - startY) / steps;
+
+        Timer timer = new Timer(delay, null);
+        final int[] count = {0};
+
+        timer.addActionListener(e -> {
+            if (count[0] < steps) {
+                box.setLocation(box.getX() + dx, box.getY() + dy);
+                count[0]++;
+            } else {
+                box.setLocation(endX, endY); // 确保最后准确落点
+                box.setRow(targetRow);
+                box.setCol(targetCol);
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
+        timer.start();
+    }
+
 }
