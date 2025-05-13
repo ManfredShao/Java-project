@@ -24,7 +24,7 @@ import java.util.List;
 public class GameController {
     private final GamePanel view;
     public static MapModel model_changed;
-    private GamePanel gamePanel;
+    private int step;
 
     public GameController(GamePanel view, MapModel model) {
         this.view = view;
@@ -131,8 +131,7 @@ public class GameController {
         box.setRow(nextRow);//更新逻辑坐标
         box.setCol(nextCol);
         //更新像素坐标
-        box.setBounds(box.getCol() * view.getGRID_SIZE() + 2, box.getRow() * view.getGRID_SIZE() + 2, width * view.getGRID_SIZE(), height * view.getGRID_SIZE());
-        box.repaint();
+        view.moveBoxSmoothly(box, nextRow, nextCol);
     }
 
     public void saveGame(User user) {

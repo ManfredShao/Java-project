@@ -3,33 +3,82 @@ package view.game;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BoxComponent extends JComponent {
-    private Color color;
+    private Color baseColor;
     private int row;
     private int col;
     private boolean isSelected;
-
+    private String text;
 
     public BoxComponent(Color color, int row, int col) {
-        this.color = color;
+        this.baseColor = color;
         this.row = row;
         this.col = col;
         isSelected = false;
+        this.setFont(new Font("PingFang SC", Font.ITALIC, 20));
+        this.setOpaque(false); // 透明背景
+    }
+
+    public void setText(String text) {
+        this.text = text;
+        repaint(); // 更新显示
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(color);
-        g.fillRect(0, 0, getWidth(), getHeight());
-        Border border ;
-        if(isSelected){
-            border = BorderFactory.createLineBorder(Color.red,3);
-        }else {
-            border = BorderFactory.createLineBorder(Color.DARK_GRAY, 1);
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int width = getWidth();
+        int height = getHeight();
+        int arc = 20; // 圆角
+
+        // 使用更柔和的渐变背景（偏高亮）
+        GradientPaint gradient = new GradientPaint(
+                0, 0, baseColor.brighter(),
+                0, height, baseColor.darker()
+        );
+        g2.setPaint(gradient);
+        g2.fillRoundRect(0, 0, width, height, arc, arc);
+
+        // 柔和边框
+        g2.setColor(baseColor.darker().darker());
+        g2.setStroke(new BasicStroke(1.5f));
+        g2.drawRoundRect(0, 0, width - 1, height - 1, arc, arc);
+
+        // 高亮选中时添加黄色边框
+        if (isSelected) {
+            g2.setColor(new Color(255, 215, 0, 180)); // 半透明金黄
+            g2.setStroke(new BasicStroke(3f));
+            g2.drawRoundRect(2, 2, width - 5, height - 5, arc, arc);
         }
-        this.setBorder(border);
+
+        // 自动文字颜色：背景亮就用黑字，背景暗就用白字
+        Color textColor = isDark(baseColor) ? Color.WHITE : Color.DARK_GRAY;
+
+        // 绘制文字
+        g2.setColor(textColor);
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        int textHeight = fm.getAscent();
+        int x = (width - textWidth) / 2;
+        int y = (height + textHeight) / 2 - 4;
+        g2.drawString(text, x, y);
+
+        g2.dispose();
+    }
+
+    private boolean isDark(Color color) {
+        // 计算感知亮度（0-255）：低亮度 → 深色背景
+        double luminance = 0.299 * color.getRed()
+                + 0.587 * color.getGreen()
+                + 0.114 * color.getBlue();
+        return luminance < 140;
     }
 
     public void setSelected(boolean selected) {
@@ -52,4 +101,5 @@ public class BoxComponent extends JComponent {
     public void setCol(int col) {
         this.col = col;
     }
+
 }
