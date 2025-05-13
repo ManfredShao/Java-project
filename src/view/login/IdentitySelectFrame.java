@@ -33,7 +33,6 @@ public class IdentitySelectFrame extends JFrame {
             MapModel mapModel = new MapModel(Map.LEVEL_1);
             GameFrame gameFrame = new GameFrame(mapModel, user);
             gameFrame.setVisible(true);
-            //直接隐藏save和load按钮，游客身份不能进行这两项操作
             gameFrame.getSaveBtn().setVisible(false);
             gameFrame.getLoadBtn().setVisible(false);
         });

@@ -34,29 +34,24 @@ public class GameController {
         view.setController(this);
 
         SwingUtilities.invokeLater(() -> {
-            // 1. 创建自定义对话框内容
             JLabel content = new JLabel("<html><div style='" + "font-family: \"楷体\",\"华文楷体\",serif;" + "text-align: center;" + "color: #5C3317;" + "font-size: 14pt;" + "'>" + "<p>建安十三年冬，曹公兵败赤壁</p>" + "<p>率残部经华容道遁走</p>" + "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" + "<p>■ 红袍为云长，当引其让路</p>" + "<p>■ 绿甲乃孟德，需助其脱困</p>" + "<p>■ 黄巾乃士卒，可纵横驱驰</p>" + "<p>■ 蓝衣乃将领，如子龙守关</p>" + "</div></html>");
 
-            // 2. 创建自定义标题组件
             JLabel titleLabel = new JLabel("<html><div style='color:#8B0000; font-size:18pt;'>漢末華容道</div></html>", SwingConstants.CENTER);
 
-            // 3. 创建完全自定义的对话框
             JDialog dialog = new JDialog();
             dialog.setTitle(""); // 清空默认标题
 
-            // 设置对话框内容
             dialog.getContentPane().setLayout(new BorderLayout(10, 10));
             dialog.getContentPane().add(titleLabel, BorderLayout.NORTH);
             dialog.getContentPane().add(content, BorderLayout.CENTER);
 
-            // 添加确认按钮
             JButton confirmBtn = new JButton("领命出征");
             confirmBtn.addActionListener(e -> dialog.dispose());
             JPanel btnPanel = new JPanel();
             btnPanel.add(confirmBtn);
             dialog.getContentPane().add(btnPanel, BorderLayout.SOUTH);
 
-            // 4. 移除图标并设置其他属性
+            //  移除java图标
             dialog.setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.pack();
@@ -104,7 +99,7 @@ public class GameController {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
-                    model_changed.setMatrix(nextRow+1, nextCol, 3);
+                    model_changed.setMatrix(nextRow + 1, nextCol, 3);
                     refreshCoordinate(nextRow, nextCol, 1, 2);
                     return true;
                 }
@@ -139,47 +134,51 @@ public class GameController {
     }
 
     public void saveGame(User user) {
-            step=view.getSteps();
-            int[][] map = model_changed.getMatrix();
-            List<String> gameData = new ArrayList<>();
-            StringBuilder sb = new StringBuilder();
-            for (int[] line : map) {
-                for (int i : line) {
-                    sb.append(i).append(" ");
-                }
-                gameData.add(sb.toString());
-                sb.setLength(0);//clear
+        step = view.getSteps();
+        int[][] map = model_changed.getMatrix();
+        List<String> gameData = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (int[] line : map) {
+            for (int i : line) {
+                sb.append(i).append(" ");
             }
-            gameData.add(String.valueOf(view.getSteps()));
-            String path = String.format("Save/%s", user.getUsername());
-            File dir = new File(path);
-            dir.mkdir();
-            try {
-                Files.write(Path.of(path + "/data.txt"), gameData);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            gameData.add(sb.toString());
+            sb.setLength(0);//clear
+        }
+        gameData.add(String.valueOf(view.getSteps()));
+        String path = String.format("Save/%s", user.getUsername());
+        File dir = new File(path);
+        dir.mkdir();
+        try {
+            Files.write(Path.of(path + "/data.txt"), gameData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }
 
     public void loadGame(User user) {
         int[][] map = new int[5][4];
-        try {
-            List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
-            for (int j = 0; j < 5; j++) {
-                String s = lines.get(j).replace(" ", "");
-                for (int i = 0; i < 4; i++) {
-                    map[j][i] = Integer.parseInt(s.substring(i, i + 1));
+        if (Files.notExists(Path.of("Save/" + user.getUsername() + "/data.txt"))) {
+            JOptionPane.showMessageDialog(view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
+        }else{
+            try {
+                List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
+                for (int j = 0; j < 5; j++) {
+                    String s = lines.get(j).replace(" ", "");
+                    for (int i = 0; i < 4; i++) {
+                        map[j][i] = Integer.parseInt(s.substring(i, i + 1));
+                    }
                 }
+                view.clear();
+                view.setSteps(Integer.parseInt(lines.get(lines.size() - 1)));
+                view.refreshStepLabel();
+                view.initialGame(map, view.getSteps());
+                model_changed.resetMatrix(map);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            view.clear();
-            view.setSteps(Integer.parseInt(lines.get(lines.size() - 1)));
-            view.refreshStepLabel();
-            view.initialGame(map, view.getSteps());
-            model_changed.resetMatrix(map);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

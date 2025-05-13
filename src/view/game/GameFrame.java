@@ -4,6 +4,7 @@ import controller.GameController;
 import model.MapModel;
 import user.User;
 import view.FrameUtil;
+import view.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,7 +106,11 @@ public class GameFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "安營紮寨");
             gamePanel.requestFocusInWindow();
         });
-
+        this.loginLabel.addActionListener(e -> {
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+            this.setVisible(false);
+        });
         //todo：revoke按钮
 
         JPanel directionPanel = new JPanel(new GridLayout(5, 3, 5, 5));// 3 行 3 列，格子间水平垂直5像素

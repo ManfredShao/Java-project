@@ -23,12 +23,12 @@ public class LoginFrame extends JFrame {
     private JTextField password;
     private JButton submitBtn;
     private JButton resetBtn;
-
+    private JButton registerBtn;
 
     public LoginFrame() {
         this.setTitle("烽燧连天处，一局定乾坤");
-        this.setLayout(new GridLayout(6, 1, 10, 10));
-        this.setSize(280,280);
+        this.setLayout(new GridLayout(7, 1, 1, 1));
+        this.setSize(280, 280);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -38,12 +38,14 @@ public class LoginFrame extends JFrame {
         password = FrameUtil.createJTextField(this, 120, 40);
         submitBtn = FrameUtil.createButton(this, "擂鼓进军", 100, 40);
         resetBtn = FrameUtil.createButton(this, "重写军帖", 100, 40);
+        registerBtn = FrameUtil.createButton(this, "注册新帐", 100, 40);
         add(userLabel);
         add(username);
         add(passLabel);
         add(password);
         add(submitBtn);
         add(resetBtn);
+        add(registerBtn);
 
         submitBtn.addActionListener(e -> {
             System.out.println("Username = " + username.getText());
@@ -58,18 +60,7 @@ public class LoginFrame extends JFrame {
                 if (Files.notExists(userDir)) {//未创建文件夹，即还没注册
                     //注册一下，创建对应用户名的目录和下面的password.txt。实际data.txt在saveGame里面才创建
                     //有可能注册过却没保存？就不会有data.txt
-                    try {
-                        Files.createDirectories(userDir);
-                        Files.writeString(passwordFile, password.getText());
-                    } catch (IOException d) {
-                        throw new RuntimeException(d);
-                    }
-
-                    this.setVisible(false);
-                    MapModel mapModel = new MapModel(Map.LEVEL_1);
-                    User user = new User(username.getText(), password.getText());
-                    GameFrame gameFrame = new GameFrame(mapModel, user);
-                    gameFrame.setVisible(true);
+                    JOptionPane.showMessageDialog(this, "此帐号未注册！", "军情有变", JOptionPane.ERROR_MESSAGE);
 
                 } else {//已注册，比对密码
                     try {
@@ -95,6 +86,22 @@ public class LoginFrame extends JFrame {
         resetBtn.addActionListener(e -> {
             username.setText("");
             password.setText("");
+        });
+
+        registerBtn.addActionListener(e -> {
+            Path userDir = Path.of("Save", username.getText());
+            Path passwordFile = userDir.resolve("password.txt");
+            if (Files.notExists(userDir)) {
+                try {
+                    Files.createDirectories(userDir);
+                    Files.writeString(passwordFile, password.getText());
+                } catch (IOException d) {
+                    throw new RuntimeException(d);
+                }
+                JOptionPane.showMessageDialog(this, "注册成功！请再次登录", "万事俱备", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "此帐号已被注册！", "军情有变", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }
