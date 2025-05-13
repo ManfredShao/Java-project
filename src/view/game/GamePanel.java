@@ -16,7 +16,7 @@ import java.util.List;
  * It is the subclass of ListenerPanel, so that it should implement those four methods: do move left, up, down ,right.
  * The class contains a grids, which is the corresponding GUI view of the matrix variable in MapMatrix.
  */
-public class GamePanel extends ListenerPanel {
+public class GamePanel extends ListenerPanel implements CloneMatrix{
     private List<BoxComponent> boxes;
     private MapModel model;
     private GameController controller;
@@ -24,6 +24,7 @@ public class GamePanel extends ListenerPanel {
     private int steps;
     private int GRID_SIZE;
     private BoxComponent selectedBox;
+    private ArrayList<int[][]> allSteps;
 
     public GamePanel() {
         // 获取实际可用显示区域
@@ -57,9 +58,13 @@ public class GamePanel extends ListenerPanel {
         initialGame(Map.LEVEL_1);
     }
 
-    public void initialGame(Map level) {
+    //初始游戏的initialGame，下面有一个重载的initialGame,是loadGame时使用
+    public void initialGame(Map level) {//不论登没登录，都会调用GamePanel中的这个方法。加载时也会调用。
         this.steps = 0;
         this.model = new MapModel(level);
+        this.allSteps = new ArrayList<>();
+        //model转化为二维数组存储在ArrayList中,allSteps[0]对应原始mapModel，allSteps[n]对应移动n步后的mapModel
+        allSteps.add(cloneMatrix(model));
 
         //copy a map
         int[][] map = new int[model.getHeight()][model.getWidth()];
@@ -104,6 +109,7 @@ public class GamePanel extends ListenerPanel {
         this.repaint();
     }
 
+    //用于loadGame的initialGame
     public void initialGame(int[][] inputMap,int steps) {
         this.steps = steps;
         int[][] map = new int[inputMap.length][inputMap[0].length];
@@ -112,6 +118,13 @@ public class GamePanel extends ListenerPanel {
                 map[i][j] = inputMap[i][j];
             }
         }
+        this.allSteps = new ArrayList<>();
+        //补齐allSteps长度，便于后续撤回能使用和初始导入mapModel的allSteps同样的index
+        for (int i = 0; i < steps - 1; i++) {
+            allSteps.add(null);
+        }
+        allSteps.add(inputMap);
+
         //build Component
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
@@ -284,6 +297,14 @@ public class GamePanel extends ListenerPanel {
 
     public int getGRID_SIZE() {
         return GRID_SIZE;
+    }
+
+    public ArrayList<int[][]> getAllSteps() {
+        return allSteps;
+    }
+
+    public void setAllSteps(ArrayList<int[][]> allSteps) {
+        this.allSteps = allSteps;
     }
 
     public int getSteps() {

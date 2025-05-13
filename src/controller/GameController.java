@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +25,10 @@ public class GameController {
     private final GamePanel view;
     public static MapModel model_changed;
     private GamePanel gamePanel;
-    private int step;
 
     public GameController(GamePanel view, MapModel model) {
         this.view = view;
-        this.model_changed = model;
+        model_changed = model;
         view.setController(this);
 
         SwingUtilities.invokeLater(() -> {
@@ -76,6 +74,7 @@ public class GameController {
                     model_changed.setMatrix(row, col, 0);//能移动，将原位置更新为空
                     model_changed.setMatrix(nextRow, nextCol, 1);//更新新位置
                     refreshCoordinate(nextRow, nextCol, 1, 1);
+                    view.getAllSteps().add(view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -89,6 +88,7 @@ public class GameController {
                     model_changed.setMatrix(nextRow, nextCol, 2);
                     model_changed.setMatrix(nextRow, nextCol + 1, 2);
                     refreshCoordinate(nextRow, nextCol, 2, 1);
+                    view.getAllSteps().add(view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -101,6 +101,7 @@ public class GameController {
                     model_changed.setMatrix(nextRow, nextCol, 3);
                     model_changed.setMatrix(nextRow + 1, nextCol, 3);
                     refreshCoordinate(nextRow, nextCol, 1, 2);
+                    view.getAllSteps().add(view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -117,6 +118,7 @@ public class GameController {
                     model_changed.setMatrix(nextRow, nextCol + 1, 4);
                     model_changed.setMatrix(nextRow + 1, nextCol + 1, 4);
                     refreshCoordinate(nextRow, nextCol, 2, 2);
+                    view.getAllSteps().add(view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -134,7 +136,6 @@ public class GameController {
     }
 
     public void saveGame(User user) {
-        step = view.getSteps();
         int[][] map = model_changed.getMatrix();
         List<String> gameData = new ArrayList<>();
         StringBuilder sb = new StringBuilder();

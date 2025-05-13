@@ -51,12 +51,10 @@ public class LoginFrame extends JFrame {
             System.out.println("Username = " + username.getText());
             System.out.println("Password = " + password.getText());
 
-            //todo: check login info
-            //todo:登录？注册？游客身份游玩还未实现（需要为客人和注册用户实现登录选择界面。）
             if (UserController.validateUser(username.getText(), password.getText())) {//输入有效
                 Path userDir = Path.of("Save", username.getText());
                 Path passwordFile = userDir.resolve("password.txt");
-                // 判断目录是否存在且确实是文件夹
+                // 判断目录是否存在
                 if (Files.notExists(userDir)) {//未创建文件夹，即还没注册
                     //注册一下，创建对应用户名的目录和下面的password.txt。实际data.txt在saveGame里面才创建
                     //有可能注册过却没保存？就不会有data.txt

@@ -8,6 +8,7 @@ import view.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GameFrame extends JFrame {
 
@@ -162,6 +163,20 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();
             gamePanel.doMoveRight();
         });
+//        revokeBtn.addActionListener(e -> {
+//          gamePanel.requestFocusInWindow();
+//           //todo：写撤回逻辑。没注册的账户也要能撤回，那么没注册的也要新建一个。第一个应该是没移动时的。
+//            // gameframe里面加存每一步的数组，Gamepanel的initialGame里面加数组[0].
+//            //gamecontroller的loadgame(调用了initialGame)里面加数组[0]
+//            // 载入游戏时，先清空，不能直接用步数索取.先补足allSteps长度至步数长度。
+//            int stepsBefore = gamePanel.getSteps();
+//            int[][] lastMapModel = gamePanel.getAllSteps().get(stepsBefore - 1);
+//            gamePanel.clear();
+//            gamePanel.setSteps(stepsBefore - 1);
+//            gamePanel.refreshStepLabel();
+//
+//
+//        })
 
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
