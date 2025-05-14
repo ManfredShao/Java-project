@@ -16,7 +16,7 @@ import java.util.List;
  * It is the subclass of ListenerPanel, so that it should implement those four methods: do move left, up, down ,right.
  * The class contains a grids, which is the corresponding GUI view of the matrix variable in MapMatrix.
  */
-public class GamePanel extends ListenerPanel {
+public class GamePanel extends ListenerPanel implements CloneMatrix {
     private List<BoxComponent> boxes;
     private MapModel model;
     private GameController controller;
@@ -24,6 +24,7 @@ public class GamePanel extends ListenerPanel {
     private int steps;
     private int GRID_SIZE;
     private BoxComponent selectedBox;
+    private ArrayList<int[][]> allSteps;
 
     public GamePanel() {
         // 获取实际可用显示区域
@@ -57,10 +58,39 @@ public class GamePanel extends ListenerPanel {
         initialGame(Map.LEVEL_1);
     }
 
+    //初始游戏的initialGame，下面有一个重载的initialGame,是loadGame时使用
     public void initialGame(Map level) {
         this.steps = 0;
         this.model = new MapModel(level);
+        this.allSteps = new ArrayList<>();
+        //model转化为二维数组存储在ArrayList中,allSteps[0]对应原始mapModel，allSteps[n]对应移动n步后的mapModel
+        allSteps.add(cloneMatrix(model));
 
+        BuildComponent();
+        this.repaint();
+    }
+
+    //用于loadGame的initialGame
+    public void initialGame(int[][] inputMap, int steps) {
+        this.steps = steps;
+
+        this.allSteps = new ArrayList<>();
+        //补齐allSteps长度，便于后续撤回能使用和初始导入mapModel的allSteps同样的index
+        for (int i = 0; i < steps - 1; i++) {
+            allSteps.add(null);
+        }
+        allSteps.add(inputMap);
+
+        BuildComponent();
+        this.repaint();
+    }
+
+    public void initialGame(int[][] inputMap) {
+        BuildComponent();
+        this.repaint();
+    }
+
+    public void BuildComponent() {
         //copy a map
         int[][] map = new int[model.getHeight()][model.getWidth()];
         for (int i = 0; i < map.length; i++) {
@@ -68,30 +98,31 @@ public class GamePanel extends ListenerPanel {
                 map[i][j] = model.getId(i, j);
             }
         }
+        //build Component
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
                 BoxComponent box = null;
                 if (map[i][j] == 1) {//卒
-                    box = new BoxComponent(new Color(69, 67, 82), i, j);
+                    box = new BoxComponent(Color.ORANGE, i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
-                    box.setImage("卒.jpg");
+                    box.setText("铁卫");
                     map[i][j] = 0;
                 } else if (map[i][j] == 2) {//关羽
                     box = new BoxComponent(new Color(46, 139, 87), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
-                    box.setImage("关羽.jpg");
+                    box.setText("武圣");
                     map[i][j] = 0;
                     map[i][j + 1] = 0;
                 } else if (map[i][j] == 3) {//其他角色
                     box = new BoxComponent(new Color(65, 105, 225), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE * 2);
-                    box.setImage("将军.jpg");
+                    box.setText("猛将");
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
                 } else if (map[i][j] == 4) {//曹操
                     box = new BoxComponent(new Color(178, 34, 34), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
-                    box.setImage("曹操.jpg");
+                    box.setText("枭雄");
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
                     map[i][j + 1] = 0;
@@ -104,55 +135,8 @@ public class GamePanel extends ListenerPanel {
                 }
             }
         }
-        this.repaint();
     }
 
-    public void initialGame(int[][] inputMap, int steps) {
-        this.steps = steps;
-        int[][] map = new int[inputMap.length][inputMap[0].length];
-        for (int i = 0; i < inputMap.length; i++) {
-            for (int j = 0; j < inputMap[0].length; j++) {
-                map[i][j] = inputMap[i][j];
-            }
-        }
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[0].length; j++) {
-                BoxComponent box = null;
-                if (map[i][j] == 1) {//卒
-                    box = new BoxComponent(new Color(69, 67, 82), i, j);
-                    box.setSize(GRID_SIZE, GRID_SIZE);
-                    box.setImage("卒.jpg");
-                    map[i][j] = 0;
-                } else if (map[i][j] == 2) {//关羽
-                    box = new BoxComponent(new Color(46, 139, 87), i, j);
-                    box.setSize(GRID_SIZE * 2, GRID_SIZE);
-                    box.setImage("关羽.jpg");
-                    map[i][j] = 0;
-                    map[i][j + 1] = 0;
-                } else if (map[i][j] == 3) {//其他角色
-                    box = new BoxComponent(new Color(65, 105, 225), i, j);
-                    box.setSize(GRID_SIZE, GRID_SIZE * 2);
-                    box.setImage("将军.jpg");
-                    map[i][j] = 0;
-                    map[i + 1][j] = 0;
-                } else if (map[i][j] == 4) {//曹操
-                    box = new BoxComponent(new Color(178, 34, 34), i, j);
-                    box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
-                    box.setImage("曹操.jpg");
-                    map[i][j] = 0;
-                    map[i + 1][j] = 0;
-                    map[i][j + 1] = 0;
-                    map[i + 1][j + 1] = 0;
-                }
-                if (box != null) {
-                    box.setLocation(j * GRID_SIZE + 2, i * GRID_SIZE + 2);
-                    boxes.add(box);
-                    this.add(box);
-                }
-            }
-        }
-        this.repaint();
-    }
 
     public void resetGame() {
         this.removeAll();
@@ -283,6 +267,14 @@ public class GamePanel extends ListenerPanel {
 
     public int getGRID_SIZE() {
         return GRID_SIZE;
+    }
+
+    public ArrayList<int[][]> getAllSteps() {
+        return allSteps;
+    }
+
+    public void setAllSteps(ArrayList<int[][]> allSteps) {
+        this.allSteps = allSteps;
     }
 
     public int getSteps() {

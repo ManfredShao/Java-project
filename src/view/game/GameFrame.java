@@ -162,6 +162,21 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();
             gamePanel.doMoveRight();
         });
+        revokeBtn.addActionListener(e -> {
+          gamePanel.requestFocusInWindow();
+           //todo：写撤回逻辑。没注册的账户也要能撤回，那么没注册的也要新建一个。第一个应该是没移动时的。
+            // gameframe里面加存每一步的数组，Gamepanel的initialGame里面加数组[0].
+            //gamecontroller的loadgame(调用了initialGame)里面加数组[0]
+            // 载入游戏时，先清空，不能直接用步数索取.先补足allSteps长度至步数长度。
+            int stepsBeforeRevoke = gamePanel.getSteps();
+            int[][] lastMapModel = gamePanel.getAllSteps().get(stepsBeforeRevoke - 1);
+            gamePanel.clear();
+            gamePanel.setSteps(stepsBeforeRevoke - 1);
+            gamePanel.refreshStepLabel();
+            gamePanel.initialGame(lastMapModel);
+            GameController.model_changed.resetMatrix(lastMapModel);
+            gamePanel.getAllSteps().remove(stepsBeforeRevoke);
+        });
 
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
