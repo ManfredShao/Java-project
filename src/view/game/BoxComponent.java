@@ -62,12 +62,6 @@ public class BoxComponent extends JComponent {
         g2.dispose();
     }
 
-    private boolean isDark(Color color) {
-        // 计算感知亮度（0-255）：低亮度 → 深色背景
-        double luminance = 0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue();
-        return luminance < 140;
-    }
-
     public void setSelected(boolean selected) {
         isSelected = selected;
         this.repaint();
