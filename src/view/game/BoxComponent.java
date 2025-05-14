@@ -11,7 +11,11 @@ public class BoxComponent extends JComponent {
     private int row;
     private int col;
     private boolean isSelected;
-    private String text;
+    private Image image;
+
+    public void setImage(String i) {
+        this.image = Toolkit.getDefaultToolkit().getImage(i);
+    }
 
     public BoxComponent(Color color, int row, int col) {
         this.baseColor = color;
@@ -22,11 +26,6 @@ public class BoxComponent extends JComponent {
         this.setOpaque(false); // 透明背景
     }
 
-    public void setText(String text) {
-        this.text = text;
-        repaint(); // 更新显示
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -34,17 +33,19 @@ public class BoxComponent extends JComponent {
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+
         int width = getWidth();
         int height = getHeight();
         int arc = 20; // 圆角
 
-        // 使用更柔和的渐变背景（偏高亮）
-        GradientPaint gradient = new GradientPaint(
-                0, 0, baseColor.brighter(),
-                0, height, baseColor.darker()
-        );
+        GradientPaint gradient = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor.darker());
         g2.setPaint(gradient);
         g2.fillRoundRect(0, 0, width, height, arc, arc);
+
+        if (image != null) {
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        }
 
         // 柔和边框
         g2.setColor(baseColor.darker().darker());
@@ -58,26 +59,12 @@ public class BoxComponent extends JComponent {
             g2.drawRoundRect(2, 2, width - 5, height - 5, arc, arc);
         }
 
-        // 自动文字颜色：背景亮就用黑字，背景暗就用白字
-        Color textColor = isDark(baseColor) ? Color.WHITE : Color.DARK_GRAY;
-
-        // 绘制文字
-        g2.setColor(textColor);
-        FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(text);
-        int textHeight = fm.getAscent();
-        int x = (width - textWidth) / 2;
-        int y = (height + textHeight) / 2 - 4;
-        g2.drawString(text, x, y);
-
         g2.dispose();
     }
 
     private boolean isDark(Color color) {
         // 计算感知亮度（0-255）：低亮度 → 深色背景
-        double luminance = 0.299 * color.getRed()
-                + 0.587 * color.getGreen()
-                + 0.114 * color.getBlue();
+        double luminance = 0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue();
         return luminance < 140;
     }
 
