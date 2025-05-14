@@ -73,7 +73,7 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
     //用于loadGame的initialGame
     public void initialGame(int[][] inputMap, int steps) {
         this.steps = steps;
-
+        this.model = new MapModel(inputMap);
         this.allSteps = new ArrayList<>();
         //补齐allSteps长度，便于后续撤回能使用和初始导入mapModel的allSteps同样的index
         for (int i = 0; i < steps - 1; i++) {
@@ -86,6 +86,7 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
     }
 
     public void initialGame(int[][] inputMap) {
+        model = new MapModel(inputMap);
         BuildComponent();
         this.repaint();
     }
