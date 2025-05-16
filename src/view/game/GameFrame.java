@@ -33,9 +33,14 @@ public class GameFrame extends JFrame {
     private JButton saveBtn;
     private JButton loginLabel;
     private JLabel userLabel;
+    private CountdownTimer time = new CountdownTimer();
     private User user;
     private JLabel stepLabel;
     private GamePanel gamePanel;
+
+    public CountdownTimer getTime() {
+        return time;
+    }
 
     public GameFrame(MapModel mapModel, User user) {
         super("華容道·漢末風雲");
@@ -82,16 +87,26 @@ public class GameFrame extends JFrame {
         this.add(restartBtn, gbc);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(userLabel);
+        bottomPanel.add(loginLabel);
         bottomPanel.add(restartBtn);
         bottomPanel.add(loadBtn);
-        bottomPanel.add(loginLabel);
-        bottomPanel.add(stepLabel);
-        bottomPanel.add(userLabel);
         bottomPanel.add(saveBtn);
+        bottomPanel.add(stepLabel);
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 4;
         add(bottomPanel, gbc);
+
+        // 添加计时器
+        GridBagConstraints gbcTimer = new GridBagConstraints();
+        gbcTimer.gridx = 3;
+        gbcTimer.gridy = 0;
+        gbcTimer.gridwidth = 1;
+        gbcTimer.gridheight = 1;
+        gbcTimer.fill = GridBagConstraints.BOTH;
+        gbcTimer.insets = new Insets(5, 5, 5, 5);  // 设置边距
+        this.add(time, gbcTimer);
 
         this.restartBtn.addActionListener(e -> {
             controller.restartGame();
@@ -109,9 +124,9 @@ public class GameFrame extends JFrame {
         this.loginLabel.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
-            this.setVisible(false);
+            time.pause();
+            this.dispose();
         });
-        //todo：revoke按钮
 
         JPanel directionPanel = new JPanel(new GridLayout(5, 3, 5, 5));// 3 行 3 列，格子间水平垂直5像素
         JButton upBtn = new JButton("↑");
@@ -181,5 +196,7 @@ public class GameFrame extends JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
+
+
     }
 }

@@ -6,15 +6,8 @@ import java.io.IOException;
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
-// From https://odoepner.wordpress.com/2013/07/19/play-mp3-or-ogg-using-javax-sound-sampled-mp3spi-vorbisspi/
 public class AudioPlayer {
-
-    /**
-     * play and loop bgm
-     */
-
     private volatile boolean isCanceled = false;
-
     private Thread currentThread = null;
 
     public static AudioPlayer playBgm(String path) {
@@ -28,9 +21,6 @@ public class AudioPlayer {
         return player;
     }
 
-    /**
-     * play sound
-     */
     public static AudioPlayer playSound(String path) {
         AudioPlayer player = new AudioPlayer();
         player.currentThread = new Thread(() -> player.play(path));

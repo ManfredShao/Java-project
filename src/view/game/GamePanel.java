@@ -4,6 +4,7 @@ import controller.GameController;
 import model.Direction;
 import model.Map;
 import model.MapModel;
+import view.login.IdentitySelectFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -71,9 +72,10 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
     }
 
     //用于loadGame的initialGame
-    public void initialGame(int[][] inputMap, int steps) {
+    public void initialGame(int[][] inputMap, int steps, String time) {
         this.steps = steps;
         this.model = new MapModel(inputMap);
+        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime(time);
         this.allSteps = new ArrayList<>();
         //补齐allSteps长度，便于后续撤回能使用和初始导入mapModel的allSteps同样的index
         for (int i = 0; i < steps - 1; i++) {
@@ -142,11 +144,10 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
     public void resetGame() {
         this.removeAll();
         boxes.clear();
-
         selectedBox = null;
         stepLabel.setText("移步: 0");
-
         initialGame(Map.LEVEL_1);
+        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime("0");
         revalidate();
         this.repaint();
     }
@@ -222,12 +223,27 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         this.steps++;
         this.stepLabel.setText(String.format("移步: %d", this.steps));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
-            JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "'>" + "华容道尽<br>云开见龙<br><br>巧行%d步，智破千重" + "</div></html>", steps));
+            ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
+
+            JLabel label = new JLabel(String.format("<html><div style='"
+                            + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; "
+                            + "color: #2E1D1A; "
+                            + "font-size: 24pt; "
+                            + "text-align: center;"
+                            + "line-height: 1.6;"
+                            + "'>"
+                            + "<span style='text-shadow: 1px 1px 2px #D3B17D;'>华容道尽，云开见龙</span><br>"
+                            + "巧行%d步，智破千重<br>"
+                            + "<span style='font-size: 16pt; color: #5C3317; letter-spacing: 1px;'>"
+                            + "⌛ 用时：%s"
+                            + "</span>"
+                            + "</div></html>",
+                    steps, ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             // 2. 创建透明图标（替换咖啡图标）
             Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             JDialog dialog = new JDialog();
-            dialog.setTitle("一破：卧龙出山");
+            dialog.setTitle("云长义释，将军可速行！");
             dialog.setIconImage(emptyIcon); // 移除Java图标
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setLayout(new BorderLayout());
@@ -236,8 +252,9 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
             JButton confirmBtn = new JButton("已知晓");
             confirmBtn.setFont(new Font("楷体", Font.PLAIN, 16));
             confirmBtn.addActionListener(e -> {
-                controller.restartGame();
-//                this.gamePanel.requestFocusInWindow();//enable key listener
+                SwingUtilities.getWindowAncestor(this).dispose();
+                new IdentitySelectFrame();
+                dialog.dispose();
             });
 
             JPanel btnPanel = new JPanel();
@@ -284,6 +301,10 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
 
     public void setSteps(int steps) {
         this.steps = steps;
+    }
+
+    public void setLeftTime(String leftTime) {
+        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime(leftTime);
     }
 
     public void refreshStepLabel() {

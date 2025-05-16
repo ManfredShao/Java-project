@@ -56,10 +56,7 @@ public class LoginFrame extends JFrame {
                 Path passwordFile = userDir.resolve("password.txt");
                 // 判断目录是否存在
                 if (Files.notExists(userDir)) {//未创建文件夹，即还没注册
-                    //注册一下，创建对应用户名的目录和下面的password.txt。实际data.txt在saveGame里面才创建
-                    //有可能注册过却没保存？就不会有data.txt
                     JOptionPane.showMessageDialog(this, "此帐号未注册！", "军情有变", JOptionPane.ERROR_MESSAGE);
-
                 } else {//已注册，比对密码
                     try {
                         String line = Files.readString(passwordFile).trim();

@@ -5,6 +5,7 @@ import model.Map;
 import model.MapModel;
 import user.User;
 import view.game.BoxComponent;
+import view.game.GameFrame;
 import view.game.GamePanel;
 
 import javax.swing.*;
@@ -146,6 +147,7 @@ public class GameController {
             sb.setLength(0);//clear
         }
         gameData.add(String.valueOf(view.getSteps()));
+        gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(view)).getTime().getUsedTime()));
         String path = String.format("Save/%s", user.getUsername());
         File dir = new File(path);
         dir.mkdir();
@@ -172,9 +174,9 @@ public class GameController {
                     }
                 }
                 view.clear();
-                view.setSteps(Integer.parseInt(lines.get(lines.size() - 1)));
+                view.setSteps(Integer.parseInt(lines.get(lines.size() - 2)));
                 view.refreshStepLabel();
-                view.initialGame(map, view.getSteps());
+                view.initialGame(map, view.getSteps(),lines.get(lines.size() - 1));
                 model_changed.resetMatrix(map);
             } catch (IOException e) {
                 throw new RuntimeException(e);
