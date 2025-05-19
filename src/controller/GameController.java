@@ -61,8 +61,8 @@ public class GameController {
 
     public void restartGame() {
         model_changed.resetMatrix(Map.LEVEL_1);
-        view.resetGame();
-        view.requestFocus();
+        this.view.resetGame();
+        this.view.requestFocus();
         System.out.println("restartGame");
     }
 
@@ -75,7 +75,7 @@ public class GameController {
                     model_changed.setMatrix(row, col, 0);//能移动，将原位置更新为空
                     model_changed.setMatrix(nextRow, nextCol, 1);//更新新位置
                     refreshCoordinate(nextRow, nextCol, 1, 1);
-                    view.getAllSteps().add(view.cloneMatrix(model_changed));
+                    this.view.addToAllSteps(this.view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -83,33 +83,40 @@ public class GameController {
 
         if (model_changed.getId(row, col) == 2) {//关羽1*2
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInWidthSize(nextCol + 1)) {
-                if ((direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0) || (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) || ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
+                if ((direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0) ||
+                    (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) ||
+                    ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
                     model_changed.setMatrix(nextRow, nextCol, 2);
                     model_changed.setMatrix(nextRow, nextCol + 1, 2);
                     refreshCoordinate(nextRow, nextCol, 2, 1);
-                    view.getAllSteps().add(view.cloneMatrix(model_changed));
+                    this.view.addToAllSteps(this.view.cloneMatrix(model_changed));
                     return true;
                 }
             }
         }
         if (model_changed.getId(row, col) == 3) {//其他角色2*1
             if (model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInHeightSize(nextRow)) {
-                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) || (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) || ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
+                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) ||
+                    (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) ||
+                    ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
                     model_changed.setMatrix(nextRow + 1, nextCol, 3);
                     refreshCoordinate(nextRow, nextCol, 1, 2);
-                    view.getAllSteps().add(view.cloneMatrix(model_changed));
+                    this.view.addToAllSteps(this.view.cloneMatrix(model_changed));
                     return true;
                 }
             }
         }
         if (model_changed.getId(row, col) == 4) {//曹操
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInWidthSize(nextCol + 1)) {
-                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow, nextCol + 1) == 0) || (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) || (direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) || (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
+                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow, nextCol + 1) == 0) ||
+                    (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) ||
+                    (direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) ||
+                    (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
@@ -119,7 +126,7 @@ public class GameController {
                     model_changed.setMatrix(nextRow, nextCol + 1, 4);
                     model_changed.setMatrix(nextRow + 1, nextCol + 1, 4);
                     refreshCoordinate(nextRow, nextCol, 2, 2);
-                    view.getAllSteps().add(view.cloneMatrix(model_changed));
+                    this.view.addToAllSteps(this.view.cloneMatrix(model_changed));
                     return true;
                 }
             }
@@ -128,11 +135,11 @@ public class GameController {
     }
 
     private void refreshCoordinate(int nextRow, int nextCol, int width, int height) {
-        BoxComponent box = view.getSelectedBox();
+        BoxComponent box = this.view.getSelectedBox();
         box.setRow(nextRow);//更新逻辑坐标
         box.setCol(nextCol);
         //更新像素坐标
-        view.moveBoxSmoothly(box, nextRow, nextCol);
+        this.view.moveBoxSmoothly(box, nextRow, nextCol);
     }
 
     public void saveGame(User user) {
@@ -146,11 +153,9 @@ public class GameController {
             gameData.add(sb.toString());
             sb.setLength(0);//clear
         }
-        gameData.add(String.valueOf(view.getSteps()));
-        gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(view)).getTime().getUsedTime()));
+        gameData.add(String.valueOf(this.view.getSteps()));
+        gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(this.view)).getTime().getUsedTime()));
         String path = String.format("Save/%s", user.getUsername());
-        File dir = new File(path);
-        dir.mkdir();
         try {
             Files.write(Path.of(path + "/data.txt"), gameData);
         } catch (IOException e) {
@@ -163,7 +168,7 @@ public class GameController {
     public void loadGame(User user) {
         int[][] map = new int[5][4];
         if (Files.notExists(Path.of("Save/" + user.getUsername() + "/data.txt"))) {
-            JOptionPane.showMessageDialog(view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this.view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
         }else{
             try {
                 List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
@@ -173,10 +178,9 @@ public class GameController {
                         map[j][i] = Integer.parseInt(s.substring(i, i + 1));
                     }
                 }
-                view.clear();
-                view.setSteps(Integer.parseInt(lines.get(lines.size() - 2)));
-                view.refreshStepLabel();
-                view.initialGame(map, view.getSteps(),lines.get(lines.size() - 1));
+                this.view.clear();
+                this.view.loadGamePanel(this.view.cloneMatrix(map), lines.get(lines.size() - 1));
+                this.view.refreshStepLabel();
                 model_changed.resetMatrix(map);
             } catch (IOException e) {
                 throw new RuntimeException(e);

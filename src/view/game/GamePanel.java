@@ -17,12 +17,11 @@ import java.util.List;
  * It is the subclass of ListenerPanel, so that it should implement those four methods: do move left, up, down ,right.
  * The class contains a grids, which is the corresponding GUI view of the matrix variable in MapMatrix.
  */
-public class GamePanel extends ListenerPanel implements CloneMatrix {
+public class GamePanel extends ListenerPanel {
     private List<BoxComponent> boxes;
     private MapModel model;
     private GameController controller;
     private JLabel stepLabel;
-    private int steps;
     private int GRID_SIZE;
     private BoxComponent selectedBox;
     private ArrayList<int[][]> allSteps;
@@ -56,40 +55,29 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         this.setFocusable(true);
         this.setLayout(null);
         this.selectedBox = null;
-        initialGame(Map.LEVEL_1);
+        initialGamePanel(Map.LEVEL_1);
     }
 
-    //初始游戏的initialGame，下面有一个重载的initialGame,是loadGame时使用
-    public void initialGame(Map level) {
-        this.steps = 0;
+    public void initialGamePanel(Map level) {
         this.model = new MapModel(level);
         this.allSteps = new ArrayList<>();
-        //model转化为二维数组存储在ArrayList中,allSteps[0]对应原始mapModel，allSteps[n]对应移动n步后的mapModel
-        allSteps.add(cloneMatrix(model));
-
-        BuildComponent();
+        this.allSteps.add(this.cloneMatrix(this.model));
+        this.BuildComponent();
         this.repaint();
     }
 
-    //用于loadGame的initialGame
-    public void initialGame(int[][] inputMap, int steps, String time) {
-        this.steps = steps;
+    public void loadGamePanel(int[][] inputMap, String time) {
         this.model = new MapModel(inputMap);
-        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime(time);
+        this.setLeftTime(time);
         this.allSteps = new ArrayList<>();
-        //补齐allSteps长度，便于后续撤回能使用和初始导入mapModel的allSteps同样的index
-        for (int i = 0; i < steps - 1; i++) {
-            allSteps.add(null);
-        }
-        allSteps.add(inputMap);
-
-        BuildComponent();
+        this.allSteps.add(inputMap);
+        this.BuildComponent();
         this.repaint();
     }
 
-    public void initialGame(int[][] inputMap) {
-        model = new MapModel(inputMap);
-        BuildComponent();
+    public void setGamePanel(int[][] inputMap) {
+        this.model = new MapModel(inputMap);
+        this.BuildComponent();
         this.repaint();
     }
 
@@ -146,8 +134,8 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         boxes.clear();
         selectedBox = null;
         stepLabel.setText("移步: 0");
-        initialGame(Map.LEVEL_1);
-        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime("0");
+        initialGamePanel(Map.LEVEL_1);
+        this.setLeftTime("0");
         revalidate();
         this.repaint();
     }
@@ -156,7 +144,6 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         this.removeAll();
         boxes.clear();
         selectedBox = null;
-        stepLabel.setText("移步: 0");
     }
 
 
@@ -219,9 +206,32 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         }
     }
 
+    public void printLastStep(){
+        int [][] matrix = this.allSteps.get(this.getSteps() - 1);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                System.out.print(matrix[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printAllSteps(){
+        for (int i = 0; i < this.allSteps.size(); i++) {
+            for (int j = 0; j < this.allSteps.get(i).length; j++) {
+                for (int k = 0; k < this.allSteps.get(i)[j].length; k++) {
+                    System.out.print(this.allSteps.get(i)[j][k]);
+                    System.out.print(" ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
+    }
+
     public void afterMove() {
-        this.steps++;
-        this.stepLabel.setText(String.format("移步: %d", this.steps));
+        this.stepLabel.setText(String.format("移步: %d", this.getSteps() + 1));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
 
@@ -238,7 +248,7 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
                             + "⌛ 用时：%s"
                             + "</span>"
                             + "</div></html>",
-                    steps, ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
+                    this.getSteps(), ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             // 2. 创建透明图标（替换咖啡图标）
             Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
@@ -295,12 +305,16 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         this.allSteps = allSteps;
     }
 
-    public int getSteps() {
-        return steps;
+    public void addToAllSteps(int[][] steps) {
+        this.allSteps.add(steps);
     }
 
-    public void setSteps(int steps) {
-        this.steps = steps;
+    public void removeLastSteps(){
+        this.allSteps.remove(allSteps.size() - 1);
+    }
+
+    public int getSteps() {
+        return this.allSteps.size();
     }
 
     public void setLeftTime(String leftTime) {
@@ -308,7 +322,7 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
     }
 
     public void refreshStepLabel() {
-        this.stepLabel.setText(String.format("移步: %d", this.steps));
+        this.stepLabel.setText(String.format("移步: %d", this.getSteps() + 1));
     }
 
     public void moveBoxSmoothly(BoxComponent box, int targetRow, int targetCol) {
@@ -342,4 +356,23 @@ public class GamePanel extends ListenerPanel implements CloneMatrix {
         timer.start();
     }
 
+    public int[][] cloneMatrix (MapModel model) {
+        int[][] cloneMatrix = new int[model.getHeight()][model.getWidth()];
+        for (int i = 0; i < model.getHeight(); i++) {
+            for (int j = 0; j < model.getWidth(); j++) {
+                cloneMatrix[i][j] = model.getId(i,j);
+            }
+        }
+        return cloneMatrix;
+    }
+
+    public int[][] cloneMatrix (int[][] matrix) {
+        int [][] cloneMatrix = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                cloneMatrix[i][j] = matrix[i][j];
+            }
+        }
+        return cloneMatrix;
+    }
 }
