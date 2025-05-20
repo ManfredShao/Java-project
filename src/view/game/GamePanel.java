@@ -25,13 +25,13 @@ public class GamePanel extends ListenerPanel {
     private int GRID_SIZE;
     private BoxComponent selectedBox;
     private ArrayList<int[][]> allSteps;
+    private Map level;
 
-    public GamePanel() {
-        // 获取实际可用显示区域
+    public GamePanel(Map mapLevel) {
+        this.level = mapLevel;
+
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         DisplayMode dm = gd.getDisplayMode();
-
-        // 考虑多显示器场景
         Rectangle effectiveBounds = gd.getDefaultConfiguration().getBounds();
         Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gd.getDefaultConfiguration());
 
@@ -41,7 +41,7 @@ public class GamePanel extends ListenerPanel {
         // 计算基准尺寸（考虑横竖屏切换）
         int baseSize = (int) Math.min(usableWidth / 4, usableHeight / 5);
 
-        // 应用系统缩放（Java 9+）
+        // 应用系统缩放
         float scale = (float) gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
         GRID_SIZE = (int) (baseSize / scale);
 
@@ -55,10 +55,10 @@ public class GamePanel extends ListenerPanel {
         this.setFocusable(true);
         this.setLayout(null);
         this.selectedBox = null;
-        initialGamePanel(Map.LEVEL_2);
+        initialGamePanel(level);
     }
 
-    public void initialGamePanel(Map level) {
+    public void initialGamePanel(Map Level) {
         this.model = new MapModel(level);
         this.allSteps = new ArrayList<>();
         this.allSteps.add(this.cloneMatrix(this.model));
@@ -66,7 +66,8 @@ public class GamePanel extends ListenerPanel {
         this.repaint();
     }
 
-    public void loadGamePanel(int[][] inputMap, String time) {
+    public void loadGamePanel(int[][] inputMap, String time,String level) {
+        this.level = Map.valueOf(level);
         this.model = new MapModel(inputMap);
         this.setLeftTime(time);
         this.allSteps = new ArrayList<>();
@@ -134,7 +135,7 @@ public class GamePanel extends ListenerPanel {
         boxes.clear();
         selectedBox = null;
         stepLabel.setText("移步: 0");
-        initialGamePanel(Map.LEVEL_2);
+        initialGamePanel(level);
         this.setLeftTime("0");
         revalidate();
         this.repaint();
@@ -311,6 +312,10 @@ public class GamePanel extends ListenerPanel {
 
     public void removeLastSteps(){
         this.allSteps.remove(allSteps.size() - 1);
+    }
+
+    public Map getLevel() {
+        return level;
     }
 
     public int getSteps() {

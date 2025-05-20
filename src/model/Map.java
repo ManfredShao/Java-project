@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 public enum Map {
     LEVEL_1(deepCopyMatrix(new int[][]{
-            {2, 2, 1, 2},
-            {2, 2, 1, 2},
-            {4, 4, 0, 2},
-            {4, 4, 0, 2},
+            {3, 3, 1, 3},
+            {3, 3, 1, 3},
+            {4, 4, 0, 3},
+            {4, 4, 0, 3},
             {2, 2, 1, 1}
     })),
     LEVEL_2(deepCopyMatrix(new int[][]{
@@ -15,7 +15,7 @@ public enum Map {
             {3, 4, 4, 3},
             {3, 0, 1, 1},
             {3, 0, 3, 3},
-            {2, 0, 3, 3}
+            {2, 2, 3, 3}
     })),
     LEVEL_3(deepCopyMatrix(new int[][]{
             {3, 4, 4, 3},
