@@ -8,6 +8,7 @@ import view.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class GameFrame extends JFrame {
 
@@ -113,7 +114,11 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();//enable key listener
         });
         this.loadBtn.addActionListener(e -> {
-            controller.loadGame(user);
+            try {
+                controller.loadGame(user);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             gamePanel.requestFocusInWindow();
         });
         this.saveBtn.addActionListener(e -> {

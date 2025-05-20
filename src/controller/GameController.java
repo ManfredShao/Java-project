@@ -60,7 +60,7 @@ public class GameController {
     }
 
     public void restartGame() {
-        model_changed.resetMatrix(Map.LEVEL_1);
+        model_changed.resetMatrix(Map.LEVEL_2);
         this.view.resetGame();
         this.view.requestFocus();
         System.out.println("restartGame");
@@ -84,8 +84,8 @@ public class GameController {
         if (model_changed.getId(row, col) == 2) {//关羽1*2
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInWidthSize(nextCol + 1)) {
                 if ((direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0) ||
-                    (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) ||
-                    ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
+                        (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) ||
+                        ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
                     model_changed.setMatrix(nextRow, nextCol, 2);
@@ -99,8 +99,8 @@ public class GameController {
         if (model_changed.getId(row, col) == 3) {//其他角色2*1
             if (model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInHeightSize(nextRow)) {
                 if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) ||
-                    (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) ||
-                    ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
+                        (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) ||
+                        ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
@@ -114,9 +114,9 @@ public class GameController {
         if (model_changed.getId(row, col) == 4) {//曹操
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInWidthSize(nextCol + 1)) {
                 if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow, nextCol + 1) == 0) ||
-                    (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) ||
-                    (direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) ||
-                    (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
+                        (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) ||
+                        (direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) ||
+                        (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
@@ -165,11 +165,11 @@ public class GameController {
 
     }
 
-    public void loadGame(User user) {
+    public void loadGame(User user) throws IOException {
         int[][] map = new int[5][4];
         if (Files.notExists(Path.of("Save/" + user.getUsername() + "/data.txt"))) {
             JOptionPane.showMessageDialog(this.view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
-        }else{
+        } else if (checkChange(user)) {
             try {
                 List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
                 for (int j = 0; j < 5; j++) {
@@ -185,6 +185,26 @@ public class GameController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            JOptionPane.showMessageDialog(this.view, "战局篡改，有奸细！", "军情有变", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public boolean checkChange(User user) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
+        for (int j = 0; j < 5; j++) {
+            String s = lines.get(j).replace(" ", "");
+            sb.append(s);
+        }
+        int[] counts = new int[10];
+        for (int i = 0; i < sb.length(); i++) {
+            char c = sb.charAt(i);
+            counts[c - '0']++;
+        }
+        if (counts[0] == 2 && counts[1] == 4 && counts[2] == 2 && counts[3] == 8 && counts[4] == 4) {
+            return true;
+        }
+        return false;
     }
 }

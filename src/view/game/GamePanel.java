@@ -55,7 +55,7 @@ public class GamePanel extends ListenerPanel {
         this.setFocusable(true);
         this.setLayout(null);
         this.selectedBox = null;
-        initialGamePanel(Map.LEVEL_1);
+        initialGamePanel(Map.LEVEL_2);
     }
 
     public void initialGamePanel(Map level) {
@@ -134,7 +134,7 @@ public class GamePanel extends ListenerPanel {
         boxes.clear();
         selectedBox = null;
         stepLabel.setText("移步: 0");
-        initialGamePanel(Map.LEVEL_1);
+        initialGamePanel(Map.LEVEL_2);
         this.setLeftTime("0");
         revalidate();
         this.repaint();

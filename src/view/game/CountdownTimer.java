@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CountdownTimer extends JPanel {
-    private final int INITIAL_COUNT = 60;
+    private final int INITIAL_COUNT = 30;
     private int count = INITIAL_COUNT;
     private Timer timer;
     private JLabel label;

@@ -30,7 +30,7 @@ public class IdentitySelectFrame extends JFrame {
         guestBtn.addActionListener(e -> {
             User user = new User(null, null);
             this.setVisible(false);
-            MapModel mapModel = new MapModel(Map.LEVEL_1);
+            MapModel mapModel = new MapModel(Map.LEVEL_2);
             GameFrame gameFrame = new GameFrame(mapModel, user);
             gameFrame.setVisible(true);
             gameFrame.getSaveBtn().setVisible(false);
