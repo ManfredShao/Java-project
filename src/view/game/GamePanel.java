@@ -25,6 +25,7 @@ public class GamePanel extends ListenerPanel {
     private int GRID_SIZE;
     private BoxComponent selectedBox;
     private ArrayList<int[][]> allSteps;
+    private int steps;
     private Map level;
 
     public GamePanel(Map mapLevel) {
@@ -60,17 +61,22 @@ public class GamePanel extends ListenerPanel {
 
     public void initialGamePanel(Map Level) {
         this.model = new MapModel(level);
+        this.steps = 0;
         this.allSteps = new ArrayList<>();
         this.allSteps.add(this.cloneMatrix(this.model));
         this.BuildComponent();
         this.repaint();
     }
 
-    public void loadGamePanel(int[][] inputMap, String time,String level) {
+    public void loadGamePanel(int[][] inputMap, int steps, String time, String level) {
         this.level = Map.valueOf(level);
         this.model = new MapModel(inputMap);
+        this.steps = steps;
         this.setLeftTime(time);
         this.allSteps = new ArrayList<>();
+        for (int i = 0; i < steps; i++) {
+            allSteps.add(this.cloneMatrix(this.model));
+        }
         this.allSteps.add(inputMap);
         this.BuildComponent();
         this.repaint();
@@ -172,6 +178,7 @@ public class GamePanel extends ListenerPanel {
         System.out.println("Click VK_RIGHT");
         if (selectedBox != null) {
             if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.RIGHT)) {
+                this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
         }
@@ -182,6 +189,7 @@ public class GamePanel extends ListenerPanel {
         System.out.println("Click VK_LEFT");
         if (selectedBox != null) {
             if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.LEFT)) {
+                this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
         }
@@ -192,6 +200,7 @@ public class GamePanel extends ListenerPanel {
         System.out.println("Click VK_Up");
         if (selectedBox != null) {
             if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.UP)) {
+                this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
         }
@@ -202,13 +211,14 @@ public class GamePanel extends ListenerPanel {
         System.out.println("Click VK_DOWN");
         if (selectedBox != null) {
             if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.DOWN)) {
+                this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
         }
     }
 
-    public void printLastStep(){
-        int [][] matrix = this.allSteps.get(this.getSteps() - 1);
+    public void printLastStep() {
+        int[][] matrix = this.allSteps.get(this.getSteps() - 1);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 System.out.print(matrix[i][j]);
@@ -218,7 +228,7 @@ public class GamePanel extends ListenerPanel {
         }
     }
 
-    public void printAllSteps(){
+    public void printAllSteps() {
         for (int i = 0; i < this.allSteps.size(); i++) {
             for (int j = 0; j < this.allSteps.get(i).length; j++) {
                 for (int k = 0; k < this.allSteps.get(i)[j].length; k++) {
@@ -232,7 +242,8 @@ public class GamePanel extends ListenerPanel {
     }
 
     public void afterMove() {
-        this.stepLabel.setText(String.format("移步: %d", this.getSteps() + 1));
+        this.steps++;
+        this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
 
@@ -310,7 +321,7 @@ public class GamePanel extends ListenerPanel {
         this.allSteps.add(steps);
     }
 
-    public void removeLastSteps(){
+    public void removeLastSteps() {
         this.allSteps.remove(allSteps.size() - 1);
     }
 
@@ -319,15 +330,20 @@ public class GamePanel extends ListenerPanel {
     }
 
     public int getSteps() {
-        return this.allSteps.size();
+        return this.steps;
     }
 
     public void setLeftTime(String leftTime) {
         ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime(leftTime);
     }
 
-    public void refreshStepLabel() {
-        this.stepLabel.setText(String.format("移步: %d", this.getSteps() + 1));
+    public void refreshStepLabel() {//用于撤回
+        this.steps --;
+        this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
+    }
+
+    public void refreshStepLabel(int steps) {//用于loadGame
+        this.stepLabel.setText(String.format("移步: %d", steps));
     }
 
     public void moveBoxSmoothly(BoxComponent box, int targetRow, int targetCol) {
@@ -361,18 +377,18 @@ public class GamePanel extends ListenerPanel {
         timer.start();
     }
 
-    public int[][] cloneMatrix (MapModel model) {
+    public int[][] cloneMatrix(MapModel model) {
         int[][] cloneMatrix = new int[model.getHeight()][model.getWidth()];
         for (int i = 0; i < model.getHeight(); i++) {
             for (int j = 0; j < model.getWidth(); j++) {
-                cloneMatrix[i][j] = model.getId(i,j);
+                cloneMatrix[i][j] = model.getId(i, j);
             }
         }
         return cloneMatrix;
     }
 
-    public int[][] cloneMatrix (int[][] matrix) {
-        int [][] cloneMatrix = new int[matrix.length][matrix[0].length];
+    public int[][] cloneMatrix(int[][] matrix) {
+        int[][] cloneMatrix = new int[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 cloneMatrix[i][j] = matrix[i][j];

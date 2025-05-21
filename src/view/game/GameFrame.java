@@ -188,7 +188,10 @@ public class GameFrame extends JFrame {
         });
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
-            int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 2);
+            if (gamePanel.getSteps() <= 0){
+                JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
+            }
+            int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 1);
             gamePanel.clear();
             gamePanel.setGamePanel(lastMapModel);
             GameController.model_changed.resetMatrix(lastMapModel);
