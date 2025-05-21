@@ -1,8 +1,8 @@
 package view.game;
 
 import controller.GameController;
+import controller.GameState;
 import model.Map;
-import model.MapModel;
 import user.User;
 import view.FrameUtil;
 import view.login.LoginFrame;
@@ -13,20 +13,14 @@ import java.io.IOException;
 
 public class GameFrame extends JFrame {
 
+    private GameState gameState;
+
     public JButton getSaveBtn() {
         return saveBtn;
     }
 
-    public void setSaveBtn(JButton saveBtn) {
-        this.saveBtn = saveBtn;
-    }
-
     public JButton getLoadBtn() {
         return loadBtn;
-    }
-
-    public void setLoadBtn(JButton loadBtn) {
-        this.loadBtn = loadBtn;
     }
 
     private GameController controller;
@@ -34,6 +28,7 @@ public class GameFrame extends JFrame {
     private JButton loadBtn;
     private JButton saveBtn;
     private JButton loginLabel;
+    private JButton solveBtn;
     private JLabel userLabel;
     private CountdownTimer time = new CountdownTimer();
     private User user;
@@ -48,6 +43,7 @@ public class GameFrame extends JFrame {
         super("華容道·漢末風雲");
         this.setLayout(new GridBagLayout());
         gamePanel = new GamePanel(level);
+        gameState = new GameState();
         this.controller = new GameController(gamePanel, level);
         this.user = user;
 
@@ -55,6 +51,7 @@ public class GameFrame extends JFrame {
         this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
+        this.solveBtn = FrameUtil.createButton(this, "神机妙算", 80, height);
         this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
         this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
         this.loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
@@ -95,6 +92,9 @@ public class GameFrame extends JFrame {
         bottomPanel.add(loadBtn);
         bottomPanel.add(saveBtn);
         bottomPanel.add(stepLabel);
+        bottomPanel.add(solveBtn);
+
+        // 添加底部面板
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 4;
@@ -110,6 +110,9 @@ public class GameFrame extends JFrame {
         gbcTimer.insets = new Insets(5, 5, 5, 5);  // 设置边距
         this.add(time, gbcTimer);
 
+        this.solveBtn.addActionListener(e -> {
+            gameState.solvePuzzle();
+        });
         this.restartBtn.addActionListener(e -> {
             controller.restartGame();
             gamePanel.requestFocusInWindow();//enable key listener
@@ -192,11 +195,8 @@ public class GameFrame extends JFrame {
             gamePanel.removeLastSteps();
             gamePanel.refreshStepLabel();
         });
-
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-
-
     }
 }

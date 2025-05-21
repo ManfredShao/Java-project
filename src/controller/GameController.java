@@ -15,8 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
+
+import static model.Direction.LEFT;
 
 /**
  * It is a bridge to combine GamePanel(view) and MapMatrix(model) in one game.
@@ -24,6 +26,11 @@ import java.util.List;
  */
 public class GameController {
     private final GamePanel view;
+
+    public static MapModel getModel_changed() {
+        return model_changed;
+    }
+
     public static MapModel model_changed;
     private Map level;
 
@@ -84,9 +91,7 @@ public class GameController {
 
         if (model_changed.getId(row, col) == 2) {//关羽1*2
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInWidthSize(nextCol + 1)) {
-                if ((direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0) ||
-                        (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) ||
-                        ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
+                if ((direction == LEFT && model_changed.getId(nextRow, nextCol) == 0) || (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0) || ((direction == Direction.UP || direction == Direction.DOWN) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow, nextCol + 1) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
                     model_changed.setMatrix(nextRow, nextCol, 2);
@@ -99,9 +104,7 @@ public class GameController {
         }
         if (model_changed.getId(row, col) == 3) {//其他角色2*1
             if (model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInHeightSize(nextRow)) {
-                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) ||
-                        (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) ||
-                        ((direction == Direction.LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
+                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0) || (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0) || ((direction == LEFT || direction == Direction.RIGHT) && model_changed.getId(nextRow, nextCol) == 0) && model_changed.getId(nextRow + 1, nextCol) == 0) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
@@ -114,10 +117,7 @@ public class GameController {
         }
         if (model_changed.getId(row, col) == 4) {//曹操
             if (model_changed.checkInHeightSize(nextRow) && model_changed.checkInWidthSize(nextCol) && model_changed.checkInHeightSize(nextRow + 1) && model_changed.checkInWidthSize(nextCol + 1)) {
-                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow, nextCol + 1) == 0) ||
-                        (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) ||
-                        (direction == Direction.LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) ||
-                        (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
+                if ((direction == Direction.UP && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow, nextCol + 1) == 0) || (direction == Direction.DOWN && model_changed.getId(nextRow + 1, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0) || (direction == LEFT && model_changed.getId(nextRow, nextCol) == 0 && model_changed.getId(nextRow + 1, nextCol) == 0) || (direction == Direction.RIGHT && model_changed.getId(nextRow, nextCol + 1) == 0 && model_changed.getId(nextRow + 1, nextCol + 1) == 0)) {
                     model_changed.setMatrix(row, col, 0);
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(row, col + 1, 0);
@@ -137,6 +137,9 @@ public class GameController {
 
     private void refreshCoordinate(int nextRow, int nextCol, int width, int height) {
         BoxComponent box = this.view.getSelectedBox();
+        if (box == null) {
+            return;
+        }
         box.setRow(nextRow);//更新逻辑坐标
         box.setCol(nextCol);
         //更新像素坐标

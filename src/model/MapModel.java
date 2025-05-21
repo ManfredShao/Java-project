@@ -35,11 +35,11 @@ public class MapModel {
     }
 
     public boolean checkInWidthSize(int col) {
-        return col >= 0 && col < matrix[0].length;
+        return col >= 0 && col < 4;
     }
 
     public boolean checkInHeightSize(int row) {
-        return row >= 0 && row < matrix.length;
+        return row >= 0 && row < 5;
     }
 
     public void resetMatrix(Map level) {
