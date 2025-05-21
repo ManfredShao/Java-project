@@ -25,11 +25,12 @@ import java.util.List;
 public class GameController {
     private final GamePanel view;
     public static MapModel model_changed;
+    private Map level;
 
-
-    public GameController(GamePanel view, MapModel model) {
+    public GameController(GamePanel view, Map mapLevel) {
         this.view = view;
-        model_changed = model;
+        this.level = mapLevel;
+        model_changed = new MapModel(level);
         view.setController(this);
 
         SwingUtilities.invokeLater(() -> {
@@ -60,7 +61,7 @@ public class GameController {
     }
 
     public void restartGame() {
-        model_changed.resetMatrix(Map.LEVEL_2);
+        model_changed.resetMatrix(level);
         this.view.resetGame();
         this.view.requestFocus();
         System.out.println("restartGame");
@@ -151,6 +152,7 @@ public class GameController {
         }
         gameData.add(String.valueOf(this.view.getSteps()));
         gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(this.view)).getTime().getUsedTime()));
+        gameData.add(String.valueOf(this.view.getLevel()));
         String path = String.format("Save/%s", user.getUsername());
         try {
             Files.write(Path.of(path + "/data.txt"), gameData);
@@ -175,8 +177,8 @@ public class GameController {
                     }
                 }
                 this.view.clear();
-                int steps = Integer.parseInt(lines.get(lines.size() - 2));
-                this.view.loadGamePanel(this.view.cloneMatrix(map), steps, lines.get(lines.size() - 1));
+                int steps = Integer.parseInt(lines.get(lines.size() - 3));
+                this.view.loadGamePanel(this.view.cloneMatrix(map), steps, lines.get(lines.size() - 2), lines.get(lines.size() - 1));
                 this.view.refreshStepLabel(steps);
                 model_changed.resetMatrix(map);
             } catch (IOException e) {

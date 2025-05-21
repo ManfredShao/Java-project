@@ -1,6 +1,7 @@
 package view.game;
 
 import controller.GameController;
+import model.Map;
 import model.MapModel;
 import user.User;
 import view.FrameUtil;
@@ -43,11 +44,11 @@ public class GameFrame extends JFrame {
         return time;
     }
 
-    public GameFrame(MapModel mapModel, User user) {
+    public GameFrame(Map level, User user) {
         super("華容道·漢末風雲");
         this.setLayout(new GridBagLayout());
-        gamePanel = new GamePanel();
-        this.controller = new GameController(gamePanel, mapModel);
+        gamePanel = new GamePanel(level);
+        this.controller = new GameController(gamePanel, level);
         this.user = user;
 
         int height = 50;

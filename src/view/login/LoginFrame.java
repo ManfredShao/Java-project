@@ -17,6 +17,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static view.login.IdentitySelectFrame.selectLevel;
+
 
 public class LoginFrame extends JFrame {
     private JTextField username;
@@ -64,10 +66,8 @@ public class LoginFrame extends JFrame {
                             JOptionPane.showMessageDialog(this, "兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
                         } else {
                             this.setVisible(false);
-                            MapModel mapModel = new MapModel(Map.LEVEL_2);
                             User user = new User(username.getText(), password.getText());
-                            GameFrame gameFrame = new GameFrame(mapModel, user);
-                            gameFrame.setVisible(true);
+                            selectLevel(user);
                         }
 
                     } catch (IOException d) {

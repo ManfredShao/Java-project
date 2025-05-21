@@ -3,13 +3,26 @@ package model;
 import java.util.Arrays;
 
 public enum Map {
-    // 枚举常量必须位于类首部
+    LEVEL_1(deepCopyMatrix(new int[][]{
+            {3, 3, 1, 3},
+            {3, 3, 1, 3},
+            {4, 4, 0, 3},
+            {4, 4, 0, 3},
+            {2, 2, 1, 1}
+    })),
     LEVEL_2(deepCopyMatrix(new int[][]{
-            {3, 1, 1, 3},
             {3, 4, 4, 3},
-            {1, 4, 4, 1},
+            {3, 4, 4, 3},
+            {3, 0, 1, 1},
+            {3, 0, 3, 3},
+            {2, 2, 3, 3}
+    })),
+    LEVEL_3(deepCopyMatrix(new int[][]{
+            {3, 4, 4, 3},
+            {3, 4, 4, 3},
             {3, 2, 2, 3},
-            {3, 0, 0, 3}
+            {3, 1, 1, 3},
+            {1, 0, 0, 1}
     }));
 
     private final int[][] matrix;
