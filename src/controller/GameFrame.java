@@ -1,5 +1,7 @@
 package controller;
 
+import Online.SocketClient;
+import Online.SocketServer;
 import model.Map;
 import user.User;
 import view.FrameUtil;
@@ -10,6 +12,7 @@ import view.login.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.net.SocketException;
 
 public class GameFrame extends JFrame {
 
@@ -25,6 +28,9 @@ public class GameFrame extends JFrame {
 
     private GameController controller;
     private JButton restartBtn;
+    private JButton severBtn;
+    private JButton clientBtn;
+    private JButton revokeBtn;
     private JButton loadBtn;
     private JButton saveBtn;
     private JButton pauseBtn;
@@ -56,6 +62,9 @@ public class GameFrame extends JFrame {
         this.solveBtn = FrameUtil.createButton(this, "神机妙算", 80, height);
         this.pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
         this.resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
+        this.revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
+        this.clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
+        this.severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
         this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
         this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
         this.loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
@@ -114,10 +123,13 @@ public class GameFrame extends JFrame {
         this.add(time, gbcTimer);
 
         // 创建新的右侧按钮面板
-        JPanel rightControlPanel = new JPanel(new GridLayout(3, 1, 5, 10)); // 3行1列，垂直间距10
+        JPanel rightControlPanel = new JPanel(new GridLayout(6, 1, 5, 10)); // 3行1列，垂直间距10
         rightControlPanel.add(solveBtn);
         rightControlPanel.add(pauseBtn);
         rightControlPanel.add(resumeBtn);
+        rightControlPanel.add(revokeBtn);
+        rightControlPanel.add(severBtn);
+        rightControlPanel.add(clientBtn);
 
         // 添加右侧控制面板
         GridBagConstraints gbcRightCtrl = new GridBagConstraints();
@@ -129,9 +141,42 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.insets = new Insets(5, 5, 5, 5);
         this.add(rightControlPanel, gbcRightCtrl);
 
+        this.severBtn.addActionListener(e -> {
+            SocketServer server = new SocketServer(8888);
+            server.addConnectListener(s -> System.out.println("服务器连接建立"));
+            server.addMessageListener(msg -> System.out.println("服务器收到消息: " + msg));
+            server.addErrorListener(ex -> System.err.println("服务器异常: " + ex.getMessage()));
+            server.start();
+            try {
+                JOptionPane.showMessageDialog(this, "伺服器已啟動，IP:" + server.getIp());
+            } catch (SocketException ex) {
+                throw new RuntimeException(ex);
+            }
+            gamePanel.requestFocusInWindow();
+        });
+
+        this.clientBtn.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(null, "请输入对方的IP地址：", "加入战局", JOptionPane.PLAIN_MESSAGE);
+            if (input != null) {
+                SocketClient client = new SocketClient(input, 8888);
+                client.addConnectListener(s -> {
+                    System.out.println("客户端已连接服务器");
+                    if (!gamePanel.afterMove()) {
+                        client.sendLine("1");  // 连接成功后发送 "1"
+                    }
+                });
+                client.addMessageListener(msg -> System.out.println("客户端收到消息: " + msg));
+                client.addErrorListener(ex -> System.err.println("客户端异常: " + ex.getMessage()));
+                client.connect();
+            } else {
+                System.out.println("用户取消了输入");
+            }
+            gamePanel.requestFocusInWindow();
+        });
         this.solveBtn.addActionListener(e -> {
             gameState.solvePuzzle();
             gameState.startAnimation();
+            gamePanel.requestFocusInWindow();
         });
         this.pauseBtn.addActionListener(e -> {
             gameState.pauseAnimation();
@@ -171,7 +216,6 @@ public class GameFrame extends JFrame {
         JButton downBtn = new JButton("↓");
         JButton leftBtn = new JButton("←");
         JButton rightBtn = new JButton("→");
-        JButton revokeBtn = new JButton("撤兵");
         directionPanel.add(new JLabel()); // (0,0) 空
         directionPanel.add(upBtn);        // (0,1)
         directionPanel.add(new JLabel()); // (0,2) 空
@@ -186,7 +230,6 @@ public class GameFrame extends JFrame {
         directionPanel.add(new JLabel());
         directionPanel.add(new JLabel());
         directionPanel.add(new JLabel());
-        directionPanel.add(revokeBtn);
 
         GridBagConstraints gbcDir = new GridBagConstraints();
 

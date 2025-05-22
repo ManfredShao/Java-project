@@ -250,7 +250,7 @@ public class GamePanel extends ListenerPanel {
         }
     }
 
-    public void afterMove() {
+    public boolean afterMove() {
         this.steps++;
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
@@ -299,6 +299,7 @@ public class GamePanel extends ListenerPanel {
             dialog.setVisible(true);
             dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+        return true;
     }
 
     public void setStepLabel(JLabel stepLabel) {
