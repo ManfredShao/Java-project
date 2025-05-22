@@ -82,7 +82,7 @@ public class GameState {
                 }
             }
 
-            if (checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 2 && getId(board, row, col + 1) == 2) {//关羽1*2
+            if (checkInWidthSize(col + 1) && checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 2 && getId(board, row, col + 1) == 2) {//关羽1*2
                 if ((direction == Direction.LEFT && getId(board, nextRow, nextCol) == 0) ||
                         (direction == Direction.RIGHT && getId(board, nextRow, nextCol + 1) == 0) ||
                         ((direction == Direction.UP || direction == Direction.DOWN) && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow, nextCol + 1) == 0)) {
@@ -93,7 +93,7 @@ public class GameState {
                 }
             }
 
-            if (checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInHeightSize(nextRow) && getId(board, row, col) == 3 && getId(board, row + 1, col) == 3) {//其他角色2*1
+            if (checkInHeightSize(row + 1) && checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInHeightSize(nextRow) && getId(board, row, col) == 3 && getId(board, row + 1, col) == 3) {//其他角色2*1
                 if ((direction == Direction.UP && getId(board, nextRow, nextCol) == 0) ||
                         (direction == Direction.DOWN && getId(board, nextRow + 1, nextCol) == 0) ||
                         ((direction == Direction.LEFT || direction == Direction.RIGHT) && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow + 1, nextCol) == 0)) {
@@ -104,7 +104,7 @@ public class GameState {
                 }
             }
 
-            if (checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 4 && getId(board, row, col + 1) == 4 && getId(board, row + 1, col) == 4 && getId(board, row + 1, col + 1) == 4) {//曹操
+            if (checkInHeightSize(row + 1) && checkInWidthSize(col + 1) && checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 4 && getId(board, row, col + 1) == 4 && getId(board, row + 1, col) == 4 && getId(board, row + 1, col + 1) == 4) {//曹操
                 if ((direction == Direction.UP && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow, nextCol + 1) == 0) ||
                         (direction == Direction.DOWN && getId(board, nextRow + 1, nextCol) == 0 && getId(board, nextRow + 1, nextCol + 1) == 0) ||
                         (direction == Direction.LEFT && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow + 1, nextCol) == 0) ||
