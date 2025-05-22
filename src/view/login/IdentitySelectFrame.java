@@ -1,10 +1,9 @@
 package view.login;
 
 import model.Map;
-import model.MapModel;
 import user.User;
 import view.FrameUtil;
-import view.game.GameFrame;
+import controller.GameFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

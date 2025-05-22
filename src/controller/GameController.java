@@ -5,34 +5,28 @@ import model.Map;
 import model.MapModel;
 import user.User;
 import view.game.BoxComponent;
-import view.game.GameFrame;
 import view.game.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import javax.swing.Timer;
 
 import static model.Direction.LEFT;
 
-/**
- * It is a bridge to combine GamePanel(view) and MapMatrix(model) in one game.
- * You can design several methods about the game logic in this class.
- */
 public class GameController {
-    private final GamePanel view;
+    public static GamePanel view;
+    public static MapModel model_changed;
+    private Map level;
 
     public static MapModel getModel_changed() {
         return model_changed;
     }
-
-    public static MapModel model_changed;
-    private Map level;
 
     public GameController(GamePanel view, Map mapLevel) {
         this.view = view;
@@ -74,7 +68,7 @@ public class GameController {
         System.out.println("restartGame");
     }
 
-    public boolean doMove(int row, int col, Direction direction) {
+    public static boolean doMove(int row, int col, Direction direction) {
         int nextRow = row + direction.getRow();
         int nextCol = col + direction.getCol();
         if (model_changed.getId(row, col) == 1) {//卒1*1
@@ -82,7 +76,7 @@ public class GameController {
                 if (model_changed.getId(nextRow, nextCol) == 0) {//不碰撞
                     model_changed.setMatrix(row, col, 0);//能移动，将原位置更新为空
                     model_changed.setMatrix(nextRow, nextCol, 1);//更新新位置
-                    refreshCoordinate(nextRow, nextCol, 1, 1);
+                    refreshCoordinate(nextRow, nextCol, 1, 1, view);
                     return true;
                 }
             }
@@ -95,7 +89,7 @@ public class GameController {
                     model_changed.setMatrix(row, col + 1, 0);
                     model_changed.setMatrix(nextRow, nextCol, 2);
                     model_changed.setMatrix(nextRow, nextCol + 1, 2);
-                    refreshCoordinate(nextRow, nextCol, 2, 1);
+                    refreshCoordinate(nextRow, nextCol, 2, 1, view);
                     return true;
                 }
             }
@@ -107,7 +101,7 @@ public class GameController {
                     model_changed.setMatrix(row + 1, col, 0);
                     model_changed.setMatrix(nextRow, nextCol, 3);
                     model_changed.setMatrix(nextRow + 1, nextCol, 3);
-                    refreshCoordinate(nextRow, nextCol, 1, 2);
+                    refreshCoordinate(nextRow, nextCol, 1, 2, view);
                     return true;
                 }
             }
@@ -123,7 +117,7 @@ public class GameController {
                     model_changed.setMatrix(nextRow + 1, nextCol, 4);
                     model_changed.setMatrix(nextRow, nextCol + 1, 4);
                     model_changed.setMatrix(nextRow + 1, nextCol + 1, 4);
-                    refreshCoordinate(nextRow, nextCol, 2, 2);
+                    refreshCoordinate(nextRow, nextCol, 2, 2, view);
                     return true;
                 }
             }
@@ -131,15 +125,15 @@ public class GameController {
         return false;
     }
 
-    private void refreshCoordinate(int nextRow, int nextCol, int width, int height) {
-        BoxComponent box = this.view.getSelectedBox();
+    private static void refreshCoordinate(int nextRow, int nextCol, int width, int height, GamePanel view) {
+        BoxComponent box = view.getSelectedBox();
         if (box == null) {
             return;
         }
         box.setRow(nextRow);//更新逻辑坐标
         box.setCol(nextCol);
         //更新像素坐标
-        this.view.moveBoxSmoothly(box, nextRow, nextCol);
+        view.moveBoxSmoothly(box, nextRow, nextCol);
     }
 
     public void saveGame(User user) {
@@ -208,5 +202,228 @@ public class GameController {
             return true;
         }
         return false;
+    }
+}
+
+class GameState {
+    String path;
+    int[][] board;
+
+    public void solvePuzzle() {
+        Queue<GameState> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+
+        GameState start = new GameState();
+        start.board = deepCopy(GameController.model_changed.getMatrix()); // 从组件提取棋盘状态
+        start.path = "";
+
+        queue.add(start);
+        visited.add(serialize(start.board));
+
+        while (!queue.isEmpty()) {
+            GameState current = queue.poll();
+
+            if (isGoal(current.board)) {
+                System.out.println("找到解法！路径：" + current.path);
+                solutionPath = current.path;
+                return;
+            }
+
+            for (GameState nextState : generateNextStates(current)) {
+                String hash = serialize(nextState.board);
+                if (!visited.contains(hash)) {
+                    visited.add(hash);
+                    queue.add(nextState);
+                }
+            }
+        }
+        System.out.println("未找到解");
+    }
+
+    public String serialize(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for (int[] row : board) {
+            for (int cell : row) {
+                sb.append(cell);
+            }
+        }
+        return sb.toString();
+    }
+
+    public List<GameState> generateNextStates(GameState state) {
+        List<GameState> result = new ArrayList<>();
+        int[][] board = state.board;
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (Direction dir : Direction.values()) {
+                    int[][] newBoard = tryMove(board, i, j, dir);
+                    if (newBoard != null) {
+                        GameState newState = new GameState();
+                        newState.board = newBoard;
+                        newState.path = state.path + String.format("(%d,%d)-%s;", i, j, dir.name());
+                        result.add(newState);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public int[][] tryMove(int[][] original, int row, int col, Direction direction) {
+        int[][] board = deepCopy(original);
+        int nextRow = row + direction.getRow();
+        int nextCol = col + direction.getCol();
+        boolean moved = false;
+
+        if (checkInHeightSize(row) && checkInWidthSize(col) && getId(board, row, col) != 0) {
+            if (getId(board, row, col) == 1) {//卒1*1
+                if (checkInHeightSize(nextRow) && checkInWidthSize(nextCol)) {//不越界
+                    if (getId(board, nextRow, nextCol) == 0) {//不碰撞
+                        setMatrix(board, row, col, 0);//能移动，将原位置更新为空
+                        setMatrix(board, nextRow, nextCol, 1);//更新新位置
+                        moved = true;
+                    }
+                }
+            }
+
+            if (checkInWidthSize(col + 1) && checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 2 && getId(board, row, col + 1) == 2) {//关羽1*2
+                if ((direction == Direction.LEFT && getId(board, nextRow, nextCol) == 0) || (direction == Direction.RIGHT && getId(board, nextRow, nextCol + 1) == 0) || ((direction == Direction.UP || direction == Direction.DOWN) && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow, nextCol + 1) == 0)) {
+                    setMatrix(board, row, col, 0);
+                    setMatrix(board, row, col + 1, 0);
+                    setMatrix(board, nextRow, nextCol, 2);
+                    setMatrix(board, nextRow, nextCol + 1, 2);
+                    moved = true;
+                }
+            }
+
+            if (checkInHeightSize(row + 1) && checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInHeightSize(nextRow) && getId(board, row, col) == 3 && getId(board, row + 1, col) == 3) {//其他角色2*1
+                if ((direction == Direction.UP && getId(board, nextRow, nextCol) == 0) || (direction == Direction.DOWN && getId(board, nextRow + 1, nextCol) == 0) || ((direction == Direction.LEFT || direction == Direction.RIGHT) && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow + 1, nextCol) == 0)) {
+                    setMatrix(board, row, col, 0);
+                    setMatrix(board, row + 1, col, 0);
+                    setMatrix(board, nextRow, nextCol, 3);
+                    setMatrix(board, nextRow + 1, nextCol, 3);
+                    moved = true;
+                }
+            }
+
+            if (checkInHeightSize(row + 1) && checkInWidthSize(col + 1) && checkInHeightSize(nextRow) && checkInWidthSize(nextCol) && checkInHeightSize(nextRow + 1) && checkInWidthSize(nextCol + 1) && getId(board, row, col) == 4 && getId(board, row, col + 1) == 4 && getId(board, row + 1, col) == 4 && getId(board, row + 1, col + 1) == 4) {//曹操
+                if ((direction == Direction.UP && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow, nextCol + 1) == 0) || (direction == Direction.DOWN && getId(board, nextRow + 1, nextCol) == 0 && getId(board, nextRow + 1, nextCol + 1) == 0) || (direction == Direction.LEFT && getId(board, nextRow, nextCol) == 0 && getId(board, nextRow + 1, nextCol) == 0) || (direction == Direction.RIGHT && getId(board, nextRow, nextCol + 1) == 0 && getId(board, nextRow + 1, nextCol + 1) == 0)) {
+                    setMatrix(board, row, col, 0);
+                    setMatrix(board, row + 1, col, 0);
+                    setMatrix(board, row, col + 1, 0);
+                    setMatrix(board, row + 1, col + 1, 0);
+                    setMatrix(board, nextRow, nextCol, 4);
+                    setMatrix(board, nextRow + 1, nextCol, 4);
+                    setMatrix(board, nextRow, nextCol + 1, 4);
+                    setMatrix(board, nextRow + 1, nextCol + 1, 4);
+                    moved = true;
+                }
+            }
+        }
+        return moved ? board : null;
+    }
+
+    public int[][] deepCopy(int[][] original) {
+        int[][] copy = new int[5][4];
+        for (int i = 0; i < 5; i++) {
+            System.arraycopy(original[i], 0, copy[i], 0, 4);
+        }
+        return copy;
+    }
+
+    public boolean isGoal(int[][] board) {
+        return board[4][1] == 4 && board[4][2] == 4;
+    }
+
+    // 下面这两个改成带参数版本，不再访问成员变量board
+    public int getId(int[][] board, int row, int col) {
+        return board[row][col];
+    }
+
+    public void setMatrix(int[][] board, int row, int col, int id) {
+        board[row][col] = id;
+    }
+
+    public boolean checkInWidthSize(int col) {
+        return col >= 0 && col < 4;
+    }
+
+    public boolean checkInHeightSize(int row) {
+        return row >= 0 && row < 5;
+    }
+
+    private String solutionPath;
+    private Timer timer;
+    private String[] steps;
+    private int currentStep;
+    private int animationSpeed = 350; // 默认500ms/步
+    private boolean isPaused = false;
+
+    public void startAnimation() {
+        this.steps = solutionPath.split(";");
+        this.currentStep = 0;
+        this.isPaused = false;
+
+        timer = new Timer(animationSpeed, e -> {
+            if (currentStep >= steps.length) {
+                stopAnimation();
+                return;
+            }
+
+            if (!isPaused) {
+                executeStep(steps[currentStep]);
+                currentStep++;
+            }
+        });
+        timer.start();
+    }
+
+    // 执行单步移动
+    private void executeStep(String step) {
+        step = step.trim();
+        if (step.startsWith("(")) {
+            String[] parts = step.split("-");
+            String coord = parts[0].replace("(", "").replace(")", "");
+            String[] xy = coord.split(",");
+            int row = Integer.parseInt(xy[0]);
+            int col = Integer.parseInt(xy[1]);
+            Direction dir = Direction.valueOf(parts[1]);
+
+            GameController.view.findBox(row,col);
+            if (GameController.doMove(row, col, dir)){
+                GameController.view.afterMove();
+            };
+        }
+    }
+
+    // 暂停动画
+    public void pauseAnimation() {
+        isPaused = true;
+    }
+
+    // 恢复动画
+    public void resumeAnimation() {
+        isPaused = false;
+    }
+
+    // 停止动画（自动调用）
+    private void stopAnimation() {
+        if (timer != null) {
+            timer.stop();
+        }
+    }
+
+    // 重置动画（回到第一步）
+    public void resetAnimation() {
+        currentStep = 0;
+    }
+
+    // 调整播放速度（ms/步）
+    public void setAnimationSpeed(int speedMs) {
+        this.animationSpeed = speedMs;
+        if (timer != null) {
+            timer.setDelay(speedMs);
+        }
     }
 }

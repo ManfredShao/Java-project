@@ -1,10 +1,10 @@
-package view.game;
+package controller;
 
-import controller.GameController;
-import controller.GameState;
 import model.Map;
 import user.User;
 import view.FrameUtil;
+import view.game.CountdownTimer;
+import view.game.GamePanel;
 import view.login.LoginFrame;
 
 import javax.swing.*;
@@ -27,6 +27,8 @@ public class GameFrame extends JFrame {
     private JButton restartBtn;
     private JButton loadBtn;
     private JButton saveBtn;
+    private JButton pauseBtn;
+    private JButton resumeBtn;
     private JButton loginLabel;
     private JButton solveBtn;
     private JLabel userLabel;
@@ -52,6 +54,8 @@ public class GameFrame extends JFrame {
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
         this.solveBtn = FrameUtil.createButton(this, "神机妙算", 80, height);
+        this.pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
+        this.resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
         this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
         this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
         this.loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
@@ -92,7 +96,6 @@ public class GameFrame extends JFrame {
         bottomPanel.add(loadBtn);
         bottomPanel.add(saveBtn);
         bottomPanel.add(stepLabel);
-        bottomPanel.add(solveBtn);
 
         // 添加底部面板
         gbc.gridx = 0;
@@ -110,8 +113,34 @@ public class GameFrame extends JFrame {
         gbcTimer.insets = new Insets(5, 5, 5, 5);  // 设置边距
         this.add(time, gbcTimer);
 
+        // 创建新的右侧按钮面板
+        JPanel rightControlPanel = new JPanel(new GridLayout(3, 1, 5, 10)); // 3行1列，垂直间距10
+        rightControlPanel.add(solveBtn);
+        rightControlPanel.add(pauseBtn);
+        rightControlPanel.add(resumeBtn);
+
+        // 添加右侧控制面板
+        GridBagConstraints gbcRightCtrl = new GridBagConstraints();
+        gbcRightCtrl.gridx = 3;
+        gbcRightCtrl.gridy = 1;  // 计时器在0行，此面板在1行
+        gbcRightCtrl.gridwidth = 1;
+        gbcRightCtrl.gridheight = 1;
+        gbcRightCtrl.fill = GridBagConstraints.BOTH;
+        gbcRightCtrl.insets = new Insets(5, 5, 5, 5);
+        this.add(rightControlPanel, gbcRightCtrl);
+
         this.solveBtn.addActionListener(e -> {
             gameState.solvePuzzle();
+            gameState.startAnimation();
+        });
+        this.pauseBtn.addActionListener(e -> {
+            gameState.pauseAnimation();
+            gamePanel.requestFocusInWindow();
+        });
+
+        this.resumeBtn.addActionListener(e -> {
+            gameState.resumeAnimation();
+            gamePanel.requestFocusInWindow();
         });
         this.restartBtn.addActionListener(e -> {
             controller.restartGame();
@@ -188,7 +217,7 @@ public class GameFrame extends JFrame {
         });
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
-            if (gamePanel.getSteps() <= 0){
+            if (gamePanel.getSteps() <= 0) {
                 JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
             }
             int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 1);

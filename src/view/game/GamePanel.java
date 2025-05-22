@@ -1,13 +1,13 @@
 package view.game;
 
 import controller.GameController;
+import controller.GameFrame;
 import model.Direction;
 import model.Map;
 import model.MapModel;
 import view.login.IdentitySelectFrame;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -169,6 +169,15 @@ public class GamePanel extends ListenerPanel {
             } else {
                 clickedComponent.setSelected(false);
                 selectedBox = null;
+            }
+        }
+    }
+
+    public void findBox(int row,int col){
+        for(BoxComponent box:boxes){
+            if(box.getRow()==row&&box.getCol()==col){
+                box.setSelected(true);
+                selectedBox=box;
             }
         }
     }
