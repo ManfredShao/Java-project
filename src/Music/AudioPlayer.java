@@ -1,3 +1,5 @@
+package Music;
+
 import javax.sound.sampled.*;
 import javax.sound.sampled.DataLine.Info;
 import java.io.File;

@@ -13,19 +13,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class GameFrame extends JFrame {
 
     private GameState gameState;
-
-    public JButton getSaveBtn() {
-        return saveBtn;
-    }
-
-    public JButton getLoadBtn() {
-        return loadBtn;
-    }
-
+    SocketServer server = new SocketServer(8888);
     private GameController controller;
     private JButton restartBtn;
     private JButton severBtn;
@@ -45,6 +44,18 @@ public class GameFrame extends JFrame {
 
     public CountdownTimer getTime() {
         return time;
+    }
+
+    public JButton getSaveBtn() {
+        return saveBtn;
+    }
+
+    public JButton getLoadBtn() {
+        return loadBtn;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public GameFrame(Map level, User user) {
@@ -142,8 +153,21 @@ public class GameFrame extends JFrame {
         this.add(rightControlPanel, gbcRightCtrl);
 
         this.severBtn.addActionListener(e -> {
-            SocketServer server = new SocketServer(8888);
-            server.addConnectListener(s -> System.out.println("服务器连接建立"));
+            server.addConnectListener(socket -> {
+                System.out.println("客户端已连接！");
+                controller.saveGame(user);
+                try {
+                    Path path = Path.of("Save/" + user.getUsername() + "/data.txt");
+                    List<String> lines = Files.readAllLines(path);
+                    for (String line : lines) {
+                        System.out.println("正在发送: " + line);
+                        server.sendLine(line);
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    server.sendLine("读取棋盘数据失败！ERROR:" + ex.getMessage());
+                }
+            });
             server.addMessageListener(msg -> System.out.println("服务器收到消息: " + msg));
             server.addErrorListener(ex -> System.err.println("服务器异常: " + ex.getMessage()));
             server.start();
@@ -159,13 +183,22 @@ public class GameFrame extends JFrame {
             String input = JOptionPane.showInputDialog(null, "请输入对方的IP地址：", "加入战局", JOptionPane.PLAIN_MESSAGE);
             if (input != null) {
                 SocketClient client = new SocketClient(input, 8888);
-                client.addConnectListener(s -> {
-                    System.out.println("客户端已连接服务器");
-                    if (!gamePanel.afterMove()) {
-                        client.sendLine("1");  // 连接成功后发送 "1"
+                client.addConnectListener(s -> System.out.println("客户端已连接服务器"));
+                List<String> receivedLines = new ArrayList<>();
+                client.addMessageListener(data -> {
+                    System.out.println("客户端收到: " + data);
+
+                    if (data.startsWith("ERROR")) {
+                        System.err.println("传输错误: " + data.substring(6));
+                    }
+                    receivedLines.add(data);
+
+                    // 达到 8 行后开始加载
+                    if (receivedLines.size() == 8) {
+                        controller.loadGame(new ArrayList<>(receivedLines));
+                        receivedLines.clear();
                     }
                 });
-                client.addMessageListener(msg -> System.out.println("客户端收到消息: " + msg));
                 client.addErrorListener(ex -> System.err.println("客户端异常: " + ex.getMessage()));
                 client.connect();
             } else {
@@ -274,4 +307,19 @@ public class GameFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
+
+    public void upDateGame() {
+        try {
+            Path path = Path.of("Save/" + user.getUsername() + "/data.txt");
+            List<String> lines = Files.readAllLines(path);
+            for (String line : lines) {
+                server.sendLine(line);
+            }
+            // 不再发送 TRANSMISSION_END，因为你已经拆粘包处理了
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            server.sendLine("ERROR: " + ex.getMessage());
+        }
+    }
+
 }

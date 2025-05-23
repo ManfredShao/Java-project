@@ -5,6 +5,7 @@ import controller.GameFrame;
 import model.Direction;
 import model.Map;
 import model.MapModel;
+import user.User;
 import view.login.IdentitySelectFrame;
 
 import javax.swing.*;
@@ -173,11 +174,11 @@ public class GamePanel extends ListenerPanel {
         }
     }
 
-    public void findBox(int row,int col){
-        for(BoxComponent box:boxes){
-            if(box.getRow()==row&&box.getCol()==col){
+    public void findBox(int row, int col) {
+        for (BoxComponent box : boxes) {
+            if (box.getRow() == row && box.getCol() == col) {
                 box.setSelected(true);
-                selectedBox=box;
+                selectedBox = box;
             }
         }
     }
@@ -252,6 +253,10 @@ public class GamePanel extends ListenerPanel {
 
     public boolean afterMove() {
         this.steps++;
+        GameFrame frame = (GameFrame) SwingUtilities.getWindowAncestor(this);
+        User user = frame.getUser();
+        controller.saveGame(user);
+        frame.upDateGame();
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
@@ -348,7 +353,7 @@ public class GamePanel extends ListenerPanel {
     }
 
     public void refreshStepLabel() {//用于撤回
-        this.steps --;
+        this.steps--;
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
     }
 

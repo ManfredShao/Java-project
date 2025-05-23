@@ -29,14 +29,18 @@ public abstract class SocketBase {
     }
 
     protected void handleConnection(Socket socket) throws IOException {
-        conn = socket;
-        connectCallback.accept(conn);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String msg;
-        while ((msg = in.readLine()) != null) {
-            receiveCallback.accept(msg);
+        try (Socket autoCloseSocket = socket) {  // 确保socket最终关闭
+            conn = autoCloseSocket;
+            connectCallback.accept(conn);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String msg;
+            while ((msg = in.readLine()) != null) {
+                receiveCallback.accept(msg);
+            }
+        } finally {
+            handleError(new IOException("Connection closed"));
         }
-        handleError(new IOException("Remote disconnected"));
     }
 
     protected void handleError(IOException e) {

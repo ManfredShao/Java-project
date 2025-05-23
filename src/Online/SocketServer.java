@@ -18,7 +18,11 @@ public class SocketServer extends SocketBase {
         exec.submit(() -> {
             try (ServerSocket server = new ServerSocket(port)) {
                 System.out.println("服务器启动，等待连接...");
-                handleConnection(server.accept());
+                while (true) {
+                    Socket socket = server.accept();
+                    System.out.println("有客户端连接");
+                    handleConnection(socket);  // 保持连接活跃
+                }
             } catch (IOException e) {
                 handleError(e);
             }

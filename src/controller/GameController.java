@@ -186,6 +186,31 @@ public class GameController {
         }
     }
 
+    public void loadGame(List<String> lines) {
+        int[][] map = new int[5][4];
+        try {
+            for (int j = 0; j < 5; j++) {
+                String s = lines.get(j).replace(" ", "");
+                for (int i = 0; i < 4; i++) {
+                    map[j][i] = Integer.parseInt(s.substring(i, i + 1));
+                }
+            }
+            int steps = Integer.parseInt(lines.get(lines.size() - 3));
+            String difficulty = lines.get(lines.size() - 2);
+            String level = lines.get(lines.size() - 1);
+
+            this.view.clear();
+            this.view.loadGamePanel(this.view.cloneMatrix(map), steps, difficulty, level);
+            this.view.refreshStepLabel(steps);
+            model_changed.resetMatrix(map);
+            System.out.println("✅ 从服务器加载战局成功");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this.view, "⚠️ 无法从服务器加载战局数据", "数据错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+
     public boolean checkChange(User user) throws IOException {
         StringBuilder sb = new StringBuilder();
         List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
@@ -390,10 +415,12 @@ class GameState {
             int col = Integer.parseInt(xy[1]);
             Direction dir = Direction.valueOf(parts[1]);
 
-            GameController.view.findBox(row,col);
-            if (GameController.doMove(row, col, dir)){
+            GameController.view.findBox(row, col);
+            if (GameController.doMove(row, col, dir)) {
                 GameController.view.afterMove();
-            };
+//                GameController.saveGame(view.getUser());
+            }
+            ;
         }
     }
 
