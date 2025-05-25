@@ -255,8 +255,10 @@ public class GamePanel extends ListenerPanel {
         this.steps++;
         GameFrame frame = (GameFrame) SwingUtilities.getWindowAncestor(this);
         User user = frame.getUser();
-        controller.saveGame(user);
-        frame.upDateGame();
+        if (user.getUsername() != null) {
+            controller.saveGame(user);
+            frame.upDateGame();
+        }
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
