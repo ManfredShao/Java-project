@@ -24,10 +24,6 @@ public class GameController {
     public static MapModel model_changed;
     private Map level;
 
-    public static MapModel getModel_changed() {
-        return model_changed;
-    }
-
     public GameController(GamePanel view, Map mapLevel) {
         this.view = view;
         this.level = mapLevel;
@@ -223,18 +219,16 @@ public class GameController {
             char c = sb.charAt(i);
             counts[c - '0']++;
         }
-        if (counts[0] == 2 && counts[1] == 4 && counts[2] == 2 && counts[3] == 8 && counts[4] == 4) {
-            return true;
-        }
-        return false;
+        return counts[0] == 2 && counts[1] == 4 && counts[2] == 2 && counts[3] == 8 && counts[4] == 4;
     }
 }
 
 class GameState {
     String path;
     int[][] board;
+    int cost;
 
-    public void solvePuzzle() {
+    public void solvePuzzleBFS() {
         Queue<GameState> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
 
@@ -249,7 +243,7 @@ class GameState {
             GameState current = queue.poll();
 
             if (isGoal(current.board)) {
-                System.out.println("找到解法！路径：" + current.path);
+                System.out.println("找到解法(BFS)！路径：" + current.path);
                 solutionPath = current.path;
                 return;
             }
@@ -262,7 +256,71 @@ class GameState {
                 }
             }
         }
-        System.out.println("未找到解");
+        System.out.println("未找到解(BFS)");
+    }
+
+    public void solvePuzzleDFS() {
+        // 限制最大深度，防止无限递归
+        final int MAX_DEPTH = 200;
+        Stack<GameState> stack = new Stack<>();
+        Set<String> visited = new HashSet<>();
+
+        GameState start = new GameState();
+        start.board = deepCopy(GameController.model_changed.getMatrix());
+        start.path = "";
+        start.cost = 0;
+
+        stack.push(start);
+        visited.add(serialize(start.board));
+
+        while (!stack.isEmpty()) {
+            GameState current = stack.pop();
+
+            if (isGoal(current.board)) {
+                System.out.println("找到解法(DFS)！路径：" + current.path);
+                solutionPath = current.path;
+                return;
+            }
+
+            // 限制搜索深度
+            if (current.cost >= MAX_DEPTH) {
+                continue;
+            }
+
+            // 生成所有可能的下一个状态
+            List<GameState> nextStates = generateNextStates(current);
+
+            // 对下一步状态进行排序 - 优先尝试看起来更有希望的方向
+            nextStates.sort((a, b) -> {
+                // 简单的启发式：优先移动曹操方块
+                boolean aHasCao = hasCaoCao(a.board);
+                boolean bHasCao = hasCaoCao(b.board);
+                if (aHasCao && !bHasCao) return -1;
+                if (!aHasCao && bHasCao) return 1;
+                return 0;
+            });
+
+            for (GameState nextState : nextStates) {
+                String hash = serialize(nextState.board);
+                if (!visited.contains(hash)) {
+                    nextState.cost = current.cost + 1;
+                    visited.add(hash);
+                    stack.push(nextState);
+                }
+            }
+        }
+        System.out.println("未找到解/在限制深度内无解(DFS)");
+    }
+
+    private boolean hasCaoCao(int[][] board) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (board[i][j] == 4) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public String serialize(int[][] board) {
@@ -386,25 +444,26 @@ class GameState {
     private boolean isPaused = false;
 
     public void startAnimation() {
-        this.steps = solutionPath.split(";");
-        this.currentStep = 0;
-        this.isPaused = false;
+        if (solutionPath != null) {
+            this.steps = solutionPath.split(";");
+            this.currentStep = 0;
+            this.isPaused = false;
 
-        timer = new Timer(animationSpeed, e -> {
-            if (currentStep >= steps.length) {
-                stopAnimation();
-                return;
-            }
+            timer = new Timer(animationSpeed, e -> {
+                if (currentStep >= steps.length) {
+                    stopAnimation();
+                    return;
+                }
 
-            if (!isPaused) {
-                executeStep(steps[currentStep]);
-                currentStep++;
-            }
-        });
-        timer.start();
+                if (!isPaused) {
+                    executeStep(steps[currentStep]);
+                    currentStep++;
+                }
+            });
+            timer.start();
+        }
     }
 
-    // 执行单步移动
     private void executeStep(String step) {
         step = step.trim();
         if (step.startsWith("(")) {
@@ -418,9 +477,7 @@ class GameState {
             GameController.view.findBox(row, col);
             if (GameController.doMove(row, col, dir)) {
                 GameController.view.afterMove();
-//                GameController.saveGame(view.getUser());
             }
-            ;
         }
     }
 

@@ -35,7 +35,8 @@ public class GameFrame extends JFrame {
     private JButton pauseBtn;
     private JButton resumeBtn;
     private JButton loginLabel;
-    private JButton solveBtn;
+    private JButton solveBtnBFS;
+    private JButton solveBtnDFS;
     private JLabel userLabel;
     private CountdownTimer time = new CountdownTimer();
     private User user;
@@ -70,7 +71,8 @@ public class GameFrame extends JFrame {
         this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
-        this.solveBtn = FrameUtil.createButton(this, "神机妙算", 80, height);
+        this.solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
+        this.solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
         this.pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
         this.resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
         this.revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
@@ -134,8 +136,9 @@ public class GameFrame extends JFrame {
         this.add(time, gbcTimer);
 
         // 创建新的右侧按钮面板
-        JPanel rightControlPanel = new JPanel(new GridLayout(6, 1, 5, 10)); // 3行1列，垂直间距10
-        rightControlPanel.add(solveBtn);
+        JPanel rightControlPanel = new JPanel(new GridLayout(7, 1, 5, 10)); // 3行1列，垂直间距10
+        rightControlPanel.add(solveBtnBFS);
+        rightControlPanel.add(solveBtnDFS);
         rightControlPanel.add(pauseBtn);
         rightControlPanel.add(resumeBtn);
         rightControlPanel.add(revokeBtn);
@@ -206,8 +209,13 @@ public class GameFrame extends JFrame {
             }
             gamePanel.requestFocusInWindow();
         });
-        this.solveBtn.addActionListener(e -> {
-            gameState.solvePuzzle();
+        this.solveBtnBFS.addActionListener(e -> {
+            gameState.solvePuzzleBFS();
+            gameState.startAnimation();
+            gamePanel.requestFocusInWindow();
+        });
+        this.solveBtnDFS.addActionListener(e -> {
+            gameState.solvePuzzleDFS();
             gameState.startAnimation();
             gamePanel.requestFocusInWindow();
         });
