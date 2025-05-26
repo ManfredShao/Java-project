@@ -25,106 +25,125 @@ public class LoginFrame extends JFrame {
     private JButton resetBtn;
     private JButton registerBtn;
     private JButton togglePasswordVisibilityBtn; // 控制密码可见性的按钮
-    private boolean passwordVisible = false; // 密码是否可见的标志
-    private ImageIcon eyeOpenIcon; // 眼睛打开的图标
-    private ImageIcon eyeClosedIcon; // 眼睛闭上的图标
+    private boolean passwordVisible = false;
+    private ImageIcon eyeOpenIcon;
+    private ImageIcon eyeClosedIcon;
 
     public LoginFrame() {
         // 设置窗口属性
         this.setTitle("烽燧连天处，一局定乾坤");
-        this.setSize(400, 250);
+        this.setSize(350, 280);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        // 设置主面板的布局管理器
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
+        // 主面板和布局
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         this.add(mainPanel);
 
-        // 眼睛图标的加载
+        // 眼睛图标加载与缩放
         ImageIcon originalEyeOpenIcon = new ImageIcon("eyeOpenIcon.jpg");
         ImageIcon originalEyeClosedIcon = new ImageIcon("eyeClosedIcon.jpg");
-
-        // 获取输入框的高度
         int inputFieldHeight = new JPasswordField(20).getPreferredSize().height;
+        eyeOpenIcon = new ImageIcon(originalEyeOpenIcon.getImage()
+                .getScaledInstance(-1, inputFieldHeight, Image.SCALE_SMOOTH));
+        eyeClosedIcon = new ImageIcon(originalEyeClosedIcon.getImage()
+                .getScaledInstance(-1, inputFieldHeight, Image.SCALE_SMOOTH));
 
-        // 等比例缩放图标以适配输入框的高度
-        eyeOpenIcon = new ImageIcon(originalEyeOpenIcon.getImage().getScaledInstance(-1, inputFieldHeight, Image.SCALE_SMOOTH));
-        eyeClosedIcon = new ImageIcon(originalEyeClosedIcon.getImage().getScaledInstance(-1, inputFieldHeight, Image.SCALE_SMOOTH));
-
-        // 用户名标签和输入框
+        // 标签和输入框初始化
         JLabel userLabel = new JLabel("帅印:");
         username = new JTextField(20);
 
-        // 密码标签和输入框
         JLabel passLabel = new JLabel("兵符:");
         password = new JPasswordField(20);
         password.setEchoChar('*');
 
-        // 密码显示切换按钮
         togglePasswordVisibilityBtn = new JButton(eyeClosedIcon);
         togglePasswordVisibilityBtn.setBorderPainted(false);
         togglePasswordVisibilityBtn.setContentAreaFilled(false);
+        togglePasswordVisibilityBtn.setPreferredSize(
+                new Dimension(40, password.getPreferredSize().height)
+        );
 
-        // 设置按钮大小，使其高度与输入框一致
-        togglePasswordVisibilityBtn.setPreferredSize(new Dimension(40, password.getPreferredSize().height));
-
-        // 提交按钮
         submitBtn = new JButton("擂鼓进军");
         resetBtn = new JButton("重写军帖");
         registerBtn = new JButton("注册新帐");
 
-        // 设置GridBagLayout布局约束并添加组件
+        //设置布局约束并添加组件
+        gbc.insets = new Insets(8, 5, 8, 5);
+
+        gbc.ipady = 5;
+
+        // 1. 用户名标签
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5); // 设置组件之间的行距和列距
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
         mainPanel.add(userLabel, gbc);
 
+        // 2. 用户名输入框（水平拉伸）
         gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
         mainPanel.add(username, gbc);
 
+        // 3. 密码标签
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
         mainPanel.add(passLabel, gbc);
 
+        // 4. 密码输入框（水平拉伸）
         gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
         mainPanel.add(password, gbc);
 
-        // 设置图标按钮的位置
+        // 5. 切换可见按钮
         gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
         mainPanel.add(togglePasswordVisibilityBtn, gbc);
 
-        // 添加按钮
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        mainPanel.add(submitBtn, gbc);
+        gbc.ipady = 0;
 
+        // 6. 三个按钮：跨三列并居中
+        gbc.gridwidth = 3;
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        gbc.gridy = 2;
+        mainPanel.add(submitBtn, gbc);
         gbc.gridy = 3;
         mainPanel.add(resetBtn, gbc);
-
         gbc.gridy = 4;
         mainPanel.add(registerBtn, gbc);
 
-        // 添加密码显示切换功能
+        // 恢复默认列跨设置
+        gbc.gridwidth = 1;
+
         togglePasswordVisibilityBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (passwordVisible) {
                     password.setEchoChar('*');
                     togglePasswordVisibilityBtn.setIcon(eyeClosedIcon);
-                    passwordVisible = false;
                 } else {
                     password.setEchoChar((char) 0);
                     togglePasswordVisibilityBtn.setIcon(eyeOpenIcon);
-                    passwordVisible = true;
                 }
+                passwordVisible = !passwordVisible;
             }
         });
 
-        // 提交按钮的功能
         submitBtn.addActionListener(e -> {
             System.out.println("Username = " + username.getText());
             System.out.println("Password = " + new String(password.getPassword()));
@@ -133,49 +152,70 @@ public class LoginFrame extends JFrame {
                 Path userDir = Path.of("Save", username.getText());
                 Path passwordFile = userDir.resolve("password.txt");
                 if (Files.notExists(userDir)) {
-                    JOptionPane.showMessageDialog(this, "此帐号未注册！", "军情有变", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "此帐号未注册！",
+                            "军情有变",
+                            JOptionPane.ERROR_MESSAGE
+                    );
                 } else {
                     try {
                         String line = Files.readString(passwordFile).trim();
-                        String hashedPassword = hashPassword(new String(password.getPassword()));
-                        assert hashedPassword != null;
-                        if (!(line.equals(hashedPassword))) {
-                            JOptionPane.showMessageDialog(this, "兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
+                        String hashed = hashPassword(new String(password.getPassword()));
+                        if (!line.equals(hashed)) {
+                            JOptionPane.showMessageDialog(
+                                    this,
+                                    "兵符有误，恐为敌军细作！",
+                                    "军情有变",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
                         } else {
                             this.setVisible(false);
                             User user = new User(username.getText(), new String(password.getPassword()));
                             selectLevel(user);
                         }
-                    } catch (IOException d) {
-                        throw new RuntimeException(d);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "兵符有误，恐为敌军细作！", "军情有变", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "兵符有误，恐为敌军细作！",
+                        "军情有变",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         });
 
-        // 重置按钮的功能
         resetBtn.addActionListener(e -> {
             username.setText("");
             password.setText("");
         });
 
-        // 注册按钮的功能
         registerBtn.addActionListener(e -> {
             Path userDir = Path.of("Save", username.getText());
             Path passwordFile = userDir.resolve("password.txt");
             if (Files.notExists(userDir)) {
                 try {
                     Files.createDirectories(userDir);
-                    String hashedPassword = hashPassword(new String(password.getPassword()));
-                    Files.writeString(passwordFile, hashedPassword);
-                } catch (IOException d) {
-                    throw new RuntimeException(d);
+                    Files.writeString(passwordFile, hashPassword(new String(password.getPassword())));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-                JOptionPane.showMessageDialog(this, "注册成功！请再次登录", "万事俱备", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "注册成功！请再次登录",
+                        "万事俱备",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
             } else {
-                JOptionPane.showMessageDialog(this, "此帐号已被注册！", "军情有变", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "此帐号已被注册！",
+                        "军情有变",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         });
     }
