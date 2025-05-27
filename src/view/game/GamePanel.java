@@ -64,7 +64,7 @@ public class GamePanel extends ListenerPanel {
         this.model = new MapModel(level);
         this.steps = 0;
         this.allSteps = new ArrayList<>();
-        this.allSteps.add(this.cloneMatrix(this.model));
+        addToAllSteps(this.cloneMatrix(this.model));
         this.BuildComponent();
         this.repaint();
     }
@@ -76,9 +76,9 @@ public class GamePanel extends ListenerPanel {
         this.setLeftTime(time);
         this.allSteps = new ArrayList<>();
         for (int i = 0; i < steps; i++) {
-            allSteps.add(this.cloneMatrix(this.model));
+            addToAllSteps(this.cloneMatrix(this.model));
         }
-        this.allSteps.add(inputMap);
+        addToAllSteps(inputMap);
         this.BuildComponent();
         this.repaint();
     }

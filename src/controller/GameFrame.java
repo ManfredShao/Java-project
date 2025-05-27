@@ -304,7 +304,7 @@ public class GameFrame extends JFrame {
             if (gamePanel.getSteps() <= 0) {
                 JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
             }
-            int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 1);
+            int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
             gamePanel.clear();
             gamePanel.setGamePanel(lastMapModel);
             GameController.model_changed.resetMatrix(lastMapModel);
