@@ -218,14 +218,14 @@ public class GameFrame extends JFrame {
 
 // 1. 提示文字
             JLabel prompt = new JLabel("请输入对方的 IP 地址：", SwingConstants.CENTER);
-            prompt.setFont(new Font("楷体", Font.BOLD, 18));
+            prompt.setFont(new Font("楷体", Font.BOLD, 16));
             prompt.setForeground(new Color(245, 222, 179));
             prompt.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
             inputDialog.add(prompt, BorderLayout.NORTH);
 
 // 2. 输入框
             JTextField ipField = new JTextField();
-            ipField.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+            ipField.setFont(new Font("楷体", Font.PLAIN, 14));
             ipField.setForeground(Color.WHITE);
             ipField.setBackground(new Color(50, 50, 50));
             ipField.setCaretColor(Color.WHITE);

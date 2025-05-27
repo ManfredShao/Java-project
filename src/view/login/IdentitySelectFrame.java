@@ -22,7 +22,7 @@ public class IdentitySelectFrame extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // 标题
-        JLabel title = new JLabel("择将入局");
+        JLabel title = new JLabel("来者何人？");
         title.setFont(new Font("楷体", Font.BOLD, 22));
         title.setForeground(new Color(245, 222, 179));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -30,8 +30,8 @@ public class IdentitySelectFrame extends JFrame {
         panel.add(Box.createVerticalStrut(20));
 
         // 按钮
-        AncientButton guestBtn = new AncientButton("游骑入营");
-        AncientButton playerBtn = new AncientButton("虎符验契");
+        AncientButton guestBtn = new AncientButton("游侠暂驻·萍踪无迹");
+        AncientButton playerBtn = new AncientButton("将军百战·沙场留名");
         guestBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         playerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(guestBtn);
