@@ -369,8 +369,8 @@ public class GamePanel extends ListenerPanel {
         final int endX = targetCol * GRID_SIZE + 2;
         final int endY = targetRow * GRID_SIZE + 2;
 
-        final int duration = 80; // 动画总时长，毫秒
-        final int steps = 75;     // 动画步数，越多越平滑
+        final int duration = 70; // 动画总时长，毫秒
+        final int steps = 85;     // 动画步数，越多越平滑
         final int delay = duration / steps;
 
         final int dx = (endX - startX) / steps;

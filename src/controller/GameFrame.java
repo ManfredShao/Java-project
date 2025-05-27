@@ -17,9 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class GameFrame extends JFrame {
 
@@ -301,15 +298,17 @@ public class GameFrame extends JFrame {
         });
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
-            if (gamePanel.getSteps() <= 0) {
+            try {
+                int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 1);
+                gamePanel.clear();
+                gamePanel.setGamePanel(lastMapModel);
+                GameController.model_changed.resetMatrix(lastMapModel);
+                gamePanel.removeLastSteps();
+                gamePanel.refreshStepLabel();
+            }
+            catch(IndexOutOfBoundsException ex){
                 JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
             }
-            int[][] lastMapModel = gamePanel.getAllSteps().get(gamePanel.getSteps() - 1);
-            gamePanel.clear();
-            gamePanel.setGamePanel(lastMapModel);
-            GameController.model_changed.resetMatrix(lastMapModel);
-            gamePanel.removeLastSteps();
-            gamePanel.refreshStepLabel();
         });
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
