@@ -31,7 +31,7 @@ public class GameController extends Component {
         view.setController(this);
 
         SwingUtilities.invokeLater(() -> {
-            JLabel content = new JLabel("<html><div style='" + "font-family: \"楷体\",\"华文楷体\",serif;" + "text-align: center;" + "color: #5C3317;" + "font-size: 14pt;" + "'>" + "<p>建安十三年冬，曹公兵败赤壁</p>" + "<p>率残部经华容道遁走</p>" + "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" + "<p>■ 红袍为云长，当引其让路</p>" + "<p>■ 绿甲乃孟德，需助其脱困</p>" + "<p>■ 黄巾乃士卒，可纵横驱驰</p>" + "<p>■ 蓝衣乃将领，如子龙守关</p>" + "</div></html>");
+            JLabel content = new JLabel("<html><div style='" + "font-family: \"楷体\",\"华文楷体\",serif;" + "text-align: center;" + "color: #5C3317;" + "font-size: 14pt;" + "'>" + "<p>建安十三年冬，曹公兵败赤壁</p>" + "<p>率残部经华容道遁走</p>" + "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" + "<p>■ 绿袍为云长，当引其让路</p>" + "<p>■ 红甲乃孟德，需助其脱困</p>" + "<p>■ 黄巾乃士卒，可纵横驱驰</p>" + "<p>■ 白衣乃将领，如子龙守关</p>" + "</div></html>");
 
             JLabel titleLabel = new JLabel("<html><div style='color:#8B0000; font-size:18pt;'>漢末華容道</div></html>", SwingConstants.CENTER);
 

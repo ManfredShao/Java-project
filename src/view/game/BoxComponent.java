@@ -49,9 +49,9 @@ public class BoxComponent extends JComponent {
         g2.setStroke(new BasicStroke(1.5f));
         g2.drawRoundRect(0, 0, width - 1, height - 1, arc, arc);
 
-        // 高亮选中时添加黄色边框
+        // 高亮选中时添加边框
         if (isSelected) {
-            g2.setColor(new Color(27, 27, 27, 180));
+            g2.setColor(new Color(120, 0, 0, 200));
             g2.setStroke(new BasicStroke(3f));
             g2.drawRoundRect(2, 2, width - 5, height - 5, arc, arc);
         }

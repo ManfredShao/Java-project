@@ -375,6 +375,7 @@ public class GameFrame extends JFrame {
         this.setVisible(true);
     }
 
+
     public void upDateGame() {
         try {
             Path path = Path.of("Save/" + user.getUsername() + "/data.txt");

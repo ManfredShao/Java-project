@@ -23,7 +23,7 @@ public class IdentitySelectFrame extends JFrame {
 
         // 标题
         JLabel title = new JLabel("请选择身份");
-        title.setFont(new Font("仿宋", Font.BOLD, 24));
+        title.setFont(new Font("楷体", Font.BOLD, 22));
         title.setForeground(new Color(245, 222, 179));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(title);
@@ -59,7 +59,7 @@ public class IdentitySelectFrame extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel label = new JLabel("请选择一个地图等级：");
-        label.setFont(new Font("楷体", Font.BOLD, 18));
+        label.setFont(new Font("楷体", Font.BOLD, 22));
         label.setForeground(new Color(245, 222, 179));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(label);
