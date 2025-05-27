@@ -440,7 +440,7 @@ class GameState {
     private Timer timer;
     private String[] steps;
     private int currentStep;
-    private int animationSpeed = 350; // 默认500ms/步
+    private int animationSpeed = 300;
     private boolean isPaused = false;
 
     public void startAnimation() {
