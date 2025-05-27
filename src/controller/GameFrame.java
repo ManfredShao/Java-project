@@ -443,13 +443,14 @@ public class GameFrame extends JFrame {
                 dialog.setSize(300, 180);
                 dialog.setLocationRelativeTo(null); // 居中
                 dialog.setVisible(true);
+            }else {
+                int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
+                gamePanel.clear();
+                gamePanel.setGamePanel(lastMapModel);
+                GameController.model_changed.resetMatrix(lastMapModel);
+                gamePanel.removeLastSteps();
+                gamePanel.refreshStepLabel();
             }
-            int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
-            gamePanel.clear();
-            gamePanel.setGamePanel(lastMapModel);
-            GameController.model_changed.resetMatrix(lastMapModel);
-            gamePanel.removeLastSteps();
-            gamePanel.refreshStepLabel();
         });
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
