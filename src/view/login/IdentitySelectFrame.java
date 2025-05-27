@@ -22,7 +22,7 @@ public class IdentitySelectFrame extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // 标题
-        JLabel title = new JLabel("来者何人？");
+        JLabel title = new JLabel("来者何人");
         title.setFont(new Font("楷体", Font.BOLD, 22));
         title.setForeground(new Color(245, 222, 179));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);

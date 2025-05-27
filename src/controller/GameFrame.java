@@ -419,7 +419,7 @@ public class GameFrame extends JFrame {
         });
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
-            if (gamePanel.getSteps() <= 0) {
+            if (gamePanel.getSteps() - controller.getInitialSteps() <= 0) {
                 // 获取当前窗口（GameFrame）
                 Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
                 // 创建一个模态对话框

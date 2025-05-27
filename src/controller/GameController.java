@@ -23,12 +23,14 @@ public class GameController extends Component {
     public static GamePanel view;
     public static MapModel model_changed;
     private final Map level;
+    private int initialSteps;
 
     public GameController(GamePanel view, Map mapLevel) {
         GameController.view = view;
         this.level = mapLevel;
         model_changed = new MapModel(level);
         view.setController(this);
+        this.initialSteps = 0;
 
         SwingUtilities.invokeLater(() -> {
             JLabel content = new JLabel("<html><div style='" + "font-family: \"楷体\",\"华文楷体\",serif;" + "text-align: center;" + "color: #5C3317;" + "font-size: 14pt;" + "'>" + "<p>建安十三年冬，曹公兵败赤壁</p>" + "<p>率残部经华容道遁走</p>" + "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" + "<p>■ 绿袍为云长，当引其让路</p>" + "<p>■ 红甲乃孟德，需助其脱困</p>" + "<p>■ 黄巾乃士卒，可纵横驱驰</p>" + "<p>■ 白衣乃将领，如子龙守关</p>" + "</div></html>");
@@ -156,6 +158,14 @@ public class GameController extends Component {
 
     }
 
+    public int getInitialSteps() {
+        return initialSteps;
+    }
+
+    public void setInitialSteps(int initialSteps) {
+        this.initialSteps = initialSteps;
+    }
+
     public void loadGame(User user) throws IOException {
         int[][] map = new int[5][4];
         if (Files.notExists(Path.of("Save/" + user.getUsername() + "/data.txt"))) {
@@ -171,6 +181,7 @@ public class GameController extends Component {
                 }
                 view.clear();
                 int steps = Integer.parseInt(lines.get(lines.size() - 3));
+                this.setInitialSteps(steps);
                 view.loadGamePanel(view.cloneMatrix(map), steps, lines.get(lines.size() - 2), lines.get(lines.size() - 1));
                 view.refreshStepLabel(steps);
                 model_changed.resetMatrix(map);
