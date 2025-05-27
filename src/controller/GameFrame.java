@@ -22,23 +22,12 @@ public class GameFrame extends JFrame {
 
     private final GameState gameState;
     SocketServer server = new SocketServer(8888);
-    private GameController controller;
-    private AncientButton restartBtn;
-    private AncientButton severBtn;
-    private AncientButton clientBtn;
-    private AncientButton revokeBtn;
-    private AncientButton loadBtn;
-    private AncientButton saveBtn;
-    private AncientButton pauseBtn;
-    private AncientButton resumeBtn;
-    private AncientButton loginBtn;
-    private AncientButton solveBtnBFS;
-    private AncientButton solveBtnDFS;
-    private JLabel userLabel;
-    private CountdownTimer time = new CountdownTimer();
-    private User user;
-    private JLabel stepLabel;
-    private GamePanel gamePanel;
+    private final GameController controller;
+    private final AncientButton loadBtn;
+    private final AncientButton saveBtn;
+    private final CountdownTimer time = new CountdownTimer();
+    private final User user;
+    private final GamePanel gamePanel;
 
     public CountdownTimer getTime() {
         return time;
@@ -67,21 +56,21 @@ public class GameFrame extends JFrame {
         this.user = user;
 
         int height = 50;
-        this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
+        AncientButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
-        this.solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
-        this.solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
-        this.pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
-        this.resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
-        this.revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
-        this.clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
-        this.severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
-        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
-        this.stepLabel.setForeground(new Color(245, 222, 179));
-        this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("楷体", Font.BOLD, 22), 80, height);
-        this.userLabel.setForeground(new Color(245, 222, 179));
-        this.loginBtn = FrameUtil.createButton(this, "登錄", 80, height);
+        AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
+        AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
+        AncientButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
+        AncientButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
+        AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
+        AncientButton clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
+        AncientButton severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
+        JLabel stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
+        stepLabel.setForeground(new Color(245, 222, 179));
+        JLabel userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("楷体", Font.BOLD, 22), 80, height);
+        userLabel.setForeground(new Color(245, 222, 179));
+        AncientButton loginBtn = FrameUtil.createButton(this, "登錄", 80, height);
         gamePanel.setStepLabel(stepLabel);
 
         int mapWidth = 4; // 假设地图的宽度为 4
@@ -183,7 +172,7 @@ public class GameFrame extends JFrame {
             server.addErrorListener(ex -> System.err.println("服务器异常: " + ex.getMessage()));
             server.start();
             try {
-                JOptionPane.showMessageDialog(this, "伺服器已啟動，IP:" + server.getIp());
+                JOptionPane.showMessageDialog(this, "伺服器已啟動，IP:" + SocketServer.getIp());
             } catch (SocketException ex) {
                 throw new RuntimeException(ex);
             }
@@ -275,7 +264,7 @@ public class GameFrame extends JFrame {
             dialog.setVisible(true);
             gamePanel.requestFocusInWindow();
         });
-        this.loginBtn.addActionListener(e -> {
+        loginBtn.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
             time.pause();
