@@ -172,7 +172,35 @@ public class GameFrame extends JFrame {
             server.addErrorListener(ex -> System.err.println("服务器异常: " + ex.getMessage()));
             server.start();
             try {
-                JOptionPane.showMessageDialog(this, "伺服器已啟動，IP:" + SocketServer.getIp());
+                // 获取当前窗口（GameFrame）
+                Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
+                // 创建一个模态对话框
+                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(GameFrame.this), "", true);
+                dialog.setLayout(new BorderLayout());
+                dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+                String ip = SocketServer.getIp();
+                String msg = String.format(
+                        "<html><div style='text-align:center;'>伺服器已啟動，IP: %s</div></html>",
+                        ip
+                );
+                JLabel message = new JLabel(msg, SwingConstants.CENTER);
+                message.setFont(new Font("楷体", Font.BOLD, 20));
+                dialog.add(message, BorderLayout.CENTER);
+                AncientButton confirmBtn = new AncientButton("已知晓");
+                confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+                confirmBtn.addActionListener(f -> {
+                    dialog.dispose(); // 关闭对话框
+                });
+
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.add(confirmBtn);
+                dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+                dialog.setSize(300, 180);
+                dialog.setLocationRelativeTo(null); // 居中
+                dialog.setVisible(true);
             } catch (SocketException ex) {
                 throw new RuntimeException(ex);
             }
@@ -180,7 +208,71 @@ public class GameFrame extends JFrame {
         });
 
         clientBtn.addActionListener(e -> {
-            String input = JOptionPane.showInputDialog(null, "请输入对方的IP地址：", "加入战局", JOptionPane.PLAIN_MESSAGE);
+            // 取得父窗口
+            Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
+// 创建一个无标题、模态的对话框
+            JDialog inputDialog = new JDialog((Frame) parentWindow, "加入战局", true);
+            inputDialog.setLayout(new BorderLayout());
+            inputDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            inputDialog.getContentPane().setBackground(new Color(27, 27, 27));
+
+// 1. 提示文字
+            JLabel prompt = new JLabel("请输入对方的 IP 地址：", SwingConstants.CENTER);
+            prompt.setFont(new Font("楷体", Font.BOLD, 18));
+            prompt.setForeground(new Color(245, 222, 179));
+            prompt.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+            inputDialog.add(prompt, BorderLayout.NORTH);
+
+// 2. 输入框
+            JTextField ipField = new JTextField();
+            ipField.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+            ipField.setForeground(Color.WHITE);
+            ipField.setBackground(new Color(50, 50, 50));
+            ipField.setCaretColor(Color.WHITE);
+            ipField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            ipField.setPreferredSize(new Dimension(200, 30));
+
+            JPanel center = new JPanel();
+            center.setBackground(new Color(27, 27, 27));
+            center.add(ipField);
+            inputDialog.add(center, BorderLayout.CENTER);
+
+// 3. 按钮区
+            AncientButton okBtn = new AncientButton("确定");
+            okBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            AncientButton cancelBtn = new AncientButton("取消");
+            cancelBtn.setFont(new Font("楷体", Font.BOLD, 16));
+
+            okBtn.addActionListener(e2 -> {
+                inputDialog.dispose();
+            });
+            cancelBtn.addActionListener(e2 -> {
+                ipField.setText(null);
+                inputDialog.dispose();
+            });
+
+            JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+            btnPanel.setBackground(new Color(27, 27, 27));
+            btnPanel.add(okBtn);
+            btnPanel.add(cancelBtn);
+            inputDialog.add(btnPanel, BorderLayout.SOUTH);
+
+// 4. 显示对话框并取得结果
+            inputDialog.pack();
+            inputDialog.setLocationRelativeTo(parentWindow);
+            inputDialog.setVisible(true);
+
+// pack 之后就能通过 ipField.getText() 拿到用户输入
+            String input = ipField.getText();
+            if (input != null && !input.isBlank()) {
+                // 用户点击“确定”并输入了内容
+                SocketClient client = new SocketClient(input, 8888);
+                // …后续逻辑…
+            } else {
+                // 用户取消或没输入
+                System.out.println("用户取消或未输入 IP");
+            }
+
             if (input != null) {
                 SocketClient client = new SocketClient(input, 8888);
                 client.addConnectListener(s -> System.out.println("客户端已连接服务器"));
