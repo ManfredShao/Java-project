@@ -50,6 +50,10 @@ public class GameFrame extends JFrame {
         return user;
     }
 
+    public GameController getController() {
+        return controller;
+    }
+
     public GameFrame(Map level, User user) {
         super("華容道·漢末風雲");
         this.getContentPane().setBackground(new Color(27, 27, 27));

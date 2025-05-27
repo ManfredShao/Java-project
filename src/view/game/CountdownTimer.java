@@ -1,5 +1,6 @@
 package view.game;
 
+import controller.GameFrame;
 import view.login.IdentitySelectFrame;
 
 import javax.swing.*;
@@ -13,6 +14,7 @@ public class CountdownTimer extends JPanel {
     private final Timer timer;
     private final JLabel label;
     private int LeftTime;
+    private int saveCounter = 0; // 保存计数器
 
     public CountdownTimer() {
         setLayout(new BorderLayout());
@@ -25,6 +27,18 @@ public class CountdownTimer extends JPanel {
         timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 count--;
+                saveCounter++;
+
+                // 每30秒保存一次
+                if (saveCounter >= 30) {
+                    GameFrame gameFrame = (GameFrame) SwingUtilities.getWindowAncestor(CountdownTimer.this);
+                    if (gameFrame.getController() != null && gameFrame.getUser() != null) {
+                        gameFrame.getController().saveGame(gameFrame.getUser());
+                        System.out.println("游戏已自动保存");
+                    }
+                    saveCounter = 0; // 重置计数器
+                }
+
                 if (count >= 0) {
                     label.setText(formatTime(count));
                 } else {
@@ -66,26 +80,28 @@ public class CountdownTimer extends JPanel {
         int s = seconds % 60;
         return String.format("%02d:%02d", m, s);
     }
+
     public void pause() {
         if (timer != null && timer.isRunning()) {
             timer.stop();
-            LeftTime = INITIAL_COUNT-count;
+            LeftTime = INITIAL_COUNT - count;
         }
     }
 
     public void setLeftTime(String leftTime) {
         LeftTime = Integer.parseInt(leftTime);
-        count = INITIAL_COUNT-LeftTime;
+        count = INITIAL_COUNT - LeftTime;
     }
 
     public String getLeftTime() {
-        LeftTime = INITIAL_COUNT-count;
+        LeftTime = INITIAL_COUNT - count;
         int minute = LeftTime / 60;
         int second = LeftTime % 60;
-        return String.format("%02d:%02d", minute,second);
+        return String.format("%02d:%02d", minute, second);
     }
-    public String getUsedTime(){
-        LeftTime = INITIAL_COUNT-count;
+
+    public String getUsedTime() {
+        LeftTime = INITIAL_COUNT - count;
         return String.valueOf(LeftTime);
     }
 }
