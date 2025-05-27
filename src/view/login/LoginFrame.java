@@ -2,7 +2,6 @@ package view.login;
 
 import controller.UserController;
 import user.User;
-import view.FrameUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,8 +9,6 @@ import java.nio.file.Path;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import static view.login.IdentitySelectFrame.selectLevel;
 
@@ -19,17 +16,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class LoginFrame extends JFrame {
-    private JTextField username;
-    private JPasswordField password;
-    private AncientButton submitBtn;
-    private AncientButton resetBtn;
-    private AncientButton registerBtn;
-    private JButton togglePasswordVisibilityBtn; // 控制密码可见性的按钮
+    private final JTextField username;
+    private final JPasswordField password;
+    private final JButton togglePasswordVisibilityBtn; // 控制密码可见性的按钮
     private boolean passwordVisible = false;
-    private ImageIcon eyeOpenIcon;
-    private ImageIcon eyeClosedIcon;
+    private final ImageIcon eyeOpenIcon;
+    private final ImageIcon eyeClosedIcon;
 
-    class AncientButton extends JButton {
+    static class AncientButton extends JButton {
         private final Color baseColor = new Color(139, 0, 0);
         private final Color hoverColor = new Color(165, 42, 42);
         private final Color pressedColor = new Color(120, 0, 0);
@@ -127,9 +121,9 @@ public class LoginFrame extends JFrame {
                 new Dimension(40, password.getPreferredSize().height)
         );
 
-        submitBtn = new AncientButton("擂鼓进军");
-        resetBtn = new AncientButton("重写军帖");
-        registerBtn = new AncientButton("注册新帐");
+        AncientButton submitBtn = new AncientButton("擂鼓进军");
+        AncientButton resetBtn = new AncientButton("重写军帖");
+        AncientButton registerBtn = new AncientButton("注册新帐");
 
         //设置布局约束并添加组件
         gbc.insets = new Insets(8, 5, 8, 5);
@@ -192,18 +186,15 @@ public class LoginFrame extends JFrame {
         // 恢复默认列跨设置
         gbc.gridwidth = 1;
 
-        togglePasswordVisibilityBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (passwordVisible) {
-                    password.setEchoChar('*');
-                    togglePasswordVisibilityBtn.setIcon(eyeClosedIcon);
-                } else {
-                    password.setEchoChar((char) 0);
-                    togglePasswordVisibilityBtn.setIcon(eyeOpenIcon);
-                }
-                passwordVisible = !passwordVisible;
+        togglePasswordVisibilityBtn.addActionListener(e -> {
+            if (passwordVisible) {
+                password.setEchoChar('*');
+                togglePasswordVisibilityBtn.setIcon(eyeClosedIcon);
+            } else {
+                password.setEchoChar((char) 0);
+                togglePasswordVisibilityBtn.setIcon(eyeOpenIcon);
             }
+            passwordVisible = !passwordVisible;
         });
 
         submitBtn.addActionListener(e -> {

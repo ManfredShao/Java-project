@@ -8,17 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CountdownTimer extends JPanel {
-    private final int INITIAL_COUNT = 900;
+    private final int INITIAL_COUNT = 600;
     private int count = INITIAL_COUNT;
-    private Timer timer;
-    private JLabel label;
-    private float fontSize = 48f;
+    private final Timer timer;
+    private final JLabel label;
     private int LeftTime;
 
     public CountdownTimer() {
         setLayout(new BorderLayout());
         label = new JLabel(formatTime(count), SwingConstants.CENTER);
         label.setForeground(new Color(245, 222, 179));
+        float fontSize = 48f;
         label.setFont(label.getFont().deriveFont(fontSize));
         add(label, BorderLayout.CENTER);
 

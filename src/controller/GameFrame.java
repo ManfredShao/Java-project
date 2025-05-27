@@ -7,12 +7,10 @@ import user.User;
 import view.FrameUtil;
 import view.game.CountdownTimer;
 import view.game.GamePanel;
-import view.login.IdentitySelectFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
@@ -22,7 +20,7 @@ import java.util.List;
 
 public class GameFrame extends JFrame {
 
-    private GameState gameState;
+    private final GameState gameState;
     SocketServer server = new SocketServer(8888);
     private GameController controller;
     private AncientButton restartBtn;
@@ -86,7 +84,6 @@ public class GameFrame extends JFrame {
         this.loginBtn = FrameUtil.createButton(this, "登錄", 80, height);
         gamePanel.setStepLabel(stepLabel);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int mapWidth = 4; // 假设地图的宽度为 4
         int mapHeight = 5; // 假设地图的高度为 5
         int gridWidth = mapWidth * gamePanel.getGRID_SIZE();
@@ -166,7 +163,7 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.insets = new Insets(5, 30, 20, 50);
         this.add(rightControlPanel, gbcRightCtrl);
 
-        this.severBtn.addActionListener(e -> {
+        severBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
                 System.out.println("客户端已连接！");
                 controller.saveGame(user);
@@ -193,7 +190,7 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();
         });
 
-        this.clientBtn.addActionListener(e -> {
+        clientBtn.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(null, "请输入对方的IP地址：", "加入战局", JOptionPane.PLAIN_MESSAGE);
             if (input != null) {
                 SocketClient client = new SocketClient(input, 8888);
@@ -220,26 +217,26 @@ public class GameFrame extends JFrame {
             }
             gamePanel.requestFocusInWindow();
         });
-        this.solveBtnBFS.addActionListener(e -> {
+        solveBtnBFS.addActionListener(e -> {
             gameState.solvePuzzleBFS();
             gameState.startAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.solveBtnDFS.addActionListener(e -> {
+        solveBtnDFS.addActionListener(e -> {
             gameState.solvePuzzleDFS();
             gameState.startAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.pauseBtn.addActionListener(e -> {
+        pauseBtn.addActionListener(e -> {
             gameState.pauseAnimation();
             gamePanel.requestFocusInWindow();
         });
 
-        this.resumeBtn.addActionListener(e -> {
+        resumeBtn.addActionListener(e -> {
             gameState.resumeAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.restartBtn.addActionListener(e -> {
+        restartBtn.addActionListener(e -> {
             controller.restartGame();
             gamePanel.requestFocusInWindow();//enable key listener
         });
@@ -385,7 +382,7 @@ public class GameFrame extends JFrame {
             for (String line : lines) {
                 server.sendLine(line);
             }
-            // 不再发送 TRANSMISSION_END，因为你已经拆粘包处理了
+            // 不发送 TRANSMISSION_END
         } catch (IOException ex) {
             ex.printStackTrace();
             server.sendLine("ERROR: " + ex.getMessage());

@@ -22,10 +22,10 @@ import static model.Direction.LEFT;
 public class GameController extends Component {
     public static GamePanel view;
     public static MapModel model_changed;
-    private Map level;
+    private final Map level;
 
     public GameController(GamePanel view, Map mapLevel) {
-        this.view = view;
+        GameController.view = view;
         this.level = mapLevel;
         model_changed = new MapModel(level);
         view.setController(this);
@@ -37,6 +37,7 @@ public class GameController extends Component {
 
             JDialog dialog = new JDialog();
             dialog.setTitle(""); // 清空默认标题
+
             dialog.getContentPane().setLayout(new BorderLayout(10, 10));
             dialog.getContentPane().add(titleLabel, BorderLayout.NORTH);
             dialog.getContentPane().add(content, BorderLayout.CENTER);
@@ -58,8 +59,8 @@ public class GameController extends Component {
 
     public void restartGame() {
         model_changed.resetMatrix(level);
-        this.view.resetGame();
-        this.view.requestFocus();
+        view.resetGame();
+        view.requestFocus();
         System.out.println("restartGame");
     }
 
@@ -142,9 +143,9 @@ public class GameController extends Component {
             gameData.add(sb.toString());
             sb.setLength(0);//clear
         }
-        gameData.add(String.valueOf(this.view.getSteps()));
-        gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(this.view)).getTime().getUsedTime()));
-        gameData.add(String.valueOf(this.view.getLevel()));
+        gameData.add(String.valueOf(view.getSteps()));
+        gameData.add(String.valueOf(((GameFrame) SwingUtilities.getWindowAncestor(view)).getTime().getUsedTime()));
+        gameData.add(String.valueOf(view.getLevel()));
         String path = String.format("Save/%s", user.getUsername());
         try {
             Files.write(Path.of(path + "/data.txt"), gameData);
@@ -158,7 +159,7 @@ public class GameController extends Component {
     public void loadGame(User user) throws IOException {
         int[][] map = new int[5][4];
         if (Files.notExists(Path.of("Save/" + user.getUsername() + "/data.txt"))) {
-            JOptionPane.showMessageDialog(this.view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(view, "此帐号未保存战局！", "军情有变", JOptionPane.ERROR_MESSAGE);
         } else if (checkChange(user)) {
             try {
                 List<String> lines = Files.readAllLines(Path.of("Save/" + user.getUsername() + "/data.txt"));
@@ -168,10 +169,10 @@ public class GameController extends Component {
                         map[j][i] = Integer.parseInt(s.substring(i, i + 1));
                     }
                 }
-                this.view.clear();
+                view.clear();
                 int steps = Integer.parseInt(lines.get(lines.size() - 3));
-                this.view.loadGamePanel(this.view.cloneMatrix(map), steps, lines.get(lines.size() - 2), lines.get(lines.size() - 1));
-                this.view.refreshStepLabel(steps);
+                view.loadGamePanel(view.cloneMatrix(map), steps, lines.get(lines.size() - 2), lines.get(lines.size() - 1));
+                view.refreshStepLabel(steps);
                 model_changed.resetMatrix(map);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -216,13 +217,13 @@ public class GameController extends Component {
             String difficulty = lines.get(lines.size() - 2);
             String level = lines.get(lines.size() - 1);
 
-            this.view.clear();
-            this.view.loadGamePanel(this.view.cloneMatrix(map), steps, difficulty, level);
-            this.view.refreshStepLabel(steps);
+            view.clear();
+            view.loadGamePanel(view.cloneMatrix(map), steps, difficulty, level);
+            view.refreshStepLabel(steps);
             model_changed.resetMatrix(map);
             System.out.println("✅ 从服务器加载战局成功");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this.view, "⚠️ 无法从服务器加载战局数据", "数据错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(view, "⚠️ 无法从服务器加载战局数据", "数据错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -461,7 +462,7 @@ class GameState {
     private Timer timer;
     private String[] steps;
     private int currentStep;
-    private int animationSpeed = 300;
+    private int animationSpeed = 200;
     private boolean isPaused = false;
 
     public void startAnimation() {
@@ -504,18 +505,48 @@ class GameState {
 
     // 暂停动画
     public void pauseAnimation() {
+        if (timer != null) {
+            timer.stop(); // 完全停止计时器
+            timer = null; // 清除引用
+        }
         isPaused = true;
     }
 
     // 恢复动画
     public void resumeAnimation() {
-        isPaused = false;
+        if (isPaused) {  // 只有在暂停状态才执行恢复
+            isPaused = false;
+
+            // 确保有步骤需要执行
+            if (steps != null && currentStep < steps.length) {
+                // 完全停止旧Timer
+                if (timer != null) {
+                    timer.stop();
+                }
+
+                // 创建新Timer
+                timer = new Timer(animationSpeed, e -> {
+                    if (currentStep >= steps.length) {
+                        stopAnimation();
+                        return;
+                    }
+
+                    if (!isPaused) {
+                        executeStep(steps[currentStep]);
+                        currentStep++;
+                    }
+                });
+                timer.setInitialDelay(0); // 立即开始
+                timer.start();
+            }
+        }
     }
 
     // 停止动画（自动调用）
     private void stopAnimation() {
         if (timer != null) {
             timer.stop();
+            timer = null;
         }
     }
 
