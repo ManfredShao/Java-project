@@ -1,13 +1,10 @@
 package view.game;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class BoxComponent extends JComponent {
-    private Color baseColor;
+    private final Color baseColor;
     private int row;
     private int col;
     private boolean isSelected;

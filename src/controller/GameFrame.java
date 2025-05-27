@@ -20,25 +20,14 @@ import java.util.List;
 
 public class GameFrame extends JFrame {
 
-    private GameState gameState;
+    private final GameState gameState;
     SocketServer server = new SocketServer(8888);
-    private GameController controller;
-    private JButton restartBtn;
-    private JButton severBtn;
-    private JButton clientBtn;
-    private JButton revokeBtn;
-    private JButton loadBtn;
-    private JButton saveBtn;
-    private JButton pauseBtn;
-    private JButton resumeBtn;
-    private JButton loginLabel;
-    private JButton solveBtnBFS;
-    private JButton solveBtnDFS;
-    private JLabel userLabel;
-    private CountdownTimer time = new CountdownTimer();
-    private User user;
-    private JLabel stepLabel;
-    private GamePanel gamePanel;
+    private final GameController controller;
+    private final JButton loadBtn;
+    private final JButton saveBtn;
+    private final CountdownTimer time = new CountdownTimer();
+    private final User user;
+    private final GamePanel gamePanel;
 
     public CountdownTimer getTime() {
         return time;
@@ -65,22 +54,21 @@ public class GameFrame extends JFrame {
         this.user = user;
 
         int height = 50;
-        this.restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
+        JButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
-        this.solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
-        this.solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
-        this.pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
-        this.resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
-        this.revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
-        this.clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
-        this.severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
-        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
-        this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
-        this.loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
+        JButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
+        JButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
+        JButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
+        JButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
+        JButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
+        JButton clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
+        JButton severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
+        JLabel stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
+        JLabel userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
+        JButton loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
         gamePanel.setStepLabel(stepLabel);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int mapWidth = 4; // 假设地图的宽度为 4
         int mapHeight = 5; // 假设地图的高度为 5
         int gridWidth = mapWidth * gamePanel.getGRID_SIZE();
@@ -152,7 +140,7 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.insets = new Insets(5, 5, 5, 5);
         this.add(rightControlPanel, gbcRightCtrl);
 
-        this.severBtn.addActionListener(e -> {
+        severBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
                 System.out.println("客户端已连接！");
                 controller.saveGame(user);
@@ -179,7 +167,7 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();
         });
 
-        this.clientBtn.addActionListener(e -> {
+        clientBtn.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(null, "请输入对方的IP地址：", "加入战局", JOptionPane.PLAIN_MESSAGE);
             if (input != null) {
                 SocketClient client = new SocketClient(input, 8888);
@@ -206,26 +194,26 @@ public class GameFrame extends JFrame {
             }
             gamePanel.requestFocusInWindow();
         });
-        this.solveBtnBFS.addActionListener(e -> {
+        solveBtnBFS.addActionListener(e -> {
             gameState.solvePuzzleBFS();
             gameState.startAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.solveBtnDFS.addActionListener(e -> {
+        solveBtnDFS.addActionListener(e -> {
             gameState.solvePuzzleDFS();
             gameState.startAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.pauseBtn.addActionListener(e -> {
+        pauseBtn.addActionListener(e -> {
             gameState.pauseAnimation();
             gamePanel.requestFocusInWindow();
         });
 
-        this.resumeBtn.addActionListener(e -> {
+        resumeBtn.addActionListener(e -> {
             gameState.resumeAnimation();
             gamePanel.requestFocusInWindow();
         });
-        this.restartBtn.addActionListener(e -> {
+        restartBtn.addActionListener(e -> {
             controller.restartGame();
             gamePanel.requestFocusInWindow();//enable key listener
         });
@@ -242,7 +230,7 @@ public class GameFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "安營紮寨");
             gamePanel.requestFocusInWindow();
         });
-        this.loginLabel.addActionListener(e -> {
+        loginLabel.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
             time.pause();
@@ -298,15 +286,16 @@ public class GameFrame extends JFrame {
         });
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
-            if (gamePanel.getSteps() <= 0) {
+            try {
+                int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
+                gamePanel.clear();
+                gamePanel.setGamePanel(lastMapModel);
+                GameController.model_changed.resetMatrix(lastMapModel);
+                gamePanel.removeLastSteps();
+                gamePanel.refreshStepLabel();
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
             }
-            int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
-            gamePanel.clear();
-            gamePanel.setGamePanel(lastMapModel);
-            GameController.model_changed.resetMatrix(lastMapModel);
-            gamePanel.removeLastSteps();
-            gamePanel.refreshStepLabel();
         });
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -320,7 +309,7 @@ public class GameFrame extends JFrame {
             for (String line : lines) {
                 server.sendLine(line);
             }
-            // 不再发送 TRANSMISSION_END，因为你已经拆粘包处理了
+            // 不发送 TRANSMISSION_END
         } catch (IOException ex) {
             ex.printStackTrace();
             server.sendLine("ERROR: " + ex.getMessage());

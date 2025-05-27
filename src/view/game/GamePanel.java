@@ -19,11 +19,11 @@ import java.util.List;
  * The class contains a grids, which is the corresponding GUI view of the matrix variable in MapMatrix.
  */
 public class GamePanel extends ListenerPanel {
-    private List<BoxComponent> boxes;
+    private final List<BoxComponent> boxes;
     private MapModel model;
     private GameController controller;
     private JLabel stepLabel;
-    private int GRID_SIZE;
+    private final int GRID_SIZE;
     private BoxComponent selectedBox;
     private ArrayList<int[][]> allSteps;
     private int steps;
@@ -33,7 +33,6 @@ public class GamePanel extends ListenerPanel {
         this.level = mapLevel;
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        DisplayMode dm = gd.getDisplayMode();
         Rectangle effectiveBounds = gd.getDefaultConfiguration().getBounds();
         Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gd.getDefaultConfiguration());
 
@@ -41,7 +40,7 @@ public class GamePanel extends ListenerPanel {
         int usableHeight = effectiveBounds.height - screenInsets.top - screenInsets.bottom;
 
         // 计算基准尺寸（考虑横竖屏切换）
-        int baseSize = (int) Math.min(usableWidth / 4, usableHeight / 5);
+        int baseSize = Math.min(usableWidth / 4, usableHeight / 5);
 
         // 应用系统缩放
         float scale = (float) gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
@@ -187,7 +186,7 @@ public class GamePanel extends ListenerPanel {
     public void doMoveRight() {
         System.out.println("Click VK_RIGHT");
         if (selectedBox != null) {
-            if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.RIGHT)) {
+            if (GameController.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.RIGHT)) {
                 this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
@@ -198,7 +197,7 @@ public class GamePanel extends ListenerPanel {
     public void doMoveLeft() {
         System.out.println("Click VK_LEFT");
         if (selectedBox != null) {
-            if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.LEFT)) {
+            if (GameController.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.LEFT)) {
                 this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
@@ -209,7 +208,7 @@ public class GamePanel extends ListenerPanel {
     public void doMoveUp() {
         System.out.println("Click VK_Up");
         if (selectedBox != null) {
-            if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.UP)) {
+            if (GameController.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.UP)) {
                 this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
@@ -220,7 +219,7 @@ public class GamePanel extends ListenerPanel {
     public void doMoveDown() {
         System.out.println("Click VK_DOWN");
         if (selectedBox != null) {
-            if (controller.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.DOWN)) {
+            if (GameController.doMove(selectedBox.getRow(), selectedBox.getCol(), Direction.DOWN)) {
                 this.addToAllSteps(this.cloneMatrix(GameController.model_changed));
                 afterMove();
             }
@@ -229,9 +228,9 @@ public class GamePanel extends ListenerPanel {
 
     public void printLastStep() {
         int[][] matrix = this.allSteps.get(this.getSteps() - 1);
-        for (int i = 0; i < matrix.length; i++) {
+        for (int[] ints : matrix) {
             for (int j = 0; j < matrix[0].length; j++) {
-                System.out.print(matrix[i][j]);
+                System.out.print(ints[j]);
                 System.out.print(" ");
             }
             System.out.println();
@@ -239,10 +238,10 @@ public class GamePanel extends ListenerPanel {
     }
 
     public void printAllSteps() {
-        for (int i = 0; i < this.allSteps.size(); i++) {
-            for (int j = 0; j < this.allSteps.get(i).length; j++) {
-                for (int k = 0; k < this.allSteps.get(i)[j].length; k++) {
-                    System.out.print(this.allSteps.get(i)[j][k]);
+        for (int[][] allStep : this.allSteps) {
+            for (int[] ints : allStep) {
+                for (int k = 0; k < ints.length; k++) {
+                    System.out.print(ints[k]);
                     System.out.print(" ");
                 }
                 System.out.println();
