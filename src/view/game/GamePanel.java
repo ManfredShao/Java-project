@@ -101,24 +101,24 @@ public class GamePanel extends ListenerPanel {
             for (int j = 0; j < map[0].length; j++) {
                 BoxComponent box = null;
                 if (map[i][j] == 1) {//卒
-                    box = new BoxComponent(Color.ORANGE, i, j);
+                    box = new BoxComponent(new Color(27,27,27), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
                     box.setImage("卒.jpg");
                     map[i][j] = 0;
                 } else if (map[i][j] == 2) {//关羽
-                    box = new BoxComponent(new Color(46, 139, 87), i, j);
+                    box = new BoxComponent(new Color(27,27,27), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
                     box.setImage("关羽.jpg");
                     map[i][j] = 0;
                     map[i][j + 1] = 0;
                 } else if (map[i][j] == 3) {//其他角色
-                    box = new BoxComponent(new Color(65, 105, 225), i, j);
+                    box = new BoxComponent(new Color(27, 27, 27), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE * 2);
                     box.setImage("将军.jpg");
                     map[i][j] = 0;
                     map[i + 1][j] = 0;
                 } else if (map[i][j] == 4) {//曹操
-                    box = new BoxComponent(new Color(178, 34, 34), i, j);
+                    box = new BoxComponent(new Color(27, 27, 27), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE * 2);
                     box.setImage("曹操.jpg");
                     map[i][j] = 0;

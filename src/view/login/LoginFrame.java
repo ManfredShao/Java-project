@@ -1,5 +1,7 @@
 package view.login;
 
+import controller.AncientButton;
+import controller.GameFrame;
 import controller.UserController;
 import user.User;
 
@@ -199,7 +201,7 @@ public class LoginFrame extends JFrame {
 
         submitBtn.addActionListener(e -> {
             System.out.println("Username = " + username.getText());
-            System.out.println("Password = " + new String(password.getPassword()));
+            System.out.println("Password = " + hashPassword(new String(password.getPassword())));
 
             if (UserController.validateUser(username.getText(), new String(password.getPassword()))) {
                 Path userDir = Path.of("Save", username.getText());
@@ -216,12 +218,7 @@ public class LoginFrame extends JFrame {
                         String line = Files.readString(passwordFile).trim();
                         String hashed = hashPassword(new String(password.getPassword()));
                         if (!line.equals(hashed)) {
-                            JOptionPane.showMessageDialog(
-                                    this,
-                                    "兵符有误，恐为敌军细作！",
-                                    "军情有变",
-                                    JOptionPane.ERROR_MESSAGE
-                            );
+                            errorMessageDialog();
                         } else {
                             this.setVisible(false);
                             User user = new User(username.getText(), new String(password.getPassword()));
@@ -232,12 +229,7 @@ public class LoginFrame extends JFrame {
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "兵符有误，恐为敌军细作！",
-                        "军情有变",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                errorMessageDialog();
             }
         });
 
@@ -256,21 +248,84 @@ public class LoginFrame extends JFrame {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                JOptionPane.showMessageDialog(
-                        this,
-                        "注册成功！请再次登录",
-                        "万事俱备",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                reLoginDialog();
             } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "此帐号已被注册！",
-                        "军情有变",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                alreadyRegisteredDialog();
             }
         });
+    }
+
+    public void errorMessageDialog() {
+        // 创建一个模态对话框
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "军情有变", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        JLabel message = new JLabel("<html><div style='text-align: center;'>兵符有误<br>恐为敌军细作</div></html>", SwingConstants.CENTER);
+        message.setFont(new Font("楷体", Font.BOLD, 20));
+        dialog.add(message, BorderLayout.CENTER);
+        controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
+        confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+        confirmBtn.addActionListener(f -> {
+            dialog.dispose(); // 关闭对话框
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmBtn);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+        dialog.setSize(300, 180);
+        dialog.setLocationRelativeTo(null); // 居中
+        dialog.setVisible(true);
+    }
+
+    public void reLoginDialog() {
+        // 创建一个模态对话框
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "万事俱备", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        JLabel message = new JLabel("<html><div style='text-align: center;'>注册成功<br>请再次登录</div></html>", SwingConstants.CENTER);
+        message.setFont(new Font("楷体", Font.BOLD, 20));
+        dialog.add(message, BorderLayout.CENTER);
+        controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
+        confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+        confirmBtn.addActionListener(f -> {
+            dialog.dispose(); // 关闭对话框
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmBtn);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+        dialog.setSize(300, 180);
+        dialog.setLocationRelativeTo(null); // 居中
+        dialog.setVisible(true);
+    }
+
+    public void alreadyRegisteredDialog(){
+        // 创建一个模态对话框
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "军情有变", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        JLabel message = new JLabel("<html><div style='text-align: center;'>此用户已注册</div></html>", SwingConstants.CENTER);
+        message.setFont(new Font("楷体", Font.BOLD, 20));
+        dialog.add(message, BorderLayout.CENTER);
+        controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
+        confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+        confirmBtn.addActionListener(f -> {
+            dialog.dispose(); // 关闭对话框
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmBtn);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+        dialog.setSize(300, 180);
+        dialog.setLocationRelativeTo(null); // 居中
+        dialog.setVisible(true);
+
     }
 
     public static String hashPassword(String password) {
