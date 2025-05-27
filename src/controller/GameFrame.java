@@ -7,6 +7,7 @@ import user.User;
 import view.FrameUtil;
 import view.game.CountdownTimer;
 import view.game.GamePanel;
+import view.login.IdentitySelectFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;
@@ -25,6 +26,7 @@ public class GameFrame extends JFrame {
     private final GameController controller;
     private final AncientButton loadBtn;
     private final AncientButton saveBtn;
+    private final AncientButton exitBtn;
     private final CountdownTimer time = new CountdownTimer();
     private final User user;
     private final GamePanel gamePanel;
@@ -68,6 +70,7 @@ public class GameFrame extends JFrame {
         AncientButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
+        this.exitBtn = FrameUtil.createButton(this, "扭轉乾坤", 80, height);
         AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊BFS", 80, height);
         AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行DFS", 80, height);
         AncientButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
@@ -117,6 +120,7 @@ public class GameFrame extends JFrame {
         bottomPanel.add(restartBtn);
         bottomPanel.add(loadBtn);
         bottomPanel.add(saveBtn);
+        bottomPanel.add(exitBtn);
         bottomPanel.add(stepLabel);
 
         // 添加底部面板
@@ -324,10 +328,12 @@ public class GameFrame extends JFrame {
             gameState.resumeAnimation();
             gamePanel.requestFocusInWindow();
         });
+
         restartBtn.addActionListener(e -> {
             controller.restartGame();
             gamePanel.requestFocusInWindow();//enable key listener
         });
+
         this.loadBtn.addActionListener(e -> {
             try {
                 controller.loadGame(user);
@@ -336,6 +342,14 @@ public class GameFrame extends JFrame {
             }
             gamePanel.requestFocusInWindow();
         });
+
+        this.exitBtn.addActionListener(e -> {
+            IdentitySelectFrame identitySelectFrame = new IdentitySelectFrame();
+            identitySelectFrame.setVisible(true);
+            time.pause();
+            this.dispose();
+        });
+
         this.saveBtn.addActionListener(e -> {
             controller.saveGame(user);
             // 获取当前窗口（GameFrame）
@@ -363,6 +377,7 @@ public class GameFrame extends JFrame {
             dialog.setVisible(true);
             gamePanel.requestFocusInWindow();
         });
+
         loginBtn.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
