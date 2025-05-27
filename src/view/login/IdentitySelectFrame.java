@@ -2,13 +2,10 @@ package view.login;
 
 import model.Map;
 import user.User;
-import view.FrameUtil;
 import controller.GameFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 class AncientButton extends JButton {
     private final Color baseColor = new Color(139, 0, 0);

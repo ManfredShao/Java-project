@@ -21,23 +21,69 @@ import java.security.NoSuchAlgorithmException;
 public class LoginFrame extends JFrame {
     private JTextField username;
     private JPasswordField password;
-    private JButton submitBtn;
-    private JButton resetBtn;
-    private JButton registerBtn;
+    private AncientButton submitBtn;
+    private AncientButton resetBtn;
+    private AncientButton registerBtn;
     private JButton togglePasswordVisibilityBtn; // 控制密码可见性的按钮
     private boolean passwordVisible = false;
     private ImageIcon eyeOpenIcon;
     private ImageIcon eyeClosedIcon;
 
+    class AncientButton extends JButton {
+        private final Color baseColor = new Color(139, 0, 0);
+        private final Color hoverColor = new Color(165, 42, 42);
+        private final Color pressedColor = new Color(120, 0, 0);
+
+        public AncientButton(String text) {
+            super(text);
+            setFont(new Font("楷体", Font.BOLD, 16));
+            setForeground(new Color(245, 222, 179));
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(245, 222, 179), 2),
+                    BorderFactory.createEmptyBorder(8, 16, 8, 16)
+            ));
+            setBackground(baseColor);
+            addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    setBackground(hoverColor);
+                    repaint();
+                }
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    setBackground(baseColor);
+                    repaint();
+                }
+                public void mousePressed(java.awt.event.MouseEvent e) {
+                    setBackground(pressedColor);
+                    repaint();
+                }
+                public void mouseReleased(java.awt.event.MouseEvent e) {
+                    setBackground(hoverColor);
+                    repaint();
+                }
+            });
+        }
+
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+            super.paintComponent(g2);
+            g2.dispose();
+        }
+    }
+
     public LoginFrame() {
         // 设置窗口属性
         this.setTitle("烽燧连天处，一局定乾坤");
-        this.setSize(350, 280);
+        this.setSize(380, 330);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // 主面板和布局
         JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(new Color(27, 27, 27));
         GridBagConstraints gbc = new GridBagConstraints();
         this.add(mainPanel);
 
@@ -52,11 +98,27 @@ public class LoginFrame extends JFrame {
 
         // 标签和输入框初始化
         JLabel userLabel = new JLabel("帅印:");
+        userLabel.setFont(new Font("楷体", Font.BOLD, 15));
+        userLabel.setForeground(new Color(245, 222, 179));
         username = new JTextField(20);
+        username.setBackground(new Color(27,27,27));
+        username.setForeground(new Color(245, 222, 179));       // 象牙白文字
+        username.setBorder(
+                BorderFactory.createLineBorder(new Color(245, 222, 179), 2)
+        );
 
         JLabel passLabel = new JLabel("兵符:");
+        passLabel.setFont(new Font("楷体", Font.BOLD, 15));
+
+        passLabel.setForeground(new Color(245, 222, 179));
         password = new JPasswordField(20);
         password.setEchoChar('*');
+        userLabel.setForeground(new Color(245, 222, 179));
+        password.setBackground(new Color(27,27,27));
+        password.setForeground(new Color(245, 222, 179));       // 象牙白文字
+        password.setBorder(
+                BorderFactory.createLineBorder(new Color(245, 222, 179), 2)
+        );
 
         togglePasswordVisibilityBtn = new JButton(eyeClosedIcon);
         togglePasswordVisibilityBtn.setBorderPainted(false);
@@ -65,9 +127,9 @@ public class LoginFrame extends JFrame {
                 new Dimension(40, password.getPreferredSize().height)
         );
 
-        submitBtn = new JButton("擂鼓进军");
-        resetBtn = new JButton("重写军帖");
-        registerBtn = new JButton("注册新帐");
+        submitBtn = new AncientButton("擂鼓进军");
+        resetBtn = new AncientButton("重写军帖");
+        registerBtn = new AncientButton("注册新帐");
 
         //设置布局约束并添加组件
         gbc.insets = new Insets(8, 5, 8, 5);
