@@ -254,7 +254,7 @@ public class GamePanel extends ListenerPanel {
         this.steps++;
         GameFrame frame = (GameFrame) SwingUtilities.getWindowAncestor(this);
         User user = frame.getUser();
-        if (user.getUsername() != null) {
+        if (user.getUsername() != null && ((GameFrame) SwingUtilities.getWindowAncestor(this)).isServer()) {
             controller.saveGame(user);
             frame.upDateGame();
         }

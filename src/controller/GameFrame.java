@@ -28,6 +28,11 @@ public class GameFrame extends JFrame {
     private final CountdownTimer time = new CountdownTimer();
     private final User user;
     private final GamePanel gamePanel;
+    private boolean isServer = false;
+
+    public boolean isServer() {
+        return isServer;
+    }
 
     public CountdownTimer getTime() {
         return time;
@@ -154,6 +159,7 @@ public class GameFrame extends JFrame {
 
         severBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
+                isServer = true;
                 System.out.println("客户端已连接！");
                 controller.saveGame(user);
                 try {
@@ -180,10 +186,7 @@ public class GameFrame extends JFrame {
                 dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
                 String ip = SocketServer.getIp();
-                String msg = String.format(
-                        "<html><div style='text-align:center;'>伺服器已啟動，IP: %s</div></html>",
-                        ip
-                );
+                String msg = String.format("<html><div style='text-align:center;'>伺服器已啟動，IP: %s</div></html>", ip);
                 JLabel message = new JLabel(msg, SwingConstants.CENTER);
                 message.setFont(new Font("楷体", Font.BOLD, 20));
                 dialog.add(message, BorderLayout.CENTER);
@@ -443,7 +446,7 @@ public class GameFrame extends JFrame {
                 dialog.setSize(300, 180);
                 dialog.setLocationRelativeTo(null); // 居中
                 dialog.setVisible(true);
-            }else {
+            } else {
                 int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
                 gamePanel.clear();
                 gamePanel.setGamePanel(lastMapModel);
