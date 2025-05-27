@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CountdownTimer extends JPanel {
-    private final int INITIAL_COUNT = 600;
+    private final int INITIAL_COUNT = 900;
     private int count = INITIAL_COUNT;
     private Timer timer;
     private JLabel label;
@@ -18,6 +18,7 @@ public class CountdownTimer extends JPanel {
     public CountdownTimer() {
         setLayout(new BorderLayout());
         label = new JLabel(formatTime(count), SwingConstants.CENTER);
+        label.setForeground(new Color(245, 222, 179));
         label.setFont(label.getFont().deriveFont(fontSize));
         add(label, BorderLayout.CENTER);
 
@@ -36,11 +37,10 @@ public class CountdownTimer extends JPanel {
                     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
                     JLabel message = new JLabel("<html><div style='text-align: center;'>来人，来人！<br>护卫何在？</div></html>", SwingConstants.CENTER);
-                    message.setFont(new Font("宋体", Font.PLAIN, 20));
+                    message.setFont(new Font("楷体", Font.BOLD, 20));
                     dialog.add(message, BorderLayout.CENTER);
-
-                    JButton confirmBtn = new JButton("已知晓");
-                    confirmBtn.setFont(new Font("宋体", Font.BOLD, 16));
+                    AncientButton confirmBtn = new AncientButton("已知晓");
+                    confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
                     confirmBtn.addActionListener(f -> {
                         dialog.dispose(); // 关闭对话框
                         parentWindow.dispose();           // 关闭 GameFrame

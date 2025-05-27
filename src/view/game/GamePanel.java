@@ -264,7 +264,7 @@ public class GamePanel extends ListenerPanel {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
 
             JLabel label = new JLabel(String.format("<html><div style='"
-                            + "font-family: \"STXingkai\", \"LiSu\", \"KaiTi\", cursive; "
+                            + "font-family: \"KaiTi\", \"LiSu\", \"KaiTi\", cursive; "
                             + "color: #2E1D1A; "
                             + "font-size: 24pt; "
                             + "text-align: center;"
@@ -287,8 +287,8 @@ public class GamePanel extends ListenerPanel {
             dialog.setLayout(new BorderLayout());
             dialog.add(label, BorderLayout.CENTER);
 
-            JButton confirmBtn = new JButton("已知晓");
-            confirmBtn.setFont(new Font("楷体", Font.PLAIN, 16));
+            AncientButton confirmBtn = new AncientButton("已知晓");
+            confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
             confirmBtn.addActionListener(e -> {
                 SwingUtilities.getWindowAncestor(this).dispose();
                 new IdentitySelectFrame();

@@ -7,10 +7,12 @@ import user.User;
 import view.FrameUtil;
 import view.game.CountdownTimer;
 import view.game.GamePanel;
+import view.login.IdentitySelectFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
@@ -23,17 +25,17 @@ public class GameFrame extends JFrame {
     private GameState gameState;
     SocketServer server = new SocketServer(8888);
     private GameController controller;
-    private JButton restartBtn;
-    private JButton severBtn;
-    private JButton clientBtn;
-    private JButton revokeBtn;
-    private JButton loadBtn;
-    private JButton saveBtn;
-    private JButton pauseBtn;
-    private JButton resumeBtn;
-    private JButton loginLabel;
-    private JButton solveBtnBFS;
-    private JButton solveBtnDFS;
+    private AncientButton restartBtn;
+    private AncientButton severBtn;
+    private AncientButton clientBtn;
+    private AncientButton revokeBtn;
+    private AncientButton loadBtn;
+    private AncientButton saveBtn;
+    private AncientButton pauseBtn;
+    private AncientButton resumeBtn;
+    private AncientButton loginBtn;
+    private AncientButton solveBtnBFS;
+    private AncientButton solveBtnDFS;
     private JLabel userLabel;
     private CountdownTimer time = new CountdownTimer();
     private User user;
@@ -44,11 +46,11 @@ public class GameFrame extends JFrame {
         return time;
     }
 
-    public JButton getSaveBtn() {
+    public AncientButton getSaveBtn() {
         return saveBtn;
     }
 
-    public JButton getLoadBtn() {
+    public AncientButton getLoadBtn() {
         return loadBtn;
     }
 
@@ -58,8 +60,10 @@ public class GameFrame extends JFrame {
 
     public GameFrame(Map level, User user) {
         super("華容道·漢末風雲");
+        this.getContentPane().setBackground(new Color(27, 27, 27));
         this.setLayout(new GridBagLayout());
         gamePanel = new GamePanel(level);
+        gamePanel.setBackground(new Color(27, 27, 27));
         gameState = new GameState();
         this.controller = new GameController(gamePanel, level);
         this.user = user;
@@ -75,9 +79,11 @@ public class GameFrame extends JFrame {
         this.revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
         this.clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
         this.severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
-        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("serif", Font.PLAIN, 22), 80, height);
-        this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("serif", Font.PLAIN, 22), 80, height);
-        this.loginLabel = FrameUtil.createButton(this, "登錄", 80, height);
+        this.stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
+        this.stepLabel.setForeground(new Color(245, 222, 179));
+        this.userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("楷体", Font.BOLD, 22), 80, height);
+        this.userLabel.setForeground(new Color(245, 222, 179));
+        this.loginBtn = FrameUtil.createButton(this, "登錄", 80, height);
         gamePanel.setStepLabel(stepLabel);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -85,10 +91,11 @@ public class GameFrame extends JFrame {
         int mapHeight = 5; // 假设地图的高度为 5
         int gridWidth = mapWidth * gamePanel.getGRID_SIZE();
         int gridHeight = mapHeight * gamePanel.getGRID_SIZE();
-        this.setSize(gridWidth + 250, gridHeight + (int) (height * 1.6));
+        gamePanel.setPreferredSize(new Dimension(gridWidth, gridHeight));
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(3, 3, 3, 3);
+        gbc.insets = new Insets(60, 30, 0, 20);
 
         // 添加游戏面板
         gbc.gridx = 0;
@@ -109,31 +116,38 @@ public class GameFrame extends JFrame {
         this.add(restartBtn, gbc);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.setBackground(new Color(27, 27, 27));
         bottomPanel.add(userLabel);
-        bottomPanel.add(loginLabel);
+        bottomPanel.add(loginBtn);
         bottomPanel.add(restartBtn);
         bottomPanel.add(loadBtn);
         bottomPanel.add(saveBtn);
         bottomPanel.add(stepLabel);
 
         // 添加底部面板
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 4;
-        add(bottomPanel, gbc);
+        GridBagConstraints gbcBottom = new GridBagConstraints();
+        gbcBottom.gridx = 0;
+        gbcBottom.gridy = 3;
+        gbcBottom.gridwidth = 4;
+        gbcBottom.fill = GridBagConstraints.HORIZONTAL;
+        gbcBottom.insets = new Insets(0, 3, 20, 3);
+        this.add(bottomPanel, gbcBottom);
 
         // 添加计时器
+        time.setBackground(new Color(27, 27, 27));
+        time.setOpaque(true);
         GridBagConstraints gbcTimer = new GridBagConstraints();
         gbcTimer.gridx = 3;
         gbcTimer.gridy = 0;
         gbcTimer.gridwidth = 1;
         gbcTimer.gridheight = 1;
         gbcTimer.fill = GridBagConstraints.BOTH;
-        gbcTimer.insets = new Insets(5, 5, 5, 5);  // 设置边距
+        gbcTimer.insets = new Insets(10, 0, 10, 20);  // 设置边距
         this.add(time, gbcTimer);
 
         // 创建新的右侧按钮面板
-        JPanel rightControlPanel = new JPanel(new GridLayout(7, 1, 5, 10)); // 3行1列，垂直间距10
+        JPanel rightControlPanel = new JPanel(new GridLayout(7, 1, 5, 15)); // 3行1列，垂直间距10
+        rightControlPanel.setBackground(new Color(27, 27, 27));
         rightControlPanel.add(solveBtnBFS);
         rightControlPanel.add(solveBtnDFS);
         rightControlPanel.add(pauseBtn);
@@ -149,7 +163,7 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.gridwidth = 1;
         gbcRightCtrl.gridheight = 1;
         gbcRightCtrl.fill = GridBagConstraints.BOTH;
-        gbcRightCtrl.insets = new Insets(5, 5, 5, 5);
+        gbcRightCtrl.insets = new Insets(5, 30, 20, 50);
         this.add(rightControlPanel, gbcRightCtrl);
 
         this.severBtn.addActionListener(e -> {
@@ -239,10 +253,32 @@ public class GameFrame extends JFrame {
         });
         this.saveBtn.addActionListener(e -> {
             controller.saveGame(user);
-            JOptionPane.showMessageDialog(this, "安營紮寨");
+            // 获取当前窗口（GameFrame）
+            Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
+            // 创建一个模态对话框
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(GameFrame.this), "休养生息", true);
+            dialog.setLayout(new BorderLayout());
+            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            JLabel message = new JLabel("<html><div style='text-align: center;'>安营扎寨</div></html>", SwingConstants.CENTER);
+            message.setFont(new Font("楷体", Font.BOLD, 20));
+            dialog.add(message, BorderLayout.CENTER);
+            AncientButton confirmBtn = new AncientButton("已知晓");
+            confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            confirmBtn.addActionListener(f -> {
+                dialog.dispose(); // 关闭对话框
+            });
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(confirmBtn);
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+            dialog.setSize(300, 180);
+            dialog.setLocationRelativeTo(null); // 居中
+            dialog.setVisible(true);
             gamePanel.requestFocusInWindow();
         });
-        this.loginLabel.addActionListener(e -> {
+        this.loginBtn.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
             time.pause();
@@ -250,10 +286,11 @@ public class GameFrame extends JFrame {
         });
 
         JPanel directionPanel = new JPanel(new GridLayout(5, 3, 5, 5));// 3 行 3 列，格子间水平垂直5像素
-        JButton upBtn = new JButton("↑");
-        JButton downBtn = new JButton("↓");
-        JButton leftBtn = new JButton("←");
-        JButton rightBtn = new JButton("→");
+        directionPanel.setBackground(new Color(27, 27, 27));
+        AncientButton upBtn = new AncientButton("↑");
+        AncientButton downBtn = new AncientButton("↓");
+        AncientButton leftBtn = new AncientButton("←");
+        AncientButton rightBtn = new AncientButton("→");
         directionPanel.add(new JLabel()); // (0,0) 空
         directionPanel.add(upBtn);        // (0,1)
         directionPanel.add(new JLabel()); // (0,2) 空
@@ -277,8 +314,14 @@ public class GameFrame extends JFrame {
         gbcDir.gridwidth = 1;
         gbcDir.gridheight = 1;
         // 四周留点空隙
-        gbcDir.insets = new Insets(5, 5, 5, 5);
+        gbcDir.insets = new Insets(20, 0, 5, 5);
         this.add(directionPanel, gbcDir);
+
+        // 让 frame 大小根据各组件的 preferredSize 自动计算
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+
 
         upBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
@@ -299,7 +342,29 @@ public class GameFrame extends JFrame {
         revokeBtn.addActionListener(e -> {
             gamePanel.requestFocusInWindow();
             if (gamePanel.getSteps() <= 0) {
-                JOptionPane.showMessageDialog(this.gamePanel, "无法撤回，背水一战", "军情有变", JOptionPane.ERROR_MESSAGE);
+                // 获取当前窗口（GameFrame）
+                Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
+                // 创建一个模态对话框
+                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(GameFrame.this), "军情有变", true);
+                dialog.setLayout(new BorderLayout());
+                dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                JLabel message = new JLabel("<html><div style='text-align: center;'>无法撤回<br>背水一战！</div></html>", SwingConstants.CENTER);
+                message.setFont(new Font("楷体", Font.BOLD, 20));
+                dialog.add(message, BorderLayout.CENTER);
+                AncientButton confirmBtn = new AncientButton("已知晓");
+                confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+                confirmBtn.addActionListener(f -> {
+                    dialog.dispose(); // 关闭对话框
+                });
+
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.add(confirmBtn);
+                dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+                dialog.setSize(300, 180);
+                dialog.setLocationRelativeTo(null); // 居中
+                dialog.setVisible(true);
             }
             int[][] lastMapModel = gamePanel.cloneMatrix(gamePanel.getAllSteps().get(gamePanel.getSteps() - 1));
             gamePanel.clear();

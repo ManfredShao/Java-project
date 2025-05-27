@@ -54,7 +54,7 @@ public class BoxComponent extends JComponent {
 
         // 高亮选中时添加黄色边框
         if (isSelected) {
-            g2.setColor(new Color(255, 215, 0, 180)); // 半透明金黄
+            g2.setColor(new Color(27, 27, 27, 180));
             g2.setStroke(new BasicStroke(3f));
             g2.drawRoundRect(2, 2, width - 5, height - 5, arc, arc);
         }

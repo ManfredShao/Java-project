@@ -19,7 +19,7 @@ import javax.swing.Timer;
 
 import static model.Direction.LEFT;
 
-public class GameController {
+public class GameController extends Component {
     public static GamePanel view;
     public static MapModel model_changed;
     private Map level;
@@ -37,12 +37,11 @@ public class GameController {
 
             JDialog dialog = new JDialog();
             dialog.setTitle(""); // 清空默认标题
-
             dialog.getContentPane().setLayout(new BorderLayout(10, 10));
             dialog.getContentPane().add(titleLabel, BorderLayout.NORTH);
             dialog.getContentPane().add(content, BorderLayout.CENTER);
 
-            JButton confirmBtn = new JButton("领命出征");
+            AncientButton confirmBtn = new AncientButton("领命出征");
             confirmBtn.addActionListener(e -> dialog.dispose());
             JPanel btnPanel = new JPanel();
             btnPanel.add(confirmBtn);
@@ -178,7 +177,29 @@ public class GameController {
                 throw new RuntimeException(e);
             }
         } else {
-            JOptionPane.showMessageDialog(this.view, "战局篡改，有奸细！", "军情有变", JOptionPane.ERROR_MESSAGE);
+            // 获取当前窗口（GameFrame）
+            Window parentWindow = SwingUtilities.getWindowAncestor(GameController.this);
+            // 创建一个模态对话框
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(GameController.this), "军情有变", true);
+            dialog.setLayout(new BorderLayout());
+            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            JLabel message = new JLabel("<html><div style='text-align: center;'>战局篡改<br>有奸细！</div></html>", SwingConstants.CENTER);
+            message.setFont(new Font("楷体", Font.BOLD, 20));
+            dialog.add(message, BorderLayout.CENTER);
+            AncientButton confirmBtn = new AncientButton("已知晓");
+            confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            confirmBtn.addActionListener(f -> {
+                dialog.dispose(); // 关闭对话框
+            });
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(confirmBtn);
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+            dialog.setSize(300, 180);
+            dialog.setLocationRelativeTo(null); // 居中
+            dialog.setVisible(true);
         }
     }
 

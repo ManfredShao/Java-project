@@ -1,5 +1,7 @@
 package view;
 
+import controller.AncientButton;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,8 +31,8 @@ public class FrameUtil {
         return jTextField;
     }
 
-    public static JButton createButton(JFrame frame, String name, int width, int height) {
-        JButton button = new JButton(name);
+    public static AncientButton createButton(JFrame frame, String name, int width, int height) {
+        AncientButton button = new AncientButton(name);
         button.setSize(width, height);
         frame.add(button);
         return button;
