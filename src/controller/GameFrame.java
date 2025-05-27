@@ -59,13 +59,13 @@ public class GameFrame extends JFrame {
         AncientButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
-        AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊（BFS）", 80, height);
-        AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行（DFS）", 80, height);
+        AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊BFS", 80, height);
+        AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行DFS", 80, height);
         AncientButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
         AncientButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
         AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
-        AncientButton clientBtn = FrameUtil.createButton(this, "客戶端", 80, height);
-        AncientButton severBtn = FrameUtil.createButton(this, "伺服器端", 80, height);
+        AncientButton clientBtn = FrameUtil.createButton(this, "鉴棋", 80, height);
+        AncientButton severBtn = FrameUtil.createButton(this, "掌棋", 80, height);
         JLabel stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
         stepLabel.setForeground(new Color(245, 222, 179));
         JLabel userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("楷体", Font.BOLD, 22), 80, height);

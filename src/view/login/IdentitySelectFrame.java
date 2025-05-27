@@ -22,7 +22,7 @@ public class IdentitySelectFrame extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // 标题
-        JLabel title = new JLabel("请选择身份");
+        JLabel title = new JLabel("择将入局");
         title.setFont(new Font("楷体", Font.BOLD, 22));
         title.setForeground(new Color(245, 222, 179));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -30,8 +30,8 @@ public class IdentitySelectFrame extends JFrame {
         panel.add(Box.createVerticalStrut(20));
 
         // 按钮
-        AncientButton guestBtn = new AncientButton("小试牛刀");
-        AncientButton playerBtn = new AncientButton("挂帅亲征");
+        AncientButton guestBtn = new AncientButton("游骑入营");
+        AncientButton playerBtn = new AncientButton("虎符验契");
         guestBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         playerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(guestBtn);
@@ -58,7 +58,7 @@ public class IdentitySelectFrame extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel label = new JLabel("请选择一个地图等级：");
+        JLabel label = new JLabel("择阵而入");
         label.setFont(new Font("楷体", Font.BOLD, 22));
         label.setForeground(new Color(245, 222, 179));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
