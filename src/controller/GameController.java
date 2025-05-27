@@ -42,7 +42,7 @@ public class GameController extends Component {
             dialog.getContentPane().add(titleLabel, BorderLayout.NORTH);
             dialog.getContentPane().add(content, BorderLayout.CENTER);
 
-            AncientButton confirmBtn = new AncientButton("领命出征");
+            AncientButton confirmBtn = new AncientButton("军令已受，战局将启");
             confirmBtn.addActionListener(e -> dialog.dispose());
             JPanel btnPanel = new JPanel();
             btnPanel.add(confirmBtn);
