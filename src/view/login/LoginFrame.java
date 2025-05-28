@@ -207,12 +207,27 @@ public class LoginFrame extends JFrame {
                 Path userDir = Path.of("Save", username.getText());
                 Path passwordFile = userDir.resolve("password.txt");
                 if (Files.notExists(userDir)) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "此帐号未注册！",
-                            "军情有变",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                    // 创建一个模态对话框
+                    JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "军情有变", true);
+                    dialog.setLayout(new BorderLayout());
+                    dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                    JLabel message = new JLabel("<html><div style='text-align: center;'>此账户未注册</div></html>", SwingConstants.CENTER);
+                    message.setFont(new Font("楷体", Font.BOLD, 20));
+                    dialog.add(message, BorderLayout.CENTER);
+                    controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
+                    confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+                    confirmBtn.addActionListener(f -> {
+                        dialog.dispose(); // 关闭对话框
+                    });
+
+                    JPanel buttonPanel = new JPanel();
+                    buttonPanel.add(confirmBtn);
+                    dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+                    dialog.setSize(300, 180);
+                    dialog.setLocationRelativeTo(null); // 居中
+                    dialog.setVisible(true);
                 } else {
                     try {
                         String line = Files.readString(passwordFile).trim();
