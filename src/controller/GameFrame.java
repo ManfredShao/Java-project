@@ -74,7 +74,7 @@ public class GameFrame extends JFrame {
         int height = 50;
         AncientButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
-        this.saveBtn = FrameUtil.createButton(this, "寫入戰局", 80, height);
+        this.saveBtn = FrameUtil.createButton(this, "保存戰局", 80, height);
         this.exitBtn = FrameUtil.createButton(this, "扭轉乾坤", 80, height);
         AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊BFS", 80, height);
         AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行DFS", 80, height);

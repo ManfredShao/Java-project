@@ -30,7 +30,7 @@ public class CountdownTimer extends JPanel {
                 saveCounter++;
 
                 // 每30秒保存一次
-                if (saveCounter >= 10) {
+                if (saveCounter >= 30) {
                     GameFrame gameFrame = (GameFrame) SwingUtilities.getWindowAncestor(CountdownTimer.this);
                     if (gameFrame.getController() != null && gameFrame.getUser().getUsername() != null) {
                         gameFrame.getController().saveGame(gameFrame.getUser());
