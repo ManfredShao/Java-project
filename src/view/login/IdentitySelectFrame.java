@@ -77,6 +77,8 @@ public class IdentitySelectFrame extends JFrame {
                 if (user.getPassword() == null && user.getUsername() == null) {
                     gf.getSaveBtn().setVisible(false);
                     gf.getLoadBtn().setVisible(false);
+                    gf.getServerBtn().setVisible(false);
+
                 }
             });
         }

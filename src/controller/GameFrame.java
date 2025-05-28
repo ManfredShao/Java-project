@@ -27,6 +27,7 @@ public class GameFrame extends JFrame {
     private final AncientButton loadBtn;
     private final AncientButton saveBtn;
     private final AncientButton exitBtn;
+    private final AncientButton serverBtn;
     private final CountdownTimer time = new CountdownTimer();
     private final User user;
     private final GamePanel gamePanel;
@@ -56,6 +57,10 @@ public class GameFrame extends JFrame {
         return controller;
     }
 
+    public AncientButton getServerBtn() {
+        return serverBtn;
+    }
+
     public GameFrame(Map level, User user) {
         super("華容道·漢末風雲");
         this.getContentPane().setBackground(new Color(27, 27, 27));
@@ -77,7 +82,7 @@ public class GameFrame extends JFrame {
         AncientButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
         AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
         AncientButton clientBtn = FrameUtil.createButton(this, "鉴棋", 80, height);
-        AncientButton severBtn = FrameUtil.createButton(this, "掌棋", 80, height);
+        this.serverBtn = FrameUtil.createButton(this, "掌棋", 80, height);
         JLabel stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
         stepLabel.setForeground(new Color(245, 222, 179));
         JLabel userLabel = FrameUtil.createJLabel(this, user.getUsername(), new Font("楷体", Font.BOLD, 22), 80, height);
@@ -152,8 +157,9 @@ public class GameFrame extends JFrame {
         rightControlPanel.add(pauseBtn);
         rightControlPanel.add(resumeBtn);
         rightControlPanel.add(revokeBtn);
-        rightControlPanel.add(severBtn);
         rightControlPanel.add(clientBtn);
+        rightControlPanel.add(serverBtn);
+
 
         // 添加右侧控制面板
         GridBagConstraints gbcRightCtrl = new GridBagConstraints();
@@ -165,7 +171,7 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.insets = new Insets(5, 30, 20, 50);
         this.add(rightControlPanel, gbcRightCtrl);
 
-        severBtn.addActionListener(e -> {
+        serverBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
                 isServer = true;
                 System.out.println("客户端已连接！");
