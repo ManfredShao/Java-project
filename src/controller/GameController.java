@@ -33,9 +33,31 @@ public class GameController extends Component {
         this.initialSteps = 0;
 
         SwingUtilities.invokeLater(() -> {
-            JLabel content = new JLabel("<html><div style='" + "font-family: \"楷体\",\"华文楷体\",serif;" + "text-align: center;" + "color: #5C3317;" + "font-size: 14pt;" + "'>" + "<p>建安十三年冬，曹公兵败赤壁</p>" + "<p>率残部经华容道遁走</p>" + "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" + "<p>■ 绿袍为云长，当引其让路</p>" + "<p>■ 红甲乃孟德，需助其脱困</p>" + "<p>■ 黄巾乃士卒，可纵横驱驰</p>" + "<p>■ 白衣乃将领，如子龙守关</p>" + "</div></html>");
+            JLabel content = new JLabel("<html><div style='" +
+                    "font-family: \"楷体\",\"华文楷体\",serif;" +
+                    "text-align: center;" +
+                    "color: #5C3317;" +
+                    "font-size: 14pt;" +
+                    "'>" +
+                    "<p>建安十三年冬，曹公兵败赤壁</p>" +
+                    "<p>率残部经华容道遁走</p>" +
+                    "<p>今关云长镇守要隘，持青龙偃月刀立雪相候</p>" +
+                    "<p><span style='color:#006400;'>&#9632;</span> 绿袍为云长，当引其让路</p>" +
+                    "<p><span style='color:#8B0000;'>&#9632;</span> 红甲乃孟德，需助其脱困</p>" +
+                    "<p><span style='color:#CD853F;'>&#9632;</span> 黄巾乃士卒，可纵横驱驰</p>" +
+                    "<p><span style='color:#C0C0C0;'>&#9632;</span> 白衣乃将领，如子龙守关</p>" +
+                    "</div></html>");
 
-            JLabel titleLabel = new JLabel("<html><div style='color:#8B0000; font-size:18pt;'>漢末華容道</div></html>", SwingConstants.CENTER);
+            // 设置内容标签的内边距
+            content.setBorder(BorderFactory.createEmptyBorder(5, 20, 0, 20));
+
+            JLabel titleLabel = new JLabel("<html><div style='" +
+                    "color:#8B0000;" +
+                    "font-size:22pt;" +
+                    "font-weight:bold;" +
+                    "'>漢末華容道</div></html>", SwingConstants.CENTER);
+            // 设置标题标签的内边距
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 10));
 
             JDialog dialog = new JDialog();
             dialog.setTitle(""); // 清空默认标题
@@ -46,11 +68,15 @@ public class GameController extends Component {
 
             AncientButton confirmBtn = new AncientButton("军令已受，战局将启");
             confirmBtn.addActionListener(e -> dialog.dispose());
+
             JPanel btnPanel = new JPanel();
+            // 设置按钮面板的内边距
+            btnPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 15, 10));
             btnPanel.add(confirmBtn);
+
             dialog.getContentPane().add(btnPanel, BorderLayout.SOUTH);
 
-            //  移除java图标
+            // 移除java图标
             dialog.setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.pack();
