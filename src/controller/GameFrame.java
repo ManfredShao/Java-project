@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -177,93 +178,110 @@ public class GameFrame extends JFrame {
         this.add(rightControlPanel, gbcRightCtrl);
 
         rankingBtn.addActionListener(e -> {
-            // 创建主面板
-            JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-            mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            mainPanel.setBackground(new Color(250, 245, 235)); // 米色背景
+            try {
+                // 1. 创建主面板
+                JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+                mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+                mainPanel.setBackground(new Color(250, 245, 235)); // 米色背景
 
-            // 标题面板
-            JPanel titlePanel = new JPanel();
-            titlePanel.setOpaque(false);
-            JLabel titleLabel = new JLabel("英雄榜");
-            titleLabel.setFont(new Font("楷体", Font.BOLD, 28));
-            titleLabel.setForeground(new Color(120, 50, 30)); // 深棕色
-            titlePanel.add(titleLabel);
-            mainPanel.add(titlePanel, BorderLayout.NORTH);
+                // 2. 创建标题
+                JLabel titleLabel = new JLabel("<html><center>英雄榜<br><span style='font-size:12pt;color:#5C3317;'>华容道·群雄逐鹿</span></center></html>");
+                titleLabel.setFont(new Font("楷体", Font.BOLD, 24));
+                titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                titleLabel.setForeground(new Color(120, 50, 30)); // 深棕色
+                mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-            // 创建表格显示排行榜
-            String[] columnNames = {"名次", "英雄名", "步数"};
-            Object[][] rowData = new Object[LeaderboardManager.getScores().size()][3];
+                // 3. 准备表格数据
+                List<Score> scores = LeaderboardManager.getScores();
+                String[] columnNames = {"排名", "英雄名", "关卡", "难度", "步数", "时间"};
+                Object[][] rowData = new Object[scores.size()][columnNames.length];
 
-            int rank = 1;
-            for (Score s : LeaderboardManager.getScores()) {
-                rowData[rank-1][0] = rank;
-                rowData[rank-1][1] = s.getPlayerName();
-                rowData[rank-1][2] = s.getSteps();
-                rank++;
+                // 4. 填充数据
+                for (int i = 0; i < scores.size(); i++) {
+                    Score score = scores.get(i);
+                    rowData[i][0] = i + 1; // 排名
+                    rowData[i][1] = score.getPlayerName();
+                    rowData[i][2] = score.getMap().name();
+                    rowData[i][3] = score.getMap().getDifficultyStars();
+                    rowData[i][4] = score.getSteps();
+                    rowData[i][5] = score.getDate().format(DateTimeFormatter.ofPattern("MM-dd HH:mm"));
+                }
+
+                // 5. 创建表格
+                JTable table = new JTable(rowData, columnNames) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false; // 禁止编辑
+                    }
+                };
+
+                // 6. 表格样式设置
+                table.setFont(new Font("宋体", Font.PLAIN, 14));
+                table.setRowHeight(30);
+                table.setGridColor(new Color(200, 180, 160));
+                table.setShowHorizontalLines(true);
+                table.setShowVerticalLines(false);
+                table.setSelectionBackground(new Color(220, 200, 180));
+
+                // 7. 表头样式
+                JTableHeader header = table.getTableHeader();
+                header.setFont(new Font("楷体", Font.BOLD, 16));
+                header.setForeground(new Color(160, 80, 40));
+                header.setBackground(new Color(230, 215, 195));
+                header.setPreferredSize(new Dimension(header.getWidth(), 35));
+
+                // 8. 列宽设置
+                table.getColumnModel().getColumn(0).setPreferredWidth(50);  // 排名
+                table.getColumnModel().getColumn(1).setPreferredWidth(100); // 名字
+                table.getColumnModel().getColumn(2).setPreferredWidth(100); // 关卡
+                table.getColumnModel().getColumn(3).setPreferredWidth(60);  // 难度
+                table.getColumnModel().getColumn(4).setPreferredWidth(60);  // 步数
+                table.getColumnModel().getColumn(5).setPreferredWidth(100); // 时间
+
+                // 9. 单元格渲染
+                DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+                centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+                for (int i = 0; i < table.getColumnCount(); i++) {
+                    table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+                }
+
+                // 10. 添加表格到滚动面板
+                JScrollPane scrollPane = new JScrollPane(table);
+                scrollPane.setBorder(BorderFactory.createLineBorder(new Color(180, 150, 120), 2));
+                scrollPane.getViewport().setBackground(new Color(240, 230, 220));
+
+                // 11. 添加装饰面板
+                JPanel tablePanel = new JPanel(new BorderLayout());
+                tablePanel.setBackground(new Color(240, 230, 220));
+                tablePanel.add(scrollPane, BorderLayout.CENTER);
+                mainPanel.add(tablePanel, BorderLayout.CENTER);
+
+                // 12. 底部装饰
+                JLabel footer = new JLabel("过关斩将显英豪，步步为营见真章");
+                footer.setFont(new Font("楷体", Font.ITALIC, 14));
+                footer.setHorizontalAlignment(SwingConstants.CENTER);
+                footer.setForeground(new Color(150, 100, 70));
+                mainPanel.add(footer, BorderLayout.SOUTH);
+
+                // 13. 创建自定义对话框
+                JDialog dialog = new JDialog();
+                dialog.setTitle("华容道·英雄榜");
+                dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+                dialog.setContentPane(mainPanel);
+                dialog.pack();
+                dialog.setSize(600, 400);
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+
+            } catch (Exception ex) {
+                // 错误处理
+                System.err.println("显示排行榜时出错: " + ex.getMessage());
+                ex.printStackTrace();
+
+                JOptionPane.showMessageDialog(null, "加载排行榜时出错，请检查数据文件\n" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
             }
-
-            JTable table = new JTable(rowData, columnNames);
-            table.setFont(new Font("宋体", Font.PLAIN, 14));
-            table.setRowHeight(30);
-            table.setEnabled(false); // 禁止编辑
-            table.setOpaque(false);
-
-            // 美化表格样式
-            table.setForeground(new Color(80, 60, 40));
-            table.setShowGrid(false);
-            table.setIntercellSpacing(new Dimension(0, 5));
-
-            // 表头样式
-            JTableHeader header = table.getTableHeader();
-            header.setFont(new Font("楷体", Font.BOLD, 16));
-            header.setForeground(new Color(160, 80, 40));
-            header.setBackground(new Color(230, 215, 195));
-            header.setPreferredSize(new Dimension(header.getWidth(), 35));
-
-            // 单元格渲染器
-            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-            for (int i = 0; i < table.getColumnCount(); i++) {
-                table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-            }
-
-            // 添加表格到滚动面板
-            JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setOpaque(false);
-            scrollPane.getViewport().setOpaque(false);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-            // 添加装饰边框
-            JPanel tablePanel = new JPanel(new BorderLayout());
-            tablePanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(180, 150, 120), 2),
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            ));
-            tablePanel.setBackground(new Color(240, 230, 220));
-            tablePanel.add(scrollPane, BorderLayout.CENTER);
-
-            mainPanel.add(tablePanel, BorderLayout.CENTER);
-
-            // 底部装饰
-            JPanel footerPanel = new JPanel();
-            footerPanel.setOpaque(false);
-            JLabel footerLabel = new JLabel("天下英雄，唯使君与操耳");
-            footerLabel.setFont(new Font("楷体", Font.ITALIC, 14));
-            footerLabel.setForeground(new Color(150, 100, 70));
-            footerPanel.add(footerLabel);
-            mainPanel.add(footerPanel, BorderLayout.SOUTH);
-
-            // 自定义对话框
-            JOptionPane optionPane = new JOptionPane(mainPanel, JOptionPane.PLAIN_MESSAGE);
-            JDialog dialog = optionPane.createDialog("华容道英雄榜");
-
-            // 移除默认Java图标
-            dialog.setIconImages(Collections.emptyList());
-
-            dialog.setResizable(false);
-            dialog.setVisible(true);
         });
+
         serverBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
                 isServer = true;

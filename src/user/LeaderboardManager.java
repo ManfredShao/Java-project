@@ -1,6 +1,10 @@
 package user;
 
+import model.Map;
+
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +20,7 @@ public class LeaderboardManager {
     }
 
     public static void addScore(Score newScore) {
-        if (newScore == null || newScore.playerName == null || newScore.playerName.trim().isEmpty()) {
+        if (newScore == null || newScore.getPlayerName() == null || newScore.getPlayerName().trim().isEmpty()) {
             return;
         }
         System.out.println("Adding new score: " + newScore);  // 调试输出
@@ -40,27 +44,72 @@ public class LeaderboardManager {
 
     private static void load() {
         scores.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                return;
+            } catch (IOException e) {
+                System.err.println("创建排行榜文件失败: " + e.getMessage());
+                return;
+            }
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                // 调试输出
+                System.out.println("Reading line: " + line);
+
                 String[] parts = line.split(",");
-                if (parts.length == 2) { // 添加数据验证
-                    scores.add(new Score(parts[0], Integer.parseInt(parts[1])));
+                // 确保有足够的部分：玩家名,步数,地图名,时间(可选)
+                if (parts.length >= 3) {
+                    try {
+                        String name = parts[0].trim();
+                        int steps = Integer.parseInt(parts[1].trim());
+                        String mapName = parts[2].trim();
+
+                        // 查找对应的地图枚举
+                        Map map = null;
+                        for (Map m : Map.values()) {
+                            if (m.name().equals(mapName)) {
+                                map = m;
+                                break;
+                            }
+                        }
+
+                        if (map == null) {
+                            System.err.println("未知地图名称: " + mapName);
+                            map = Map.轻骑试阵; // 默认地图
+                        }
+
+                        // 处理时间（如果有）
+                        LocalDateTime date = parts.length > 3 ? LocalDateTime.parse(parts[3].trim(), DateTimeFormatter.ISO_LOCAL_DATE_TIME) : LocalDateTime.now();
+
+                        scores.add(new Score(name, steps, map));
+                    } catch (Exception e) {
+                        System.err.println("解析行失败: " + line + ", 错误: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("忽略格式不正确的行: " + line);
                 }
             }
-        } catch (IOException | NumberFormatException e) {
-            // 至少记录日志
+        } catch (IOException e) {
             System.err.println("加载排行榜失败: " + e.getMessage());
-            // 或者初始化一个空排行榜
         }
     }
 
     private static void save() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
             for (Score score : scores) {
-                writer.println(score.playerName + "," + score.steps);
+                writer.println(String.format("%s,%d,%s,%s",
+                        score.getPlayerName(),
+                        score.getSteps(),
+                        score.getMap().name(),
+                        score.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            System.err.println("保存排行榜失败: " + e.getMessage());
         }
     }
 }

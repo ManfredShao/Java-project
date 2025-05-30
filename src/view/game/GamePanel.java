@@ -263,7 +263,7 @@ public class GamePanel extends ListenerPanel {
 
         //排行榜
         if (user.getUsername() != null && GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
-            LeaderboardManager.addScore(new Score(user.getUsername(), this.getSteps()));
+            LeaderboardManager.addScore(new Score(user.getUsername(), this.getSteps(), this.getLevel()));
         }
 
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
