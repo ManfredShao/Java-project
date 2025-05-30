@@ -3,6 +3,8 @@ package controller;
 import Online.SocketClient;
 import Online.SocketServer;
 import model.Map;
+import user.LeaderboardManager;
+import user.Score;
 import user.User;
 import view.FrameUtil;
 import view.game.CountdownTimer;
@@ -11,12 +13,15 @@ import view.login.IdentitySelectFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GameFrame extends JFrame {
@@ -26,7 +31,6 @@ public class GameFrame extends JFrame {
     private final GameController controller;
     private final AncientButton loadBtn;
     private final AncientButton saveBtn;
-    private final AncientButton exitBtn;
     private final AncientButton serverBtn;
     private final CountdownTimer time = new CountdownTimer();
     private final User user;
@@ -75,11 +79,12 @@ public class GameFrame extends JFrame {
         AncientButton restartBtn = FrameUtil.createButton(this, "重整旗鼓", 80, height);
         this.loadBtn = FrameUtil.createButton(this, "讀取戰局", 80, height);
         this.saveBtn = FrameUtil.createButton(this, "保存戰局", 80, height);
-        this.exitBtn = FrameUtil.createButton(this, "扭轉乾坤", 80, height);
+        AncientButton exitBtn = FrameUtil.createButton(this, "扭轉乾坤", 80, height);
         AncientButton solveBtnBFS = FrameUtil.createButton(this, "广域探骊BFS", 80, height);
         AncientButton solveBtnDFS = FrameUtil.createButton(this, "隐栈潜行DFS", 80, height);
         AncientButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
         AncientButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
+        AncientButton rankingBtn = FrameUtil.createButton(this, "排行", 80, height);
         AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
         AncientButton clientBtn = FrameUtil.createButton(this, "鉴棋", 80, height);
         this.serverBtn = FrameUtil.createButton(this, "掌棋", 80, height);
@@ -150,16 +155,16 @@ public class GameFrame extends JFrame {
         this.add(time, gbcTimer);
 
         // 创建新的右侧按钮面板
-        JPanel rightControlPanel = new JPanel(new GridLayout(7, 1, 5, 15)); // 3行1列，垂直间距10
+        JPanel rightControlPanel = new JPanel(new GridLayout(8, 1, 5, 15)); // 3行1列，垂直间距10
         rightControlPanel.setBackground(new Color(27, 27, 27));
         rightControlPanel.add(solveBtnBFS);
         rightControlPanel.add(solveBtnDFS);
         rightControlPanel.add(pauseBtn);
         rightControlPanel.add(resumeBtn);
+        rightControlPanel.add(rankingBtn);
         rightControlPanel.add(revokeBtn);
         rightControlPanel.add(clientBtn);
         rightControlPanel.add(serverBtn);
-
 
         // 添加右侧控制面板
         GridBagConstraints gbcRightCtrl = new GridBagConstraints();
@@ -171,6 +176,94 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.insets = new Insets(5, 30, 20, 50);
         this.add(rightControlPanel, gbcRightCtrl);
 
+        rankingBtn.addActionListener(e -> {
+            // 创建主面板
+            JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+            mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            mainPanel.setBackground(new Color(250, 245, 235)); // 米色背景
+
+            // 标题面板
+            JPanel titlePanel = new JPanel();
+            titlePanel.setOpaque(false);
+            JLabel titleLabel = new JLabel("英雄榜");
+            titleLabel.setFont(new Font("楷体", Font.BOLD, 28));
+            titleLabel.setForeground(new Color(120, 50, 30)); // 深棕色
+            titlePanel.add(titleLabel);
+            mainPanel.add(titlePanel, BorderLayout.NORTH);
+
+            // 创建表格显示排行榜
+            String[] columnNames = {"名次", "英雄名", "步数"};
+            Object[][] rowData = new Object[LeaderboardManager.getScores().size()][3];
+
+            int rank = 1;
+            for (Score s : LeaderboardManager.getScores()) {
+                rowData[rank-1][0] = rank;
+                rowData[rank-1][1] = s.getPlayerName();
+                rowData[rank-1][2] = s.getSteps();
+                rank++;
+            }
+
+            JTable table = new JTable(rowData, columnNames);
+            table.setFont(new Font("宋体", Font.PLAIN, 14));
+            table.setRowHeight(30);
+            table.setEnabled(false); // 禁止编辑
+            table.setOpaque(false);
+
+            // 美化表格样式
+            table.setForeground(new Color(80, 60, 40));
+            table.setShowGrid(false);
+            table.setIntercellSpacing(new Dimension(0, 5));
+
+            // 表头样式
+            JTableHeader header = table.getTableHeader();
+            header.setFont(new Font("楷体", Font.BOLD, 16));
+            header.setForeground(new Color(160, 80, 40));
+            header.setBackground(new Color(230, 215, 195));
+            header.setPreferredSize(new Dimension(header.getWidth(), 35));
+
+            // 单元格渲染器
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            // 添加表格到滚动面板
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+            // 添加装饰边框
+            JPanel tablePanel = new JPanel(new BorderLayout());
+            tablePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(180, 150, 120), 2),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            tablePanel.setBackground(new Color(240, 230, 220));
+            tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+            mainPanel.add(tablePanel, BorderLayout.CENTER);
+
+            // 底部装饰
+            JPanel footerPanel = new JPanel();
+            footerPanel.setOpaque(false);
+            JLabel footerLabel = new JLabel("天下英雄，唯使君与操耳");
+            footerLabel.setFont(new Font("楷体", Font.ITALIC, 14));
+            footerLabel.setForeground(new Color(150, 100, 70));
+            footerPanel.add(footerLabel);
+            mainPanel.add(footerPanel, BorderLayout.SOUTH);
+
+            // 自定义对话框
+            JOptionPane optionPane = new JOptionPane(mainPanel, JOptionPane.PLAIN_MESSAGE);
+            JDialog dialog = optionPane.createDialog("华容道英雄榜");
+
+            // 移除默认Java图标
+            dialog.setIconImages(Collections.emptyList());
+
+            dialog.setResizable(false);
+            dialog.setVisible(true);
+        });
         serverBtn.addActionListener(e -> {
             server.addConnectListener(socket -> {
                 isServer = true;
@@ -225,22 +318,22 @@ public class GameFrame extends JFrame {
         });
 
         clientBtn.addActionListener(e -> {
-            // 取得父窗口
+
             Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
-// 创建一个无标题、模态的对话框
+            // 创建对话框
             JDialog inputDialog = new JDialog((Frame) parentWindow, "加入战局", true);
             inputDialog.setLayout(new BorderLayout());
             inputDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             inputDialog.getContentPane().setBackground(new Color(27, 27, 27));
 
-// 1. 提示文字
+            // 提示文字
             JLabel prompt = new JLabel("请输入对方的 IP 地址：", SwingConstants.CENTER);
             prompt.setFont(new Font("楷体", Font.BOLD, 16));
             prompt.setForeground(new Color(245, 222, 179));
             prompt.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
             inputDialog.add(prompt, BorderLayout.NORTH);
 
-// 2. 输入框
+            // 输入框
             JTextField ipField = new JTextField();
             ipField.setFont(new Font("楷体", Font.PLAIN, 14));
             ipField.setForeground(Color.WHITE);
@@ -254,15 +347,13 @@ public class GameFrame extends JFrame {
             center.add(ipField);
             inputDialog.add(center, BorderLayout.CENTER);
 
-// 3. 按钮区
+            // 按钮区
             AncientButton okBtn = new AncientButton("确定");
             okBtn.setFont(new Font("楷体", Font.BOLD, 16));
             AncientButton cancelBtn = new AncientButton("取消");
             cancelBtn.setFont(new Font("楷体", Font.BOLD, 16));
 
-            okBtn.addActionListener(e2 -> {
-                inputDialog.dispose();
-            });
+            okBtn.addActionListener(e2 -> inputDialog.dispose());
             cancelBtn.addActionListener(e2 -> {
                 ipField.setText(null);
                 inputDialog.dispose();
@@ -274,19 +365,16 @@ public class GameFrame extends JFrame {
             btnPanel.add(cancelBtn);
             inputDialog.add(btnPanel, BorderLayout.SOUTH);
 
-// 4. 显示对话框并取得结果
+            // 显示对话框并取得结果
             inputDialog.pack();
             inputDialog.setLocationRelativeTo(parentWindow);
             inputDialog.setVisible(true);
 
-// pack 之后就能通过 ipField.getText() 拿到用户输入
+            // pack 之后就能通过 ipField.getText() 拿到用户输入
             String input = ipField.getText();
             if (input != null && !input.isBlank()) {
-                // 用户点击“确定”并输入了内容
                 SocketClient client = new SocketClient(input, 8888);
-                // …后续逻辑…
             } else {
-                // 用户取消或没输入
                 System.out.println("用户取消或未输入 IP");
             }
 
@@ -349,7 +437,7 @@ public class GameFrame extends JFrame {
             gamePanel.requestFocusInWindow();
         });
 
-        this.exitBtn.addActionListener(e -> {
+        exitBtn.addActionListener(e -> {
             IdentitySelectFrame identitySelectFrame = new IdentitySelectFrame();
             identitySelectFrame.setVisible(true);
             time.pause();

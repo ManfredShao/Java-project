@@ -5,6 +5,8 @@ import controller.GameFrame;
 import model.Direction;
 import model.Map;
 import model.MapModel;
+import user.LeaderboardManager;
+import user.Score;
 import user.User;
 import view.login.IdentitySelectFrame;
 
@@ -101,12 +103,12 @@ public class GamePanel extends ListenerPanel {
             for (int j = 0; j < map[0].length; j++) {
                 BoxComponent box = null;
                 if (map[i][j] == 1) {//卒
-                    box = new BoxComponent(new Color(27,27,27), i, j);
+                    box = new BoxComponent(new Color(27, 27, 27), i, j);
                     box.setSize(GRID_SIZE, GRID_SIZE);
                     box.setImage("卒.jpg");
                     map[i][j] = 0;
                 } else if (map[i][j] == 2) {//关羽
-                    box = new BoxComponent(new Color(27,27,27), i, j);
+                    box = new BoxComponent(new Color(27, 27, 27), i, j);
                     box.setSize(GRID_SIZE * 2, GRID_SIZE);
                     box.setImage("关羽.jpg");
                     map[i][j] = 0;
@@ -258,24 +260,17 @@ public class GamePanel extends ListenerPanel {
             controller.saveGame(user);
             frame.upDateGame();
         }
+
+        //排行榜
+        if (user.getUsername() != null && GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
+            LeaderboardManager.addScore(new Score(user.getUsername(), this.getSteps()));
+        }
+
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
 
-            JLabel label = new JLabel(String.format("<html><div style='"
-                            + "font-family: \"KaiTi\", \"LiSu\", \"KaiTi\", cursive; "
-                            + "color: #2E1D1A; "
-                            + "font-size: 24pt; "
-                            + "text-align: center;"
-                            + "line-height: 1.6;"
-                            + "'>"
-                            + "<span style='text-shadow: 1px 1px 2px #D3B17D;'>华容道尽，云开见龙</span><br>"
-                            + "巧行%d步，智破千重<br>"
-                            + "<span style='font-size: 16pt; color: #5C3317; letter-spacing: 1px;'>"
-                            + "⌛ 用时：%s"
-                            + "</span>"
-                            + "</div></html>",
-                    this.getSteps(), ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
+            JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"KaiTi\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "line-height: 1.6;" + "'>" + "<span style='text-shadow: 1px 1px 2px #D3B17D;'>华容道尽，云开见龙</span><br>" + "巧行%d步，智破千重<br>" + "<span style='font-size: 16pt; color: #5C3317; letter-spacing: 1px;'>" + "⌛ 用时：%s" + "</span>" + "</div></html>", this.getSteps(), ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             // 2. 创建透明图标（替换咖啡图标）
             Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);

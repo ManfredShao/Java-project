@@ -2,7 +2,6 @@ package view.game;
 
 import controller.GameFrame;
 import view.login.IdentitySelectFrame;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
