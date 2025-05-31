@@ -9,8 +9,5 @@
         <module name="huarongdao" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Java-project" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
