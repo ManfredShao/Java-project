@@ -45,53 +45,23 @@ public class LeaderboardManager {
     private static void load() {
         scores.clear();
         File file = new File(FILE_PATH);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                return;
-            } catch (IOException e) {
-                System.err.println("创建排行榜文件失败: " + e.getMessage());
-                return;
-            }
-        }
+        if (!file.exists()) return;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // 调试输出
-                System.out.println("Reading line: " + line);
-
-                String[] parts = line.split(",");
-                // 确保有足够的部分：玩家名,步数,地图名,时间(可选)
-                if (parts.length >= 3) {
-                    try {
+                try {
+                    String[] parts = line.split(",", 4); // 明确分割4部分
+                    if (parts.length == 4) {
                         String name = parts[0].trim();
                         int steps = Integer.parseInt(parts[1].trim());
-                        String mapName = parts[2].trim();
+                        Map map = Map.valueOf(parts[2].trim());
+                        LocalDateTime time = LocalDateTime.parse(parts[3].trim());
 
-                        // 查找对应的地图枚举
-                        Map map = null;
-                        for (Map m : Map.values()) {
-                            if (m.name().equals(mapName)) {
-                                map = m;
-                                break;
-                            }
-                        }
-
-                        if (map == null) {
-                            System.err.println("未知地图名称: " + mapName);
-                            map = Map.轻骑试阵; // 默认地图
-                        }
-
-                        // 处理时间（如果有）
-                        LocalDateTime date = parts.length > 3 ? LocalDateTime.parse(parts[3].trim(), DateTimeFormatter.ISO_LOCAL_DATE_TIME) : LocalDateTime.now();
-
-                        scores.add(new Score(name, steps, map));
-                    } catch (Exception e) {
-                        System.err.println("解析行失败: " + line + ", 错误: " + e.getMessage());
+                        scores.add(new Score(name, steps, map, time)); // 使用保存的时间
                     }
-                } else {
-                    System.err.println("忽略格式不正确的行: " + line);
+                } catch (Exception e) {
+                    System.err.println("忽略无效记录: " + line + " 错误: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
