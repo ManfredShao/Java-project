@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GameFrame extends JFrame {
@@ -86,6 +85,7 @@ public class GameFrame extends JFrame {
         AncientButton pauseBtn = FrameUtil.createButton(this, "凝思", 80, height);
         AncientButton resumeBtn = FrameUtil.createButton(this, "续弈", 80, height);
         AncientButton rankingBtn = FrameUtil.createButton(this, "排行", 80, height);
+        AncientButton aiBtn = FrameUtil.createButton(this, "AI", 80, height);
         AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
         AncientButton clientBtn = FrameUtil.createButton(this, "鉴棋", 80, height);
         this.serverBtn = FrameUtil.createButton(this, "掌棋", 80, height);
@@ -156,8 +156,9 @@ public class GameFrame extends JFrame {
         this.add(time, gbcTimer);
 
         // 创建新的右侧按钮面板
-        JPanel rightControlPanel = new JPanel(new GridLayout(8, 1, 5, 15)); // 3行1列，垂直间距10
+        JPanel rightControlPanel = new JPanel(new GridLayout(9, 1, 5, 15)); // 3行1列，垂直间距10
         rightControlPanel.setBackground(new Color(27, 27, 27));
+        rightControlPanel.add(aiBtn);
         rightControlPanel.add(solveBtnBFS);
         rightControlPanel.add(solveBtnDFS);
         rightControlPanel.add(pauseBtn);
@@ -176,6 +177,79 @@ public class GameFrame extends JFrame {
         gbcRightCtrl.fill = GridBagConstraints.BOTH;
         gbcRightCtrl.insets = new Insets(5, 30, 20, 50);
         this.add(rightControlPanel, gbcRightCtrl);
+
+        aiBtn.addActionListener(e -> {
+            // 1. 创建非模态进度对话框（允许用户操作其他界面）
+            JDialog loadingDialog = new JDialog(GameFrame.this, "AI思考中", false);
+            loadingDialog.setLayout(new BorderLayout(10, 10));
+            loadingDialog.setResizable(false);
+
+            // 2. 添加装饰性面板
+            JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+            contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            contentPanel.setBackground(new Color(245, 245, 245));
+
+            // 3. 加载提示
+            JLabel loadingLabel = new JLabel(
+                    "<html><center>正在运筹帷幄<br><span style='font-size:12px;color:#666;'>请稍候...</span></center></html>",
+                    SwingConstants.CENTER
+            );
+            loadingLabel.setFont(new Font("楷体", Font.BOLD, 16));
+            loadingLabel.setForeground(new Color(70, 70, 70));
+
+            // 4. 进度条
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(200, 20));
+
+            // 5. 取消按钮
+            AncientButton cancelBtn = new AncientButton("取消");
+            cancelBtn.setFont(new Font("楷体", Font.PLAIN, 14));
+            cancelBtn.addActionListener(ev -> {
+                AIClient.cancelCurrentRequest();
+                loadingDialog.dispose();
+                gamePanel.requestFocusInWindow();
+            });
+            // 6. 组装组件
+            contentPanel.add(loadingLabel, BorderLayout.CENTER);
+            contentPanel.add(progressBar, BorderLayout.SOUTH);
+
+            JPanel btnPanel = new JPanel();
+            btnPanel.add(cancelBtn);
+
+            loadingDialog.add(contentPanel, BorderLayout.CENTER);
+            loadingDialog.add(btnPanel, BorderLayout.SOUTH);
+            loadingDialog.pack();
+            loadingDialog.setLocationRelativeTo(GameFrame.this);
+
+            // 7. 显示输入对话框
+            String question = JOptionPane.showInputDialog(
+                    GameFrame.this,
+                    "<html><div style='width:300px;'>请输入您想咨询的问题：</div></html>",
+                    "AI军师",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (question != null && !question.trim().isEmpty()) {
+                // 8. 显示加载对话框
+                loadingDialog.setVisible(true);
+
+                // 9. 异步调用AI
+                AIClient.chatWithAIAsync(
+                        question,
+                        answer -> SwingUtilities.invokeLater(() -> {
+                            loadingDialog.dispose();
+                            showAIResponse(answer);
+                        }),
+                        error -> SwingUtilities.invokeLater(() -> {
+                            loadingDialog.dispose();
+                            showErrorDialog("AI军师暂时无法响应", error.getMessage());
+                        })
+                );
+            }
+        });
+
+// 显示错误对话框的独立方法
 
         rankingBtn.addActionListener(e -> {
             try {
@@ -605,5 +679,31 @@ public class GameFrame extends JFrame {
             server.sendLine("ERROR: " + ex.getMessage());
         }
     }
+    // 显示AI回复的独立方法
+    private void showAIResponse(String answer) {
+        JTextArea textArea = new JTextArea(answer);
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setFont(new Font("楷体", Font.PLAIN, 14));
 
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(500, 300));
+
+        JOptionPane.showMessageDialog(
+                this,
+                scrollPane,
+                "AI回复",
+                JOptionPane.INFORMATION_MESSAGE);
+        gamePanel.requestFocusInWindow();
+    }
+    private void showErrorDialog(String title, String message) {
+        JOptionPane.showMessageDialog(
+                this,
+                "<html><div style='width:300px;'>" + message + "</div></html>",
+                title,
+                JOptionPane.ERROR_MESSAGE
+        );
+        gamePanel.requestFocusInWindow();
+    }
 }
