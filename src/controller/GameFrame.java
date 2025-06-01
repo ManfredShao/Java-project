@@ -80,7 +80,7 @@ public class GameFrame extends JFrame {
         super("華容道·漢末風雲");
         this.getContentPane().setBackground(new Color(27, 27, 27));
         this.setLayout(new GridBagLayout());
-        gamePanel = new GamePanel(level,1.2f);
+        gamePanel = new GamePanel(level, 1.2f);
         gamePanel.setBackground(new Color(27, 27, 27));
         gameState = new GameState();
         this.controller = new GameController(gamePanel, level);
@@ -99,7 +99,7 @@ public class GameFrame extends JFrame {
         AncientButton aiBtn = FrameUtil.createButton(this, "AI", 80, height);
         AncientButton revokeBtn = FrameUtil.createButton(this, "撤兵", 80, height);
         AncientButton clientBtn = FrameUtil.createButton(this, "鉴棋", 80, height);
-        AncientButton questionBtn = FrameUtil.createButton(this,"缓兵之计", 80, height);
+        AncientButton questionBtn = FrameUtil.createButton(this, "缓兵之计", 80, height);
         this.serverBtn = FrameUtil.createButton(this, "掌棋", 80, height);
         JLabel stepLabel = FrameUtil.createJLabel(this, "佈陣開局", new Font("楷体", Font.BOLD, 22), 80, height);
         stepLabel.setForeground(new Color(245, 222, 179));
@@ -200,7 +200,7 @@ public class GameFrame extends JFrame {
             }
         });
 
-        twoSolveBtn.addActionListener(e ->{
+        twoSolveBtn.addActionListener(e -> {
             JFrame frame = new JFrame("军师錦囊");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setSize(320, 280);
@@ -217,7 +217,7 @@ public class GameFrame extends JFrame {
 
             JLabel label = new JLabel("錦囊有二，任擇其一");
             label.setFont(new Font("楷体", Font.BOLD, 22));
-            label.setForeground(new Color(120,0,0));
+            label.setForeground(new Color(120, 0, 0));
             label.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(Box.createVerticalStrut(10));
             panel.add(label);
@@ -260,7 +260,7 @@ public class GameFrame extends JFrame {
             // 2. 添加装饰性面板
             JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
             contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            contentPanel.setBackground(new Color(245, 245, 245));
+            contentPanel.setBackground(new Color(250, 245, 235));
 
             // 3. 加载提示
             JLabel loadingLabel = new JLabel(
@@ -283,11 +283,13 @@ public class GameFrame extends JFrame {
                 loadingDialog.dispose();
                 gamePanel.requestFocusInWindow();
             });
+
             // 6. 组装组件
             contentPanel.add(loadingLabel, BorderLayout.CENTER);
             contentPanel.add(progressBar, BorderLayout.SOUTH);
 
             JPanel btnPanel = new JPanel();
+            btnPanel.setBackground(new Color(250, 245, 235));
             btnPanel.add(cancelBtn);
 
             loadingDialog.add(contentPanel, BorderLayout.CENTER);
@@ -296,31 +298,83 @@ public class GameFrame extends JFrame {
             loadingDialog.setLocationRelativeTo(GameFrame.this);
 
             // 7. 显示输入对话框
-            String question = JOptionPane.showInputDialog(
-                    GameFrame.this,
-                    "<html><div style='width:300px;'>请输入您想咨询的问题：</div></html>",
-                    "AI军师",
-                    JOptionPane.PLAIN_MESSAGE
-            );
+            Window parentWindow = SwingUtilities.getWindowAncestor(GameFrame.this);
+            JDialog inputDialog = new JDialog((Frame) parentWindow, "AI军师", true);
+            inputDialog.setLayout(new BorderLayout());
+            inputDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            inputDialog.getContentPane().setBackground(new Color(27, 27, 27));
 
-            if (question != null && !question.trim().isEmpty()) {
-                // 8. 显示加载对话框
-                loadingDialog.setVisible(true);
+            // 提示文字
+            JLabel prompt = new JLabel("请输入您想咨询的问题：", SwingConstants.CENTER);
+            prompt.setFont(new Font("楷体", Font.BOLD, 18));
+            prompt.setForeground(new Color(245, 222, 179));
+            prompt.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+            inputDialog.add(prompt, BorderLayout.NORTH);
 
-                // 9. 异步调用AI
-                AIClient.chatWithAIAsync(
-                        question,
-                        answer -> SwingUtilities.invokeLater(() -> {
-                            loadingDialog.dispose();
-                            showAIResponse(answer);
-                        }),
-                        error -> SwingUtilities.invokeLater(() -> {
-                            loadingDialog.dispose();
-                            showErrorDialog("AI军师暂时无法响应", error.getMessage());
-                        })
-                );
-            }
+            // 输入框
+            JTextField question = new JTextField();
+            question.setFont(new Font("楷体", Font.PLAIN, 14));
+            question.setForeground(Color.WHITE);
+            question.setBackground(new Color(50, 50, 50));
+            question.setCaretColor(Color.WHITE);
+            question.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            question.setPreferredSize(new Dimension(350, 30));
+
+            JPanel center = new JPanel();
+            center.setBackground(new Color(27, 27, 27));
+            center.add(question);
+            inputDialog.add(center, BorderLayout.CENTER);
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+            buttonPanel.setBackground(new Color(27, 27, 27));
+
+            // 按钮区
+            AncientButton okBtn = new AncientButton("确定");
+            okBtn.setFont(new Font("楷体", Font.BOLD, 12));
+            AncientButton cancelBtn2 = new AncientButton("取消");
+            cancelBtn2.setFont(new Font("楷体", Font.BOLD, 12));
+
+            buttonPanel.add(okBtn);
+            buttonPanel.add(cancelBtn2);
+
+            okBtn.addActionListener(e2 -> {
+                // 获取输入框的文本并判断是否为空
+                String text = question.getText().trim();
+                if (!text.isEmpty()) {
+                    // 8. 显示加载对话框
+                    loadingDialog.setVisible(true);
+
+                    // 9. 异步调用AI
+                    AIClient.chatWithAIAsync(
+                            text,
+                            answer -> SwingUtilities.invokeLater(() -> {
+                                loadingDialog.dispose();
+                                showAIResponse(answer);
+                            }),
+                            error -> SwingUtilities.invokeLater(() -> {
+                                loadingDialog.dispose();
+                                showErrorDialog("AI军师暂时无法响应", error.getMessage());
+                            })
+                    );
+                    inputDialog.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(inputDialog, "问题不能为空", "提示", JOptionPane.WARNING_MESSAGE);
+                }
+            });
+
+            cancelBtn2.addActionListener(e2 -> {
+                question.setText(null);
+                inputDialog.dispose();
+            });
+
+            inputDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+            inputDialog.pack();
+            inputDialog.setLocationRelativeTo(GameFrame.this);
+            inputDialog.setVisible(true);
         });
+
+
 
 // 显示错误对话框的独立方法
 
@@ -748,13 +802,14 @@ public class GameFrame extends JFrame {
             server.sendLine("ERROR: " + ex.getMessage());
         }
     }
+
     // 显示AI回复的独立方法
     private void showAIResponse(String answer) {
         JTextArea textArea = new JTextArea(answer);
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setFont(new Font("楷体", Font.PLAIN, 14));
+        textArea.setFont(new Font("楷体", Font.PLAIN, 16));
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(500, 300));
@@ -766,6 +821,7 @@ public class GameFrame extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
         gamePanel.requestFocusInWindow();
     }
+
     private void showErrorDialog(String title, String message) {
         JOptionPane.showMessageDialog(
                 this,
