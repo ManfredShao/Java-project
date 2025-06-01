@@ -198,6 +198,7 @@ public class GameFrame extends JFrame {
             } else {
                 Question.showQuestionDialog(-1, gamePanel);
             }
+            gamePanel.requestFocusInWindow();
         });
 
         twoSolveBtn.addActionListener(e -> {
@@ -249,6 +250,7 @@ public class GameFrame extends JFrame {
 
             frame.setContentPane(panel);
             frame.setVisible(true);
+            gamePanel.requestFocusInWindow();
         });
 
         aiBtn.addActionListener(e -> {
@@ -372,6 +374,7 @@ public class GameFrame extends JFrame {
             inputDialog.pack();
             inputDialog.setLocationRelativeTo(GameFrame.this);
             inputDialog.setVisible(true);
+            gamePanel.requestFocusInWindow();
         });
 
 
@@ -481,6 +484,7 @@ public class GameFrame extends JFrame {
 
                 JOptionPane.showMessageDialog(null, "加载排行榜时出错，请检查数据文件\n" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
             }
+            gamePanel.requestFocusInWindow();
         });
 
         serverBtn.addActionListener(e -> {
@@ -547,7 +551,7 @@ public class GameFrame extends JFrame {
 
             // 提示文字
             JLabel prompt = new JLabel("请输入对方的 IP 地址：", SwingConstants.CENTER);
-            prompt.setFont(new Font("楷体", Font.BOLD, 16));
+            prompt.setFont(new Font("楷体", Font.BOLD, 17));
             prompt.setForeground(new Color(245, 222, 179));
             prompt.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
             inputDialog.add(prompt, BorderLayout.NORTH);
@@ -559,7 +563,7 @@ public class GameFrame extends JFrame {
             ipField.setBackground(new Color(50, 50, 50));
             ipField.setCaretColor(Color.WHITE);
             ipField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            ipField.setPreferredSize(new Dimension(200, 30));
+            ipField.setPreferredSize(new Dimension(250, 30));
 
             JPanel center = new JPanel();
             center.setBackground(new Color(27, 27, 27));
@@ -568,9 +572,9 @@ public class GameFrame extends JFrame {
 
             // 按钮区
             AncientButton okBtn = new AncientButton("确定");
-            okBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            okBtn.setFont(new Font("楷体", Font.BOLD, 14));
             AncientButton cancelBtn = new AncientButton("取消");
-            cancelBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            cancelBtn.setFont(new Font("楷体", Font.BOLD, 14));
 
             okBtn.addActionListener(e2 -> inputDialog.dispose());
             cancelBtn.addActionListener(e2 -> {

@@ -316,8 +316,6 @@ public class GamePanel extends ListenerPanel {
 
             AncientButton confirmBtn = new AncientButton("已知晓");
             confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
-            confirmBtn.setBackground(new Color(250, 245, 235)); // 设置按钮背景颜色
-            confirmBtn.setOpaque(true);  // 使按钮背景颜色生效
             confirmBtn.addActionListener(e -> {
                 SwingUtilities.getWindowAncestor(this).dispose();
                 new IdentitySelectFrame();
