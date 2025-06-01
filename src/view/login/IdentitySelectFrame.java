@@ -11,7 +11,7 @@ import java.awt.*;
 public class IdentitySelectFrame extends JFrame {
     public IdentitySelectFrame() {
         setTitle("身份选择");
-        setSize(300, 330);
+        setSize(300, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -27,7 +27,7 @@ public class IdentitySelectFrame extends JFrame {
         title.setForeground(new Color(245, 222, 179));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(title);
-        panel.add(Box.createVerticalStrut(20));
+        panel.add(Box.createVerticalStrut(40));
 
         // 按钮
         AncientButton guestBtn = new AncientButton("游侠暂驻·萍踪无迹");
@@ -35,7 +35,7 @@ public class IdentitySelectFrame extends JFrame {
         guestBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         playerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(guestBtn);
-        panel.add(Box.createVerticalStrut(15));
+        panel.add(Box.createVerticalStrut(20));
         panel.add(playerBtn);
 
         // 事件
@@ -57,28 +57,31 @@ public class IdentitySelectFrame extends JFrame {
         panel.setBackground(new Color(27, 27, 27));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
+        panel.add(Box.createVerticalStrut(10));
         JLabel label = new JLabel("择阵而入");
         label.setFont(new Font("楷体", Font.BOLD, 22));
         label.setForeground(new Color(245, 222, 179));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(label);
-        panel.add(Box.createVerticalStrut(15));
+        panel.add(Box.createVerticalStrut(30));
 
         for (Map level : Map.values()) {
             AncientButton btn = new AncientButton(level.name());
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(btn);
-            panel.add(Box.createVerticalStrut(10));
+            panel.add(Box.createVerticalStrut(15));
             btn.addActionListener(e -> {
                 frame.dispose();
                 GameFrame gf = new GameFrame(level, user);
                 gf.setVisible(true);
                 if (user.getPassword() == null && user.getUsername() == null) {
+
                     gf.getSaveBtn().setVisible(false);
                     gf.getLoadBtn().setVisible(false);
                     gf.getServerBtn().setVisible(false);
 
+                }else{
+                    gf.getLoginBtn().setVisible(false);
                 }
             });
         }

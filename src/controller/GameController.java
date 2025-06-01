@@ -37,7 +37,7 @@ public class GameController extends Component {
                     "font-family: \"楷体\",\"华文楷体\",serif;" +
                     "text-align: center;" +
                     "color: #5C3317;" +
-                    "font-size: 14pt;" +
+                    "font-size: 15pt;" +
                     "'>" +
                     "<p>建安十三年冬，曹公兵败赤壁</p>" +
                     "<p>率残部经华容道遁走</p>" +
@@ -48,16 +48,17 @@ public class GameController extends Component {
                     "<p><span style='color:#C0C0C0;'>&#9632;</span> 白衣乃将领，如子龙守关</p>" +
                     "</div></html>");
 
+
             // 设置内容标签的内边距
-            content.setBorder(BorderFactory.createEmptyBorder(5, 20, 0, 20));
+            content.setBorder(BorderFactory.createEmptyBorder(5, 25, 0, 25));
 
             JLabel titleLabel = new JLabel("<html><div style='" +
                     "color:#8B0000;" +
-                    "font-size:22pt;" +
+                    "font-size:24pt;" +
                     "font-weight:bold;" +
                     "'>漢末華容道</div></html>", SwingConstants.CENTER);
             // 设置标题标签的内边距
-            titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 10));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
             JDialog dialog = new JDialog();
             dialog.setTitle(""); // 清空默认标题

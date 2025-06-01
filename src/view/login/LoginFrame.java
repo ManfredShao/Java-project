@@ -275,8 +275,12 @@ public class LoginFrame extends JFrame {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "军情有变", true);
         dialog.setLayout(new BorderLayout());
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        dialog.getContentPane().setBackground(new Color(250, 245, 235));
         JLabel message = new JLabel("<html><div style='text-align: center;'>兵符有误<br>恐为敌军细作</div></html>", SwingConstants.CENTER);
+        message.setForeground(new Color(120, 0, 0));
         message.setFont(new Font("楷体", Font.BOLD, 20));
+        message.setOpaque(true);
+        message.setBackground(new Color(250, 245, 235));
         dialog.add(message, BorderLayout.CENTER);
         controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
         confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
@@ -285,6 +289,7 @@ public class LoginFrame extends JFrame {
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(250, 245, 235));
         buttonPanel.add(confirmBtn);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -299,8 +304,12 @@ public class LoginFrame extends JFrame {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "万事俱备", true);
         dialog.setLayout(new BorderLayout());
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        dialog.getContentPane().setBackground(new Color(250, 245, 235));
         JLabel message = new JLabel("<html><div style='text-align: center;'>注册成功<br>请再次登录</div></html>", SwingConstants.CENTER);
+        message.setForeground(new Color(120, 0, 0));
         message.setFont(new Font("楷体", Font.BOLD, 20));
+        message.setOpaque(true);
+        message.setBackground(new Color(250, 245, 235));
         dialog.add(message, BorderLayout.CENTER);
         controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
         confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
@@ -309,6 +318,7 @@ public class LoginFrame extends JFrame {
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(250, 245, 235));
         buttonPanel.add(confirmBtn);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -323,8 +333,12 @@ public class LoginFrame extends JFrame {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(LoginFrame.this), "军情有变", true);
         dialog.setLayout(new BorderLayout());
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        dialog.getContentPane().setBackground(new Color(250, 245, 235));
         JLabel message = new JLabel("<html><div style='text-align: center;'>此用户已注册</div></html>", SwingConstants.CENTER);
+        message.setForeground(new Color(120, 0, 0));
         message.setFont(new Font("楷体", Font.BOLD, 20));
+        message.setOpaque(true);
+        message.setBackground(new Color(250, 245, 235));
         dialog.add(message, BorderLayout.CENTER);
         controller.AncientButton confirmBtn = new controller.AncientButton("已知晓");
         confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
@@ -333,6 +347,7 @@ public class LoginFrame extends JFrame {
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(250, 245, 235));
         buttonPanel.add(confirmBtn);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 

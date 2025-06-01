@@ -26,13 +26,15 @@ public class GamePanel extends ListenerPanel {
     private GameController controller;
     private JLabel stepLabel;
     private final int GRID_SIZE;
+    private final float scaleFactor;
     private BoxComponent selectedBox;
     private ArrayList<int[][]> allSteps;
     private int steps;
     private Map level;
 
-    public GamePanel(Map mapLevel) {
+    public GamePanel(Map mapLevel,float scaleFactor) {
         this.level = mapLevel;
+        this.scaleFactor = scaleFactor;
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         Rectangle effectiveBounds = gd.getDefaultConfiguration().getBounds();
@@ -45,8 +47,8 @@ public class GamePanel extends ListenerPanel {
         int baseSize = Math.min(usableWidth / 4, usableHeight / 5);
 
         // 应用系统缩放
-        float scale = (float) gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
-        GRID_SIZE = (int) (baseSize / scale);
+        float screenScale = (float) gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
+        GRID_SIZE = (int) (baseSize / screenScale * scaleFactor);
 
         // 设置组件尺寸（保留边框）
         int panelWidth = 4 * GRID_SIZE + 4;
@@ -270,12 +272,36 @@ public class GamePanel extends ListenerPanel {
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
             ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().pause();
 
-            JLabel label = new JLabel(String.format("<html><div style='" + "font-family: \"KaiTi\", \"LiSu\", \"KaiTi\", cursive; " + "color: #2E1D1A; " + "font-size: 24pt; " + "text-align: center;" + "line-height: 1.6;" + "'>" + "<span style='text-shadow: 1px 1px 2px #D3B17D;'>华容道尽，云开见龙</span><br>" + "巧行%d步，智破千重<br>" + "<span style='font-size: 16pt; color: #5C3317; letter-spacing: 1px;'>" + "⌛ 用时：%s" + "</span>" + "</div></html>", this.getSteps(), ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()));
+            JLabel label = new JLabel(String.format(
+                    "<html>"
+                            + "<div style='"
+                            +   "font-family: \"KaiTi\", \"LiSu\", \"KaiTi\", cursive; "
+                            +   "color: #2E1D1A; "
+                            +   "font-size: 24pt; "
+                            +   "text-align: center; "
+                            +   "line-height: 1.6; "
+                            + "'>"
+                            +   "<span style='text-shadow: 1px 1px 2px #D3B17D;'>华容道尽，云开见龙</span><br>"
+                            +   "巧行%d步，智破千重<br><br>"
+                            +   "<span style='font-size: 16pt; color: #5C3317; letter-spacing: 1px;'>"
+                            +     "⌛ 用时：%s"
+                            +   "</span>"
+                            + "</div>"
+                            + "</html>",
+                    this.getSteps(),
+                    ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getLeftTime()
+            ));
+
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            // 2. 创建透明图标（替换咖啡图标）
-            Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+            label.setBackground(new Color(250, 245, 235));  // 设置label背景颜色
+            label.setOpaque(true);  // 使背景颜色生效
+
             JDialog dialog = new JDialog();
             dialog.setTitle("云长义释，将军可速行！");
+            dialog.setBackground(new Color(250, 245, 235)); // 设置dialog背景颜色
+
+// 创建透明图标（替换咖啡图标）
+            Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             dialog.setIconImage(emptyIcon); // 移除Java图标
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setLayout(new BorderLayout());
@@ -283,6 +309,8 @@ public class GamePanel extends ListenerPanel {
 
             AncientButton confirmBtn = new AncientButton("已知晓");
             confirmBtn.setFont(new Font("楷体", Font.BOLD, 16));
+            confirmBtn.setBackground(new Color(250, 245, 235)); // 设置按钮背景颜色
+            confirmBtn.setOpaque(true);  // 使按钮背景颜色生效
             confirmBtn.addActionListener(e -> {
                 SwingUtilities.getWindowAncestor(this).dispose();
                 new IdentitySelectFrame();
@@ -290,15 +318,17 @@ public class GamePanel extends ListenerPanel {
             });
 
             JPanel btnPanel = new JPanel();
+            btnPanel.setBackground(new Color(250, 245, 235)); // 设置按钮面板的背景颜色
             btnPanel.add(confirmBtn);
             dialog.add(btnPanel, BorderLayout.SOUTH);
 
-            // 自适应大小并居中显示
+// 自适应大小并居中显示
             dialog.pack();
             dialog.setSize(400, 300);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
             dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
         }
         return true;
     }
@@ -346,6 +376,14 @@ public class GamePanel extends ListenerPanel {
 
     public void setLeftTime(String leftTime) {
         ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().setLeftTime(leftTime);
+    }
+
+    public String getLeftTime() {
+        return ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().getUsedTime();
+    }
+
+    public void setLeftTime() {
+        ((GameFrame) SwingUtilities.getWindowAncestor(this)).getTime().addTime();
     }
 
     public void refreshStepLabel() {//用于撤回

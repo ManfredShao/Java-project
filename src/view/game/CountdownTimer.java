@@ -2,13 +2,15 @@ package view.game;
 
 import controller.GameFrame;
 import view.login.IdentitySelectFrame;
+
+import javax.naming.InitialContext;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CountdownTimer extends JPanel {
-    private final int INITIAL_COUNT = 180;
+    private int INITIAL_COUNT = 180;
     private int count = INITIAL_COUNT;
     private final Timer timer;
     private final JLabel label;
@@ -102,5 +104,10 @@ public class CountdownTimer extends JPanel {
     public String getUsedTime() {
         LeftTime = INITIAL_COUNT - count;
         return String.valueOf(LeftTime);
+    }
+
+    public void addTime(){
+        INITIAL_COUNT = INITIAL_COUNT + 60;
+        count = count + 60;
     }
 }
