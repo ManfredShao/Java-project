@@ -8,21 +8,26 @@ public class Score implements Comparable<Score> {
     private final String playerName;
     private final int steps;
     private final Map map; // 使用Map枚举代替level
-    private final LocalDateTime date;
+    private final LocalDateTime completionTime;
 
-    public Score(String name, int steps, Map map) {
-        this.playerName = name;
+    public Score(String playerName, int steps, Map map, LocalDateTime completionTime) {
+        this.playerName = playerName;
         this.steps = steps;
         this.map = map;
-        this.date = LocalDateTime.now();
+        this.completionTime = completionTime;
     }
 
+    // 保留旧构造函数（自动记录当前时间）
+    public Score(String playerName, int steps, Map map) {
+        this(playerName, steps, map, LocalDateTime.now());
+    }
     // Getters
     public String getPlayerName() { return playerName; }
     public int getSteps() { return steps; }
     public Map getMap() { return map; }
-    public LocalDateTime getDate() { return date; }
-
+    public LocalDateTime getDate() {
+        return completionTime;
+    }
     @Override
     public int compareTo(Score other) {
         // 先按关卡难度降序，再按步数升序
@@ -37,7 +42,7 @@ public class Score implements Comparable<Score> {
                 playerName,
                 steps,
                 map.name(), // 保存枚举名称
-                date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                completionTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 
     public String toDisplayString() {

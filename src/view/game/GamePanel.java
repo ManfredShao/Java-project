@@ -13,6 +13,7 @@ import view.login.IdentitySelectFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -265,8 +266,14 @@ public class GamePanel extends ListenerPanel {
 
         //排行榜
         if (user.getUsername() != null && GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
-            LeaderboardManager.addScore(new Score(user.getUsername(), this.getSteps(), this.getLevel()));
-        }
+            LocalDateTime completionTime = LocalDateTime.now(); // 记录完成时刻
+            Score score = new Score(
+                    user.getUsername(),
+                    this.getSteps(),
+                    this.getLevel(),
+                    completionTime  // 使用明确的时间
+            );
+            LeaderboardManager.addScore(score);        }
 
         this.stepLabel.setText(String.format("移步: %d", this.getSteps()));
         if (GameController.model_changed.getId(4, 1) == 4 && GameController.model_changed.getId(4, 2) == 4) {
@@ -401,8 +408,8 @@ public class GamePanel extends ListenerPanel {
         final int endX = targetCol * GRID_SIZE + 2;
         final int endY = targetRow * GRID_SIZE + 2;
 
-        final int duration = 70; // 动画总时长，毫秒
-        final int steps = 85;     // 动画步数，越多越平滑
+        final int duration = 100; // 动画总时长，毫秒
+        final int steps = 50;     // 动画步数，越多越平滑
         final int delay = duration / steps;
 
         final int dx = (endX - startX) / steps;
