@@ -808,31 +808,87 @@ public class GameFrame extends JFrame {
     }
 
     // 显示AI回复的独立方法
+    // 显示AI回复的独立方法
     private void showAIResponse(String answer) {
+
+        JDialog dialog = new JDialog(
+                (Frame) SwingUtilities.getWindowAncestor(this),
+                "AI回复",
+                true
+        );
+        dialog.setLayout(new BorderLayout());
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+
+        dialog.getContentPane().setBackground(new Color(250, 245, 235));
+
         JTextArea textArea = new JTextArea(answer);
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setFont(new Font("楷体", Font.PLAIN, 16));
+        textArea.setBackground(new Color(250, 245, 235)); // 文本区域背景设为 (250,245,235)
+        textArea.setForeground(new Color(70, 70, 70));     // 文本颜色设为深灰
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(500, 300));
+        scrollPane.setBackground(new Color(250, 245, 235));
+        scrollPane.getViewport().setBackground(new Color(250, 245, 235));
 
-        JOptionPane.showMessageDialog(
-                this,
-                scrollPane,
-                "AI回复",
-                JOptionPane.INFORMATION_MESSAGE);
+        dialog.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(250, 245, 235));
+        AncientButton okButton = new AncientButton("确定");
+        okButton.setFont(new Font("楷体", Font.PLAIN, 14));
+        okButton.addActionListener(e -> {
+            dialog.dispose();             // 点击后关闭对话框
+            gamePanel.requestFocusInWindow(); // 如果需要让游戏面板继续获取焦点
+        });
+        buttonPanel.add(okButton);
+
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
         gamePanel.requestFocusInWindow();
     }
 
     private void showErrorDialog(String title, String message) {
-        JOptionPane.showMessageDialog(
-                this,
-                "<html><div style='width:300px;'>" + message + "</div></html>",
-                title,
-                JOptionPane.ERROR_MESSAGE
-        );
+        JFrame frame = new JFrame(title);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(320, 200);
+        frame.setLocationRelativeTo(null);
+
+        Image emptyIcon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        frame.setIconImage(emptyIcon);
+
+        // 纯色背景面板
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(250, 245, 235));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel label = new JLabel(message);
+        label.setFont(new Font("楷体", Font.BOLD, 14));
+        label.setForeground(new Color(120,0,0));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(25));
+
+        AncientButton confirmBtn = FrameUtil.createButton(frame, "已知晓", 80, 50);
+
+        confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(confirmBtn);
+
+        confirmBtn.addActionListener(f -> {
+            frame.dispose(); // 关闭对话框
+        });
+
+        frame.setContentPane(panel);
+        frame.setVisible(true);
         gamePanel.requestFocusInWindow();
     }
 }
