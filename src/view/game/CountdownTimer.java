@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CountdownTimer extends JPanel {
-    private int INITIAL_COUNT = 180;
+    private int INITIAL_COUNT = 300;
     private int count = INITIAL_COUNT;
     private final Timer timer;
     private final JLabel label;

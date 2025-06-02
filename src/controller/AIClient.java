@@ -2,6 +2,7 @@ package controller;
 
 import okhttp3.*;
 import org.json.*;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -12,8 +13,7 @@ public class AIClient {
     private static volatile Call currentCall; // 当前网络请求（支持取消）
 
     // 配置HTTP客户端（包含超时设置）
-    private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)  // 连接超时
+    private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)  // 连接超时
             .readTimeout(120, TimeUnit.SECONDS)    // 读取超时
             .writeTimeout(30, TimeUnit.SECONDS)    // 写入超时
             .callTimeout(180, TimeUnit.SECONDS)    // 总超时
@@ -21,37 +21,23 @@ public class AIClient {
 
     /**
      * 异步调用AI接口
-     * @param question 用户问题
+     *
+     * @param question  用户问题
      * @param onSuccess 成功回调
-     * @param onError 失败回调
+     * @param onError   失败回调
      */
-    public static void chatWithAIAsync(String question,
-                                       Consumer<String> onSuccess,
-                                       Consumer<Exception> onError) {
+    public static void chatWithAIAsync(String question, Consumer<String> onSuccess, Consumer<Exception> onError) {
         new Thread(() -> {
             try {
                 // 1. 构建请求体
-                JSONObject message = new JSONObject()
-                        .put("role", "user")
-                        .put("content", question);
+                JSONObject message = new JSONObject().put("role", "user").put("content", question);
 
-                JSONObject requestBody = new JSONObject()
-                        .put("model", "deepseek-chat")
-                        .put("messages", new JSONArray().put(message))
-                        .put("temperature", 0.7)
-                        .put("max_tokens", 1000);
+                JSONObject requestBody = new JSONObject().put("model", "deepseek-chat").put("messages", new JSONArray().put(message)).put("temperature", 0.7).put("max_tokens", 1000);
 
-                RequestBody body = RequestBody.create(
-                        requestBody.toString(),
-                        MediaType.get("application/json")
-                );
+                RequestBody body = RequestBody.create(requestBody.toString(), MediaType.get("application/json"));
 
                 // 2. 构建请求
-                Request request = new Request.Builder()
-                        .url(API_URL)
-                        .addHeader("Authorization", "Bearer " + getApiKey())
-                        .post(body)
-                        .build();
+                Request request = new Request.Builder().url(API_URL).addHeader("Authorization", "Bearer " + getApiKey()).post(body).build();
 
                 // 3. 执行请求（记录当前Call以便取消）
                 currentCall = client.newCall(request);
@@ -68,11 +54,7 @@ public class AIClient {
                         throw new IOException("无效的API响应格式");
                     }
 
-                    String answer = json.getJSONArray("choices")
-                            .getJSONObject(0)
-                            .getJSONObject("message")
-                            .getString("content")
-                            .trim();
+                    String answer = json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content").trim();
 
                     // 5. 回调到UI线程
                     SwingUtilities.invokeLater(() -> onSuccess.accept(answer));
@@ -107,10 +89,7 @@ public class AIClient {
      */
     public static boolean isNetworkAvailable() {
         try {
-            Request request = new Request.Builder()
-                    .url("https://www.baidu.com")
-                    .head()
-                    .build();
+            Request request = new Request.Builder().url("https://www.baidu.com").head().build();
 
             try (Response response = client.newCall(request).execute()) {
                 return response.isSuccessful();
