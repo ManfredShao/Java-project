@@ -81,7 +81,7 @@ public class AIClient {
      */
     private static String getApiKey() {
         // 实际项目中应从安全配置读取
-        return "sk-9fbabfb094344d789c492a5121287333";
+        return "///";
     }
 
     /**
